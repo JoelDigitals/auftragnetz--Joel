@@ -1,0 +1,7 @@
+Django>=4.2
+django-crispy-forms
+django-allauth       # optional for social auth/email helpers
+phonenumbers         # phone validation
+python-dotenv
+twilio
+djangorestframework

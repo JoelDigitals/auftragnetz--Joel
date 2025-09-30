@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Registration Step 2" %}{% endblock %}
+
+{% block content %}
+<h2>{% trans "Enter your details" %}</h2>
+<form method="post">
+    {% csrf_token %}
+    <label>{% trans "Name" %} <input type="text" name="name"></label><br>
+    <label>{% trans "Email" %} <input type="email" name="email"></label><br>
+    <label>{% trans "Phone" %} <input type="tel" name="phone"></label><br>
+    <button type="submit">{% trans "Finish" %}</button>
+</form>
+{% endblock %}

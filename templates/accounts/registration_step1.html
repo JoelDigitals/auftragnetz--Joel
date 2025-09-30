@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Registration Step 1" %}{% endblock %}
+
+{% block content %}
+<h2>{% trans "Choose your role" %}</h2>
+<form method="post">
+    {% csrf_token %}
+    <label><input type="radio" name="role" value="freelancer"> {% trans "Freelancer" %}</label><br>
+    <label><input type="radio" name="role" value="company"> {% trans "Company" %}</label><br>
+    <label><input type="radio" name="role" value="self_employed"> {% trans "Self-employed" %}</label><br>
+    <button type="submit">{% trans "Next" %}</button>
+</form>
+{% endblock %}

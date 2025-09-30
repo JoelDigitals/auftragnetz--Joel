@@ -1,0 +1,170 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q, Count
+from django.utils import timezone
+from datetime import datetime
+from .models import Order, Application, Category
+from .forms import ApplicationForm
+from plans.models import UserPlan
+import calendar
+from datetime import timedelta
+from django.utils.dateparse import parse_date
+
+def order_list(request):
+    qs = Order.objects.filter(status__in=["open", "in_progress"]).order_by("-created_at")
+
+    # Suche
+    search = request.GET.get("q")
+    if search:
+        qs = qs.filter(
+            Q(title__icontains=search) | Q(description__icontains=search)
+        )
+
+    # Mehrere Kategorien (z. B. ?categories=1&categories=5)
+    categories_filter = request.GET.getlist("categories")
+    if categories_filter:
+        qs = qs.filter(category__id__in=categories_filter).distinct()
+
+    # Datumsfilter (z. B. ?date_from=2025-09-01&date_to=2025-09-29)
+    date_from = request.GET.get("date_from")
+    date_to = request.GET.get("date_to")
+
+    if date_from:
+        qs = qs.filter(created_at__gte=parse_date(date_from))
+    if date_to:
+        qs = qs.filter(created_at__lte=parse_date(date_to))
+
+    categories = Category.objects.all().order_by("name")
+
+    return render(request, "orders/order_list.html", {
+        "orders": qs,
+        "categories": categories,
+        "selected_categories": categories_filter,
+        "search": search,
+        "date_from": date_from,
+        "date_to": date_to,
+    })
+
+def order_detail(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    applications = order.applications.all()
+    app_form = ApplicationForm()
+    return render(request, "orders/order_detail.html", {
+        "order": order,
+        "app_form": app_form,
+        "applications": applications,
+    })
+
+@login_required
+def order_create(request):
+    if request.method == "POST":
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        budget = request.POST.get('budget')
+        deadline = request.POST.get('deadline')
+        categories = request.POST.getlist('categories')
+        status = request.POST.get('status')
+
+        order = Order.objects.create(
+            title=title,
+            description=description,
+            budget=budget,
+            deadline=deadline,
+            status=status,
+            created_by=request.user
+        )
+
+        order.categories.set(categories)  # Set ManyToMany relation
+
+        return redirect("orders:order_detail", pk=order.pk)
+    else:
+        categories = Category.objects.all()
+        status_choices = Order.STATUS_CHOICES
+        return render(request, "orders/create_order.html", {
+            "categories": categories,
+            "status_choices": status_choices,
+            "title": "",
+            "description": "",
+            "budget": "",
+            "deadline": "",
+            "status": "",
+            "selected_categories": []
+        })
+@login_required
+def create_order(request):
+    if request.method == "POST":
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        budget = request.POST.get('budget') or None
+        deadline = request.POST.get('deadline') or None
+        categories = request.POST.getlist('categories')
+        status = request.POST.get('status')
+
+        order = Order.objects.create(
+            title=title,
+            description=description,
+            budget=budget,
+            deadline=deadline,
+            status=status,
+            created_by=request.user
+        )
+
+        if categories:
+            order.category.set(categories)  # funktioniert jetzt mit ManyToMany
+        return redirect("order_detail", pk=order.pk)
+    else:
+        categories = Category.objects.all()
+        status_choices = Order.STATUS_CHOICES
+        return render(request, "orders/order_create.html", {
+            "categories": categories,
+            "status_choices": status_choices
+        })
+
+    
+@login_required
+def apply_order(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+
+    # Prüfen ob aktiver Plan existiert
+    now = timezone.now()
+    userplan = UserPlan.objects.filter(user=request.user, expires_at__gte=now).first()
+    if not userplan:
+        return redirect("order_detail", pk=order.pk)
+
+    # Monatslimit prüfen
+    month_start = datetime(now.year, now.month, 1)
+    month_end = datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1], 23, 59, 59)
+
+    count_apps = Application.objects.filter(
+        applicant=request.user,
+        created_at__range=(month_start, month_end)
+    ).count()
+
+    limit = userplan.plan.applications_limit_per_month or 10  # fallback
+    if count_apps >= limit:
+        return redirect("order_detail", pk=order.pk)
+
+    # Bewerbung speichern
+    if request.method == "POST":
+        form = ApplicationForm(request.POST)
+        if form.is_valid():
+            a = form.save(commit=False)
+            a.order = order
+            a.applicant = request.user
+            a.phone = getattr(request.user, "phone_number", "")
+            a.email = request.user.email
+            a.save()
+            return redirect("order_detail", pk=order.pk)
+
+    return redirect("order_detail", pk=order.pk)
+
+def freelancer_list(request):
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    qs = User.objects.annotate(app_count=Count("application")).all()
+
+    search = request.GET.get("q")
+    if search:
+        qs = qs.filter(Q(username__icontains=search) | Q(email__icontains=search))
+
+    return render(request, "orders/freelancer_list.html", {"freelancers": qs})

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Freelancers" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <h1 class="text-2xl font-bold mb-6">{% trans "Freelancers" %}</h1>
+
+  <form method="get" class="flex items-center space-x-2 mb-6">
+    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="{% trans 'Search by name or email' %}"
+      class="flex-1 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-3 py-2">
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+      {% trans "Search" %}
+    </button>
+  </form>
+
+  {% if freelancers %}
+  <ul class="space-y-4">
+    {% for f in freelancers %}
+    <li>
+      <a href="{% url 'profile_detail' f.username %}" 
+         class="block bg-white dark:bg-gray-800 p-4 rounded-lg shadow flex justify-between items-center hover:shadow-lg transition cursor-pointer">
+        <div>
+          <p class="font-semibold">{{ f.username }}</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{{ f.email }}</p>
+        </div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+          {% trans "Applications" %}: {{ f.app_count }}
+        </div>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p class="text-gray-600 dark:text-gray-400">{% trans "No freelancers found." %}</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-8 transition">
+  
+  <!-- Profilkopf -->
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+      Profil von {{ profile_user.username }}
+    </h1>
+    <span class="px-3 py-1 text-xs rounded-full 
+      {% if profile_type == 'company' %} bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-100
+      {% elif profile_type == 'freelancer' %} bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-100
+      {% elif profile_type == 'sonstiges' %} bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-100
+      {% endif %}">
+      {{ profile_type|title }}
+    </span>
+  </div>
+
+  <!-- Profilinformationen -->
+  <div class="space-y-6">
+    {% if profile_type == "company" %}
+      <div>
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Firmendetails</h2>
+        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
+          <p><span class="font-medium">Firma:</span> {{ profile.company_name }}</p>
+          <p><span class="font-medium">Mitarbeiter:</span> {{ profile.employee_count }}</p>
+          <p><span class="font-medium">Typ:</span> {{ profile.company_type }}</p>
+          <p><span class="font-medium">Telefon:</span> {{ profile.phone }}</p>
+          <p><span class="font-medium">Website:</span> <a href="{{ profile.website }}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ profile.website }}</a></p>
+          <p><span class="font-medium">Adresse:</span> {{ profile.address }}</p>
+          <p><span class="font-medium">Ort:</span> {{ profile.location }}</p>
+        </div>
+        {% if profile.description %}
+          <p class="mt-4 text-gray-700 dark:text-gray-300">{{ profile.description }}</p>
+        {% endif %}
+      </div>
+
+    {% elif profile_type == "freelancer" %}
+      <div>
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Freelancer Details</h2>
+        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
+          <p><span class="font-medium">Skills:</span> {{ profile.skills }}</p>
+          <p><span class="font-medium">Stundensatz:</span> {{ profile.hourly_rate }} €</p>
+          <p><span class="font-medium">Telefon:</span> {{ profile.phone }}</p>
+          <p><span class="font-medium">Website:</span> <a href="{{ profile.website }}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ profile.website }}</a></p>
+          <p><span class="font-medium">Verfügbarkeit:</span> {{ profile.availability }}</p>
+          <p><span class="font-medium">Ort:</span> {{ profile.location }}</p>
+          <p><span class="font-medium">Sprachen:</span> {{ profile.languages }}</p>
+          <p><span class="font-medium">Zertifikate:</span> {{ profile.certifications }}</p>
+          <p><span class="font-medium">Portfolio:</span> <a href="{{ profile.portfolio_link }}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ profile.portfolio_link }}</a></p>
+        </div>
+      </div>
+
+    {% elif profile_type == "sonstiges" %}
+      <div>
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Sonstiges Profil</h2>
+        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
+          <p><span class="font-medium">Weitere Infos:</span> {{ profile.additional_info }}</p>
+          <p><span class="font-medium">Portfolio:</span> <a href="{{ profile.portfolio_link }}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ profile.portfolio_link }}</a></p>
+          <p><span class="font-medium">Verfügbarkeit:</span> {{ profile.availability }}</p>
+          <p><span class="font-medium">Ort:</span> {{ profile.location }}</p>
+          <p><span class="font-medium">Sprachen:</span> {{ profile.languages }}</p>
+          <p><span class="font-medium">Zertifikate:</span> {{ profile.certifications }}</p>
+          {% if profile.resume %}
+            <p><span class="font-medium">Lebenslauf:</span> <a href="{{ profile.resume.url }}" class="text-blue-600 dark:text-blue-400 hover:underline">Download</a></p>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-4 flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
+    <span>Besucher: {{ profile.visitor_count }}</span>
+    <a href="javascript:history.back()" class="hover:underline">Zurück</a>
+  </div>
+</div>
+{% endblock %}

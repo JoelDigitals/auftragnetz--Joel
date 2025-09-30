@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Plans" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-10">
+  <h1 class="text-3xl font-bold mb-8 text-center">{% trans "Choose Your Plan" %}</h1>
+
+  {% if active_plan %}
+    <div class="mb-6 p-4 bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700 rounded-xl text-center">
+      <p class="font-semibold">{% trans "Your active plan" %}: {{ active_plan.plan.name }}</p>
+      <p>{% trans "Valid until" %}: {{ active_plan.expires_at|date:"d.m.Y" }}</p>
+    </div>
+  {% endif %}
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {% for plan in plans %}
+      <div class="p-6 rounded-2xl border shadow-lg backdrop-blur-xl bg-white/50 dark:bg-gray-800/40 flex flex-col justify-between">
+        <div>
+          <h3 class="text-2xl font-bold mb-2">{{ plan.name }}</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-4">{{ plan.description }}</p>
+
+          <p class="mb-2"><strong>{% trans "Applications per month" %}:</strong> 
+            {{ plan.applications_limit_per_month|default:"∞" }}
+          </p>
+          <p class="mb-2"><strong>{% trans "Product limit" %}:</strong> 
+            {{ plan.product_limit|default:"∞" }}
+          </p>
+          <p class="mb-2"><strong>{% trans "Boosters" %}:</strong> {{ plan.booster_limit }}</p>
+        </div>
+
+        <div class="mt-4">
+          {% if plan.discount_percent > 0 %}
+            <p class="text-xl font-semibold text-red-500 line-through">€{{ plan.price }}</p>
+            <p class="text-2xl font-bold text-blue-600">€{{ plan.discounted_price }}</p>
+          {% else %}
+            <p class="text-2xl font-bold text-blue-600">€{{ plan.price }}</p>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p class="col-span-3 text-center text-gray-500">{% trans "No active plans available." %}</p>
+    {% endfor %}
+  </div>
+
+  <div class="mt-10 text-center">
+    <a href="{% url 'redeem_code' %}" 
+       class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition">
+       {% trans "Redeem Code" %}
+    </a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Welcome" %}{% endblock %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<!-- ========================== -->
+<!-- Eingeloggter User Dashboard -->
+<!-- ========================== -->
+
+<section class="mb-12">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
+        {% trans "Welcome back," %} {{ user.username }}!
+    </h1>
+    <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 max-w-3xl leading-relaxed">
+        {% trans "Here’s a quick overview of your profile, projects, leads, and activity." %}
+    </p>
+</section>
+
+<!-- Quick Access / Cards -->
+<section class="mb-12 grid md:grid-cols-2 gap-6">
+    <!-- Projekte finden -->
+    <a href="/orders/" class="card hover:shadow-xl transition text-center">
+        <div class="text-6xl mb-4">📂</div>
+        <h3 class="text-2xl font-semibold mb-2">{% trans "Find Projects" %}</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-sm">{% trans "Browse and manage available projects" %}</p>
+    </a>
+
+    <!-- Companies, Freelancers & Products -->
+    <a href="/freelancers/" class="card hover:shadow-xl transition text-center">
+        <div class="text-6xl mb-4">🏢🧑‍💼🛒</div>
+        <h3 class="text-2xl font-semibold mb-2">{% trans "Companies, Freelancers & Products" %}</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-sm">{% trans "Explore freelancers, companies, and products" %}</p>
+    </a>
+</section>
+
+<!-- Latest Projects -->
+<section class="mb-12">
+    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">{% trans "Latest Projects" %}</h2>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for project in projects|slice:":6" %}
+        <div class="card flex flex-col justify-between hover:shadow-xl transition">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ project.title }}</h3>
+            <p class="text-gray-600 dark:text-gray-300 mt-2 line-clamp-3">{{ project.description }}</p>
+            <p class="mt-2 text-sm text-gray-400">{% trans "Created on" %} {{ project.created_at|date:"d.m.Y" }}</p>
+            <a href="{% url 'project_detail' project.id %}" class="mt-4 text-blue-600 dark:text-blue-400 hover:underline font-medium text-sm">
+                {% trans "View Details" %}
+            </a>
+        </div>
+        {% empty %}
+        <p class="text-gray-500 dark:text-gray-400">{% trans "No projects available yet." %}</p>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Leads Preview -->
+{% if active_plan %}
+<section class="mb-12">
+    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">{% trans "Lead Preview" %}</h2>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for lead in leads_preview %}
+        <div class="card flex flex-col justify-between">
+            <h3 class="font-semibold text-lg">{{ lead.name }}</h3>
+            <p class="text-gray-600 dark:text-gray-300 line-clamp-2">{{ lead.message }}</p>
+            <p class="text-sm text-gray-400 mt-2">{{ lead.created_at|date:"d.m.Y" }}</p>
+        </div>
+        {% empty %}
+        <p class="text-gray-500 dark:text-gray-400">{% trans "No leads available at the moment." %}</p>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% else %}
+<!-- ========================== -->
+<!-- Nicht eingeloggter User -->
+<!-- ========================== -->
+<section class="text-center mb-16 relative bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 rounded-2xl py-20 px-6 shadow-lg">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
+        {% trans "Welcome to Auftragnetz" %}
+    </h1>
+    <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+        {% trans "Find and post projects easily. Connect with companies, clients, and freelancers in one place." %}
+    </p>
+</section>
+
+<!-- Features & Benefits -->
+<section class="grid md:grid-cols-3 gap-8 mb-16 px-4 md:px-0">
+    <div class="card text-center hover:shadow-xl transition">
+        <div class="text-5xl mb-4">📌</div>
+        <h3 class="text-2xl font-bold mb-2">{% trans "Post Projects" %}</h3>
+        <p class="text-gray-600 dark:text-gray-300">{% trans "Create projects and attract the right freelancers." %}</p>
+    </div>
+    <div class="card text-center hover:shadow-xl transition">
+        <div class="text-5xl mb-4">🔍</div>
+        <h3 class="text-2xl font-bold mb-2">{% trans "Discover Opportunities" %}</h3>
+        <p class="text-gray-600 dark:text-gray-300">{% trans "Find freelance gigs, jobs, and collaborations." %}</p>
+    </div>
+    <div class="card text-center hover:shadow-xl transition">
+        <div class="text-5xl mb-4">🤝</div>
+        <h3 class="text-2xl font-bold mb-2">{% trans "Connect & Grow" %}</h3>
+        <p class="text-gray-600 dark:text-gray-300">{% trans "Build lasting connections with clients and businesses." %}</p>
+    </div>
+</section>
+
+{% endif %}
+
+<!-- Styles -->
+<style>
+.card {
+    backdrop-filter: blur(12px);
+    background: rgba(255,255,255,0.15);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: all .2s;
+}
+.card:hover { transform: translateY(-2px); }
+</style>
+
+{% endblock %}

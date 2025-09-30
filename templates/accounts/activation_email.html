@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Willkommen beim AuftragNetz by Joel Digitals</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
+    }
+    .container {
+      background: #fff;
+      border-radius: 15px;
+      padding: 40px 30px;
+      width: 650px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      text-align: center;
+    }
+    .header {
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: #fff;
+      padding: 40px 20px;
+      border-radius: 12px 12px 0 0;
+      margin: -40px -30px 30px -30px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 1px;
+    }
+    .lang-btns {
+      margin-bottom: 25px;
+    }
+    .lang-btns button {
+      margin: 0 6px;
+      padding: 10px 22px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      background: #4f46e5;
+      color: #fff;
+      transition: 0.3s;
+    }
+    .lang-btns button.active {
+      background: #6366f1;
+    }
+    .lang-section {
+      display: none;
+      text-align: left;
+      margin-top: 20px;
+      line-height: 1.7;
+    }
+    .lang-section.active {
+      display: block;
+    }
+    .button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 14px 32px;
+      background: #4f46e5;
+      color: #fff !important;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 12px;
+      transition: 0.3s;
+    }
+    .button:hover {
+      background: #4338ca;
+    }
+    .fallback-link {
+      word-break: break-all;
+      font-size: 14px;
+      color: #4f46e5;
+      margin-top: 10px;
+      display: block;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #e5e7eb;
+      margin: 25px 0;
+    }
+    .emoji { font-size: 18px; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 id="header-title">🎉 Willkommen beim AuftragNetz!</h1>
+    </div>
+
+    <!-- Sprachwahl -->
+    <div class="lang-btns">
+      <button id="btn-de" class="active" onclick="showLang('de')">Deutsch</button>
+      <button id="btn-en" onclick="showLang('en')">English</button>
+      <button id="btn-fr" onclick="showLang('fr')">Français</button>
+    </div>
+
+    <!-- Deutsch -->
+    <div id="de" class="lang-section active">
+      <p><span class="emoji">🇩🇪</span>Hallo {{ user.username }},</p>
+      <p>Wir freuen uns sehr, dass du dich bei uns registriert hast! Um dein neues Konto zu aktivieren und alle Funktionen des AuftragNetz by Joel Digitals nutzen zu können, bestätige bitte deine E-Mail-Adresse.</p>
+      <p>Nach der Bestätigung kannst du Aufträge aufgeben, Projekte finden, Nachrichten senden und viele weitere Funktionen nutzen.</p>
+      <p>Wenn du dich nicht registriert hast, ignoriere bitte diese E-Mail.</p>
+      <a href="http://{{ domain }}{% url 'activate' uidb64=uidb64 token=token %}" class="button">E-Mail-Adresse bestätigen</a>
+      <p class="fallback-link">http://{{ domain }}{% url 'activate' uidb64=uidb64 token=token %}</p>
+    </div>
+
+    <!-- Englisch -->
+    <div id="en" class="lang-section">
+      <p><span class="emoji">🇬🇧</span>Hello {{ user.username }},</p>
+      <p>We are thrilled that you registered with us! To activate your new account and access all features of AuftragNetz by Joel Digitals, please confirm your email address.</p>
+      <p>After confirmation, you can post tasks, find projects, send messages, and enjoy many more features.</p>
+      <p>If you did not register, you can safely ignore this email.</p>
+      <a href="http://{{ domain }}{% url 'activate' uidb64=uidb64 token=token %}" class="button">Confirm Email</a>
+      <p class="fallback-link">http://{{ domain }}{% url 'activate' uidb64=uidb64 token=token %}</p>
+    </div>
+
+    <!-- Französisch -->
+    <div id="fr" class="lang-section">
+      <p><span class="emoji">🇫🇷</span>Bonjour {{ user.username }},</p>
+      <p>Nous sommes ravis que vous vous soyez inscrit chez nous ! Pour activer votre compte et profiter de toutes les fonctionnalités d’AuftragNetz by Joel Digitals, veuillez confirmer votre adresse e-mail.</p>
+      <p>Après confirmation, vous pourrez publier des missions, trouver des projets, envoyer des messages et profiter de nombreuses autres fonctionnalités.</p>
+      <p>Si vous ne vous êtes pas inscrit, vous pouvez ignorer ce courriel en toute sécurité.</p>
+      <a href="http://{{ domain }}{% url 'activate' uidb64=uidb64 token=token %}" class="button">Confirmer l'e-mail</a>
+      <p class="fallback-link">http://{{ domain }}{% url 'activate' uidb64=uidb64 token=token %}</p>
+    </div>
+
+    <hr>
+
+    <p>Herzliche Grüße / Best regards / Cordialement,<br>Dein AuftragNetz-Team by Joel Digitals</p>
+
+    <div class="footer">
+      <p>Diese E-Mail wurde automatisch erstellt – bitte antworte nicht direkt darauf.<br>
+      This email was automatically generated – please do not reply.<br>
+      Ce courriel a été généré automatiquement – veuillez ne pas répondre.</p>
+      <p>&copy; {{ current_year }} Joel Digitals. Alle Rechte vorbehalten.</p>
+    </div>
+  </div>
+
+  <script>
+    const headers = {
+      de: "🎉 Willkommen beim AuftragNetz!",
+      en: "🎉 Welcome to AuftragNetz!",
+      fr: "🎉 Bienvenue sur AuftragNetz !"
+    };
+
+    function showLang(lang) {
+      // Überschrift ändern
+      document.getElementById("header-title").textContent = headers[lang];
+
+      // Sprachen ein-/ausblenden
+      document.querySelectorAll('.lang-section').forEach(el => el.classList.remove('active'));
+      document.getElementById(lang).classList.add('active');
+
+      // Button aktiv setzen
+      document.querySelectorAll('.lang-btns button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('btn-' + lang).classList.add('active');
+    }
+  </script>
+</body>
+</html>
