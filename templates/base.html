@@ -63,7 +63,7 @@
                 <!-- Logo -->
                 <div class="flex items-center space-x-2">
                     <img src="{% static 'images/logo.png' %}" alt="Auftragnetz" class="h-10 w-10 object-contain">
-                    <a href="{% url 'home' %}" class="text-2xl font-extrabold text-blue-600 dark:text-blue-400">AuftragNetz</a>
+                    <a href="{% url 'home' %}" class="text-2xl font-extrabold text-blue-600 dark:text-blue-400">{% trans "AuftragNetz" %}</a>
                 </div>
 
                 <!-- Desktop Menu -->
@@ -76,6 +76,7 @@
                     {% if user.is_authenticated %}
                         <span class="text-sm text-gray-700 dark:text-gray-300">{% trans "Hello" %}, <strong>{{ user.username }}</strong></span>
                         <a href="{% url 'company_dashboard' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Dashboard" %}</a>
+                        <a href="{% url 'chat_list' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Chats" %}</a>
                         <a href="{% url 'logout' %}" class="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition">{% trans "Logout" %}</a>
                     {% else %}
                         <a href="{% url 'register' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Register" %}</a>
@@ -113,6 +114,7 @@
             {% if user.is_authenticated %}
                 <span class="block text-gray-700 dark:text-gray-300">{% trans "Hello" %}, <strong>{{ user.username }}</strong></span>
                 <a href="{% url 'company_dashboard' %}" class="block text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Dashboard" %}</a>
+                <a href="{% url 'chat_list' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Chats" %}</a>
                 <a href="{% url 'logout' %}" class="block bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition">{% trans "Logout" %}</a>
             {% else %}
                 <a href="{% url 'register' %}" class="block text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Register" %}</a>
@@ -140,8 +142,8 @@
     <footer class="bg-gray-900 dark:bg-gray-800 text-gray-300 py-10 transition-colors duration-300 mt-auto">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-                <h3 class="text-lg font-semibold text-white">Auftragnetz</h3>
-                <p class="mt-2 text-sm">Finde Projekte, Freelancer und Unternehmen – alles an einem Ort.</p>
+                <h3 class="text-lg font-semibold text-white">{% trans "Auftragnetz" %}</h3>
+                <p class="mt-2 text-sm">{% trans "Finde Projekte, Freelancer und Unternehmen – alles an einem Ort." %}</p>
             </div>
 
             <div>
@@ -154,8 +156,9 @@
             </div>
 
             <div>
-                <h3 class="text-lg font-semibold text-white">{% trans "Language" %}</h3>
-                <p class="mt-2 text-sm">{% trans "Select your preferred language in the menu above." %}</p>
+                <h3 class="text-lg font-semibold text-white">{% trans "Rechtliches" %}</h3>
+                <a href="{% url 'home' %}" class="hover:underline">{% trans "Imprint" %}</a><br>
+                <a href="{% url 'login' %}" class="hover:underline">{% trans "Datenschutz" %}</a>
             </div>
         </div>
         <div class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">&copy; 2025 Joel Digitals</div>

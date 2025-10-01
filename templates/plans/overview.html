@@ -14,7 +14,7 @@
     </div>
   {% endif %}
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     {% for plan in plans %}
       <div class="p-6 rounded-2xl border shadow-lg backdrop-blur-xl bg-white/50 dark:bg-gray-800/40 flex flex-col justify-between">
         <div>
@@ -30,19 +30,31 @@
           <p class="mb-2"><strong>{% trans "Boosters" %}:</strong> {{ plan.booster_limit }}</p>
         </div>
 
-        <div class="mt-4">
+        <!-- Preisanzeige -->
+        <div class="mt-4 text-center">
           {% if plan.discount_percent > 0 %}
             <p class="text-xl font-semibold text-red-500 line-through">€{{ plan.price }}</p>
-            <p class="text-2xl font-bold text-blue-600">€{{ plan.discounted_price }}</p>
+            <p class="text-2xl font-bold text-blue-600">€{{ plan.discounted_price|floatformat:2 }}</p>
           {% else %}
             <p class="text-2xl font-bold text-blue-600">€{{ plan.price }}</p>
           {% endif %}
         </div>
+
+        <!-- Buy-Link Button, falls vorhanden -->
+        {% if plan.link %}
+        <div class="mt-4 text-center">
+          <a href="{{ plan.link }}" target="_blank" 
+             class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl transition">
+             {% trans "Buy Plan" %}
+          </a>
+        </div>
+        {% endif %}
       </div>
     {% empty %}
       <p class="col-span-3 text-center text-gray-500">{% trans "No active plans available." %}</p>
     {% endfor %}
-  </div>
+</div>
+
 
   <div class="mt-10 text-center">
     <a href="{% url 'redeem_code' %}" 

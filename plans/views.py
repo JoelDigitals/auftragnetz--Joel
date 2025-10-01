@@ -9,10 +9,17 @@ def plans_overview(request):
     """Zeigt alle verfügbaren Pläne an und den aktuell aktiven Plan des Users."""
     plans = Plan.objects.filter(is_active=True)
     active_plan = UserPlan.objects.filter(user=request.user, expires_at__gte=timezone.now()).first()
+    
+    # Free Plan automatisch, wenn kein anderer Plan aktiv ist
+    free_plan = Plan.objects.filter(name="Free Plan").first()
+    if not active_plan and free_plan:
+        active_plan = type('DummyUserPlan', (), {"plan": free_plan, "expires_at": None})()
+
     return render(request, "plans/overview.html", {
         "plans": plans,
         "active_plan": active_plan
     })
+
 
 
 @login_required

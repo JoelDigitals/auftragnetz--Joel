@@ -10,8 +10,9 @@ class Plan(models.Model):
     booster_limit = models.IntegerField(default=0)
     price = models.DecimalField(max_digits=6, decimal_places=2)  # e.g., 9999.99
     description = models.TextField(blank=True)
-    discount_percent = models.IntegerField(default=0)  # e.g., 20 for 20% discount
+    discount_percent = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
+    link = models.URLField(blank=True, null=True)  # NEU: optionaler Link für Buy-Button
 
     def discounted_price(self):
         if self.discount_percent > 0:
@@ -21,6 +22,7 @@ class Plan(models.Model):
     
     def __str__(self):
         return self.name
+
 
 class Code(models.Model):
     code = models.CharField(max_length=50, unique=True)

@@ -3,8 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Count
 from django.utils import timezone
 from datetime import datetime
-from .models import Order, Application, Category
-from .forms import ApplicationForm
+from .models import Order, Application, Category, Chat, Message
+from accounts.models import User
+from .forms import ApplicationForm, MessageForm
 from plans.models import UserPlan
 import calendar
 from datetime import timedelta
@@ -47,13 +48,13 @@ def order_list(request):
 
 def order_detail(request, pk):
     order = get_object_or_404(Order, pk=pk)
-    applications = order.applications.all()
-    app_form = ApplicationForm()
+    applications = order.applications.select_related("applicant").all()
+
     return render(request, "orders/order_detail.html", {
         "order": order,
-        "app_form": app_form,
         "applications": applications,
     })
+
 
 @login_required
 def order_create(request):
@@ -90,6 +91,7 @@ def order_create(request):
             "status": "",
             "selected_categories": []
         })
+    
 @login_required
 def create_order(request):
     if request.method == "POST":
@@ -119,32 +121,35 @@ def create_order(request):
             "categories": categories,
             "status_choices": status_choices
         })
-
     
 @login_required
 def apply_order(request, pk):
     order = get_object_or_404(Order, pk=pk)
-
-    # Prüfen ob aktiver Plan existiert
     now = timezone.now()
-    userplan = UserPlan.objects.filter(user=request.user, expires_at__gte=now).first()
-    if not userplan:
-        return redirect("order_detail", pk=order.pk)
 
-    # Monatslimit prüfen
+    # Aktiver Plan prüfen
+    userplan = UserPlan.objects.filter(user=request.user, expires_at__gte=now).first()
+
+    # Monatslimit berechnen
     month_start = datetime(now.year, now.month, 1)
-    month_end = datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1], 23, 59, 59)
+    month_end = datetime(
+        now.year, now.month,
+        calendar.monthrange(now.year, now.month)[1], 23, 59, 59
+    )
 
     count_apps = Application.objects.filter(
         applicant=request.user,
         created_at__range=(month_start, month_end)
     ).count()
 
-    limit = userplan.plan.applications_limit_per_month or 10  # fallback
+    if userplan:
+        limit = userplan.plan.applications_limit_per_month or 10
+    else:
+        limit = 10  # Free User Limit
+
     if count_apps >= limit:
         return redirect("order_detail", pk=order.pk)
 
-    # Bewerbung speichern
     if request.method == "POST":
         form = ApplicationForm(request.POST)
         if form.is_valid():
@@ -154,17 +159,75 @@ def apply_order(request, pk):
             a.phone = getattr(request.user, "phone_number", "")
             a.email = request.user.email
             a.save()
-            return redirect("order_detail", pk=order.pk)
 
-    return redirect("order_detail", pk=order.pk)
+            # Chat erstellen
+            chat = Chat.objects.create()
+            chat.participants.add(request.user, order.created_by)
+            a.chat = chat
+            a.save(update_fields=["chat"])
+
+            # Erste Nachricht = Bewerbungstext + Kontaktdaten
+            msg_text = (
+                f"📌 Bewerbung auf {order.title}\n\n"
+                f"{a.message}\n\n"
+                f"Kontaktdaten:\n📞 {a.phone or '-'}\n📧 {a.email or '-'}"
+            )
+            Message.objects.create(chat=chat, sender=request.user, text=msg_text)
+
+            return redirect("order_detail", pk=order.pk)
+    else:
+        form = ApplicationForm()
+
+    return render(request, "orders/apply_order.html", {
+        "order": order,
+        "form": form
+    })
+
 
 def freelancer_list(request):
-    from django.contrib.auth import get_user_model
-    User = get_user_model()
     qs = User.objects.annotate(app_count=Count("application")).all()
-
     search = request.GET.get("q")
     if search:
         qs = qs.filter(Q(username__icontains=search) | Q(email__icontains=search))
-
     return render(request, "orders/freelancer_list.html", {"freelancers": qs})
+
+
+@login_required
+def start_chat(request, username):
+    other_user = get_object_or_404(User, username=username)
+    chat = Chat.objects.filter(participants=request.user).filter(participants=other_user).first()
+    if not chat:
+        chat = Chat.objects.create()
+        chat.participants.add(request.user, other_user)
+    return redirect("chat_detail", pk=chat.pk)
+
+@login_required
+def chat_detail(request, pk):
+    chat = get_object_or_404(Chat, pk=pk, participants=request.user)
+
+    # Den anderen Teilnehmer bestimmen
+    other_user = chat.participants.exclude(id=request.user.id).first()
+
+    if request.method == "POST":
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            msg = form.save(commit=False)
+            msg.chat = chat
+            msg.sender = request.user
+            msg.save()
+            return redirect("chat_detail", pk=chat.pk)
+    else:
+        form = MessageForm()
+
+    messages = chat.messages.order_by("created_at")
+    return render(request, "chats/chat_detail.html", {
+        "chat": chat,
+        "messages": messages,
+        "form": form,
+        "other_user": other_user,   # 👈 für Template
+    })
+
+@login_required
+def chat_list(request):
+    chats = Chat.objects.filter(participants=request.user).order_by("-created_at")
+    return render(request, "chats/chat_list.html", {"chats": chats})

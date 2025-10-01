@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Chat{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-6 bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden flex flex-col h-[80vh]">
+  
+  <!-- Chat Header -->
+  <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-100 dark:bg-gray-800">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+      {% trans "Chat with" %} {{ other_user.username }}
+    </h2>
+  </div>
+
+  <!-- Messages -->
+  <div id="chat-box" class="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50 dark:bg-gray-800">
+    {% for message in messages %}
+      <div class="{% if message.sender == request.user %}text-right{% endif %}">
+        <div class="inline-block max-w-xs md:max-w-md px-4 py-2 rounded-2xl shadow-sm
+                    {% if message.sender == request.user %}
+                      bg-blue-600 text-white rounded-br-none
+                    {% else %}
+                      bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-bl-none
+                    {% endif %}">
+          <p class="whitespace-pre-line break-words">{{ message.text }}</p>
+          <div class="text-[10px] mt-1 opacity-70">
+            {{ message.created_at|date:"H:i" }}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-gray-500 dark:text-gray-400 text-center mt-10 italic">
+        {% trans "No messages yet." %}
+      </p>
+    {% endfor %}
+  </div>
+
+  <!-- Message Form -->
+  <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
+    <form method="post" class="flex items-center space-x-2">
+      {% csrf_token %}
+      {{ form.text }}
+      <button type="submit" 
+              class="bg-blue-600 text-white px-5 py-2 rounded-full font-medium shadow-sm hover:bg-blue-700 transition">
+        {% trans "Send" %}
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Optional: Auto-scroll to latest message -->
+<script>
+  const chatBox = document.getElementById("chat-box");
+  if (chatBox) {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+</script>
+{% endblock %}
