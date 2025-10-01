@@ -40,9 +40,19 @@ def create_order(request):
 def company_dashboard(request):
     # Aktiver Plan prüfen
     active_plan = UserPlan.objects.filter(user=request.user, expires_at__gte=timezone.now()).first()
-    
-    # Besucherzählung (angenommen als Integer)
-    profile_visits_count = 123  # Dummy, hier deine echte Logik einsetzen
+
+    # Besucherzählung aus aktivem Profil ermitteln
+    profile_visits_count = 0
+    profile = None
+    if hasattr(request.user, "companyprofile"):
+        profile = request.user.companyprofile
+    elif hasattr(request.user, "freelancerprofile"):
+        profile = request.user.freelancerprofile
+    elif hasattr(request.user, "sonstiges"):
+        profile = request.user.sonstiges
+
+    if profile:
+        profile_visits_count = profile.visitor_count
 
     # Leads nur wenn Plan aktiv
     leads = Lead.objects.filter(company=request.user) if active_plan else []
