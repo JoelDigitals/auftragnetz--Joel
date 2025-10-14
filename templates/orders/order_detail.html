@@ -38,38 +38,22 @@
   
 
   <!-- Bewerbungen -->
-  {% if user == order.created_by %}
-  <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow mt-8">
-    <h3 class="text-lg font-semibold mb-4">{% trans "Applications" %}</h3>
-    {% if applications %}
-      <ul class="space-y-4">
-        {% for app in applications %}
-        <li class="border-b border-gray-200 dark:border-gray-700 pb-2">
-          <strong>{{ app.applicant.username }}</strong>
-          <p class="mt-2 whitespace-pre-line">{{ app.message }}</p>
-          <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            📞 {{ app.phone|default:"-" }} <br>
-            📧 {{ app.email|default:"-" }}
-          </p>
-          <small class="text-gray-500 dark:text-gray-400">
-            {{ app.created_at|date:"d.m.Y H:i" }}
-          </small>
-          {% if app.chat %}
-            <div class="mt-2">
-              <a href="{% url 'chat_detail' app.chat.id %}"
-                 class="text-blue-600 dark:text-blue-400 hover:underline">
-                 {% trans "Open Chat" %}
-              </a>
-            </div>
-          {% endif %}
-        </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>{% trans "No applications yet." %}</p>
-    {% endif %}
-  </div>
+  {% if user == order.created_by and form %}
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow mt-6">
+  <h3 class="text-lg font-semibold mb-4">{% trans "Update Order Status" %}</h3>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.status }}
+    <div class="mt-4">
+      <button type="submit"
+              class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+        {% trans "Save Status" %}
+      </button>
+    </div>
+  </form>
+</div>
 {% endif %}
+
 
 
 </div>

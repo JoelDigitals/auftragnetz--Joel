@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Kategorien für Leadliste</h2>
+<form method="post">
+  {% csrf_token %}
+  <div class="grid grid-cols-2 gap-2">
+    {% for cat in categories %}
+      <label>
+        <input type="checkbox" name="categories" value="{{ cat.id }}"
+               {% if cat in selected_categories %}checked{% endif %}>
+        {{ cat.name }}
+      </label>
+    {% endfor %}
+  </div>
+  <button type="submit" class="btn btn-primary mt-4">Speichern</button>
+</form>
+{% endblock %}

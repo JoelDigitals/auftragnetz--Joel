@@ -1,0 +1,400 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fr\n"
+
+#: templates/base.html:33
+msgid "AuftragNetz"
+msgstr "AuftragNetz"
+
+#: templates/base.html:74
+msgid "Toggle Dark Mode"
+msgstr "Basculer le mode sombre"
+
+#: templates/base.html:78
+msgid "Hello"
+msgstr "Bonjour"
+
+#: templates/base.html:85
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: templates/base.html:86
+msgid "Chats"
+msgstr "Discussions"
+
+#: templates/base.html:87
+msgid "Logout"
+msgstr "Déconnexion"
+
+#: templates/base.html:91
+msgid "Register"
+msgstr "S’inscrire"
+
+#: templates/base.html:92
+msgid "Login"
+msgstr "Se connecter"
+
+#: templates/base.html:151
+msgid "Finde Projekte, Freelancer und Unternehmen – alles an einem Ort."
+msgstr "Trouvez des projets, freelances et entreprises – tout en un seul endroit."
+
+#: templates/base.html:155
+msgid "Quick Links"
+msgstr "Liens rapides"
+
+#: templates/base.html:158
+msgid "Home"
+msgstr "Accueil"
+
+#: templates/base.html:159
+msgid "Aufträge Finden"
+msgstr "Trouver des projets"
+
+#: templates/base.html:160
+msgid "Freelancer und Unternehmen"
+msgstr "Freelances & Entreprises"
+
+#: templates/base.html:164
+msgid "Rechtliches"
+msgstr "Mentions légales"
+
+#: templates/base.html:165
+msgid "Imprint"
+msgstr "Mentions légales"
+
+#: templates/base.html:166
+msgid "Datenschutz"
+msgstr "Politique de confidentialité"
+
+#: templates/home.html:4
+msgid "Welcome"
+msgstr "Bienvenue"
+
+#: templates/home.html:11
+msgid "Welcome back,"
+msgstr "Bon retour,"
+
+#: templates/home.html:13
+msgid "Here’s a quick overview of your profile, projects, leads, and activity."
+msgstr "Voici un aperçu rapide de votre profil, projets, leads et activités."
+
+#: templates/home.html:21
+msgid "Find Projects"
+msgstr "Trouver des projets"
+
+#: templates/home.html:22
+msgid "Browse and manage available projects"
+msgstr "Parcourir et gérer les projets disponibles"
+
+#: templates/home.html:28
+msgid "Companies, Freelancers & Products"
+msgstr "Entreprises, freelances et produits"
+
+#: templates/home.html:29
+msgid "Explore freelancers, companies, and products"
+msgstr "Explorez les freelances, entreprises et produits"
+
+#: templates/home.html:35
+msgid "Latest Projects"
+msgstr "Derniers projets"
+
+#: templates/home.html:39
+msgid "Created on"
+msgstr "Créé le"
+
+#: templates/home.html:41
+msgid "View Details"
+msgstr "Voir les détails"
+
+#: templates/home.html:44
+msgid "No projects available yet."
+msgstr "Aucun projet disponible pour le moment."
+
+#: templates/home.html:49
+msgid "Lead Preview"
+msgstr "Aperçu du lead"
+
+#: templates/home.html:56
+msgid "No leads available at the moment."
+msgstr "Aucun lead disponible pour le moment."
+
+#: templates/home.html:63
+msgid "Welcome to Auftragnetz"
+msgstr "Bienvenue sur Auftragnetz"
+
+#: templates/home.html:66
+msgid "Find and post projects easily. Connect with companies, clients, and freelancers in one place."
+msgstr "Trouvez et publiez des projets facilement. Connectez-vous avec des entreprises, clients et freelances en un seul endroit."
+
+#: templates/home.html:73
+msgid "Post Projects"
+msgstr "Publier un projet"
+
+#: templates/home.html:74
+msgid "Create projects and attract the right freelancers."
+msgstr "Créez des projets et attirez les freelances appropriés."
+
+#: templates/home.html:77
+msgid "Discover Opportunities"
+msgstr "Découvrir des opportunités"
+
+#: templates/home.html:78
+msgid "Find freelance gigs, jobs, and collaborations."
+msgstr "Trouvez des missions freelance, emplois et collaborations."
+
+#: templates/home.html:81
+msgid "Connect & Grow"
+msgstr "Se connecter et évoluer"
+
+#: templates/home.html:82
+msgid "Build lasting connections with clients and businesses."
+msgstr "Établissez des connexions durables avec les clients et entreprises."
+
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fr\n"
+
+msgid "Company Dashboard"
+msgstr "Tableau de bord de l'entreprise"
+
+msgid "Overview"
+msgstr "Aperçu"
+
+msgid "Leads"
+msgstr "Leads"
+
+msgid "Products"
+msgstr "Produits"
+
+msgid "Jobs"
+msgstr "Emplois"
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Profile Visits"
+msgstr "Visites du profil"
+
+msgid "Total visitors to your profile"
+msgstr "Nombre total de visiteurs sur votre profil"
+
+msgid "Active Leads"
+msgstr "Leads actifs"
+
+msgid "Leads collected from your offers"
+msgstr "Leads collectés depuis vos offres"
+
+msgid "Available with an active plan"
+msgstr "Disponible avec un plan actif"
+
+msgid "Coming Soon"
+msgstr "Bientôt disponible"
+
+msgid "Lead Einstellungen"
+msgstr "Paramètres des leads"
+
+msgid "No leads yet."
+msgstr "Aucun lead pour le moment."
+
+msgid "Leads are only available with an active plan."
+msgstr "Les leads ne sont disponibles qu'avec un plan actif."
+
+msgid "Your Job Offers"
+msgstr "Vos offres d'emploi"
+
+msgid "Create Job"
+msgstr "Créer une offre"
+
+msgid "Budget"
+msgstr "Budget"
+
+msgid "Created"
+msgstr "Créé le"
+
+msgid "You have no job offers yet."
+msgstr "Vous n'avez pas encore d'offres d'emploi."
+
+msgid "Profile Settings"
+msgstr "Paramètres du profil"
+
+msgid "Your profile details and company information."
+msgstr "Les détails de votre profil et les informations de l'entreprise."
+
+msgid "Pläne"
+msgstr "Plans"
+
+msgid "Orders"
+msgstr "Commandes"
+
+msgid "Filter Orders"
+msgstr "Filtrer les commandes"
+
+msgid "Search orders..."
+msgstr "Rechercher des commandes..."
+
+msgid "Categories"
+msgstr "Catégories"
+
+msgid "Posted within"
+msgstr "Publié dans"
+
+msgid "Any time"
+msgstr "À tout moment"
+
+msgid "Last 24 hours"
+msgstr "Dernières 24 heures"
+
+msgid "Last 7 days"
+msgstr "Derniers 7 jours"
+
+msgid "Last 30 days"
+msgstr "Derniers 30 jours"
+
+msgid "Advertisement"
+msgstr "Publicité"
+
+msgid "Available Orders"
+msgstr "Commandes disponibles"
+
+msgid "No orders found."
+msgstr "Aucune commande trouvée."
+
+msgid "Apply for this order"
+msgstr "Postuler à cette commande"
+
+msgid "Update Order Status"
+msgstr "Mettre à jour le statut de la commande"
+
+msgid "Save Status"
+msgstr "Enregistrer le statut"
+
+msgid "Apply for"
+msgstr "Postuler pour"
+
+msgid "Apply for order:"
+msgstr "Postuler pour la commande :"
+
+msgid "Send Application"
+msgstr "Envoyer la candidature"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Choose Your Plan"
+msgstr "Choisissez votre plan"
+
+msgid "Your active plan"
+msgstr "Votre plan actif"
+
+msgid "Valid until"
+msgstr "Valable jusqu'au"
+
+msgid "Applications per month"
+msgstr "Candidatures par mois"
+
+msgid "Product limit"
+msgstr "Limite de produits"
+
+msgid "Boosters"
+msgstr "Boosters"
+
+msgid "Buy Plan"
+msgstr "Acheter le plan"
+
+msgid "No active plans available."
+msgstr "Aucun plan actif disponible."
+
+msgid "Redeem Code"
+msgstr "Utiliser un code"
+
+msgid "Redeem a Plan Code"
+msgstr "Utiliser un code de plan"
+
+msgid "Enter your code"
+msgstr "Entrez votre code"
+
+msgid "No profile found"
+msgstr "Aucun profil trouvé"
+
+msgid "has not created a profile yet."
+msgstr "n'a pas encore créé de profil."
+
+msgid "Back to Home"
+msgstr "Retour à l'accueil"
+
+msgid "Edit Profile"
+msgstr "Modifier le profil"
+
+msgid "Edit your Profile"
+msgstr "Modifier votre profil"
+
+msgid "Save Profile"
+msgstr "Enregistrer le profil"
+
+msgid "Profile of"
+msgstr "Profil de"
+
+msgid "Company Details"
+msgstr "Détails de l'entreprise"
+
+msgid "Company"
+msgstr "Entreprise"
+
+msgid "Employees"
+msgstr "Employés"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Phone"
+msgstr "Téléphone"
+
+msgid "Website"
+msgstr "Site web"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Location"
+msgstr "Localisation"
+
+msgid "Freelancer Details"
+msgstr "Détails du freelance"
+
+msgid "Skills"
+msgstr "Compétences"
+
+msgid "Hourly Rate"
+msgstr "Taux horaire"
+
+msgid "Availability"
+msgstr "Disponibilité"
+
+msgid "Languages"
+msgstr "Langues"
+
+msgid "Certifications"
+msgstr "Certifications"
+
+msgid "Portfolio"
+msgstr "Portfolio"
+
+msgid "Other Profile"
+msgstr "Autre profil"
+
+msgid "Additional Info"
+msgstr "Informations supplémentaires"
+
+msgid "Resume"
+msgstr "CV"
+
+msgid "Download"
+msgstr "Télécharger"
+
+msgid "Visitors"
+msgstr "Visiteurs"
+
+msgid "Back"
+msgstr "Retour"

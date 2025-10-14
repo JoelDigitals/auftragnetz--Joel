@@ -64,41 +64,49 @@
     </section>
 
     <!-- Leads -->
-    <section id="leads-section" class="tab-content hidden">
-      {% if active_plan %}
-        <div class="card overflow-x-auto">
-          <h3 class="text-xl font-bold mb-4">{% trans "Leads" %}</h3>
-          {% if leads %}
-            <div class="overflow-x-auto w-full">
-              <table class="min-w-full text-left border-collapse">
-                <thead>
-                  <tr class="border-b border-gray-300 dark:border-gray-600">
-                    <th class="px-4 py-2 whitespace-nowrap">{% trans "Name" %}</th>
-                    <th class="px-4 py-2 whitespace-nowrap">{% trans "Email" %}</th>
-                    <th class="px-4 py-2 whitespace-nowrap">{% trans "Message" %}</th>
-                    <th class="px-4 py-2 whitespace-nowrap">{% trans "Date" %}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for lead in leads %}
-                  <tr class="border-b border-gray-200 dark:border-gray-600">
-                    <td class="px-4 py-2">{{ lead.name }}</td>
-                    <td class="px-4 py-2">{{ lead.email }}</td>
-                    <td class="px-4 py-2">{{ lead.message }}</td>
-                    <td class="px-4 py-2">{{ lead.created_at|date:"d.m.Y H:i" }}</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-          {% else %}
-            <p class="text-gray-500 dark:text-gray-400">{% trans "No leads yet." %}</p>
-          {% endif %}
+<section id="leads-section" class="tab-content hidden">
+  {% if active_plan %}
+    <div class="card overflow-x-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold">{% trans "Leads" %}</h3>
+        <a href="{% url 'lead_preferences' %}" 
+           class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+          ⚙️ {% trans "Lead Einstellungen" %}
+        </a>
+      </div>
+
+      {% if leads %}
+        <div class="overflow-x-auto w-full">
+          <table class="min-w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-gray-300 dark:border-gray-600">
+                <th class="px-4 py-2 whitespace-nowrap">{% trans "Name" %}</th>
+                <th class="px-4 py-2 whitespace-nowrap">{% trans "Email" %}</th>
+                <th class="px-4 py-2 whitespace-nowrap">{% trans "Message" %}</th>
+                <th class="px-4 py-2 whitespace-nowrap">{% trans "Date" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for lead in leads %}
+              <tr class="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                <td class="px-4 py-2">{{ lead.name }}</td>
+                <td class="px-4 py-2">{{ lead.email }}</td>
+                <td class="px-4 py-2">{{ lead.message }}</td>
+                <td class="px-4 py-2">{{ lead.created_at|date:"d.m.Y H:i" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       {% else %}
-        <p class="text-gray-400 italic">{% trans "Leads are only available with an active plan." %}</p>
+        <p class="text-gray-500 dark:text-gray-400">{% trans "No leads yet." %}</p>
       {% endif %}
-    </section>
+    </div>
+  {% else %}
+    <p class="text-gray-400 italic">{% trans "Leads are only available with an active plan." %}</p>
+  {% endif %}
+</section>
+
 
     <!-- Products -->
     <section id="products-section" class="tab-content hidden">

@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load i18n %}
+
 {% block content %}
 <div class="max-w-xl mx-auto mt-12 bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-8 text-center transition">
   
@@ -11,17 +13,17 @@
 
   <!-- Message -->
   <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
-    Kein Profil gefunden
+    {% trans "No profile found" %}
   </h1>
   <p class="text-gray-600 dark:text-gray-400 mb-6">
-    {{ user.username }} hat bisher kein Profil erstellt.
+    {{ user.username }} {% trans "has not created a profile yet." %}
   </p>
 
   <!-- Button -->
   <div class="flex justify-center">
     <a href="{% url 'home' %}" 
        class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow transition">
-      Zurück zur Startseite
+      {% trans "Back to Home" %}
     </a>
   </div>
 </div>

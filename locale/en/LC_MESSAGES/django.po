@@ -1,0 +1,401 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en\n"
+
+#: templates/base.html:33
+msgid "AuftragNetz"
+msgstr "AuftragNetz"
+
+#: templates/base.html:74
+msgid "Toggle Dark Mode"
+msgstr "Toggle Dark Mode"
+
+#: templates/base.html:78
+msgid "Hello"
+msgstr "Hello"
+
+#: templates/base.html:85
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: templates/base.html:86
+msgid "Chats"
+msgstr "Chats"
+
+#: templates/base.html:87
+msgid "Logout"
+msgstr "Logout"
+
+#: templates/base.html:91
+msgid "Register"
+msgstr "Register"
+
+#: templates/base.html:92
+msgid "Login"
+msgstr "Login"
+
+#: templates/base.html:151
+msgid "Finde Projekte, Freelancer und Unternehmen – alles an einem Ort."
+msgstr "Find projects, freelancers, and companies—all in one place."
+
+#: templates/base.html:155
+msgid "Quick Links"
+msgstr "Quick Links"
+
+#: templates/base.html:158
+msgid "Home"
+msgstr "Home"
+
+#: templates/base.html:159
+msgid "Aufträge Finden"
+msgstr "Find Orders"
+
+#: templates/base.html:160
+msgid "Freelancer und Unternehmen"
+msgstr "Freelancers & Companies"
+
+#: templates/base.html:164
+msgid "Rechtliches"
+msgstr "Legal"
+
+#: templates/base.html:165
+msgid "Imprint"
+msgstr "Imprint"
+
+#: templates/base.html:166
+msgid "Datenschutz"
+msgstr "Privacy Policy"
+
+#: templates/home.html:4
+msgid "Welcome"
+msgstr "Welcome"
+
+#: templates/home.html:11
+msgid "Welcome back,"
+msgstr "Welcome back,"
+
+#: templates/home.html:13
+msgid "Here’s a quick overview of your profile, projects, leads, and activity."
+msgstr "Here’s a quick overview of your profile, projects, leads, and activity."
+
+#: templates/home.html:21
+msgid "Find Projects"
+msgstr "Find Projects"
+
+#: templates/home.html:22
+msgid "Browse and manage available projects"
+msgstr "Browse and manage available projects"
+
+#: templates/home.html:28
+msgid "Companies, Freelancers & Products"
+msgstr "Companies, Freelancers & Products"
+
+#: templates/home.html:29
+msgid "Explore freelancers, companies, and products"
+msgstr "Explore freelancers, companies, and products"
+
+#: templates/home.html:35
+msgid "Latest Projects"
+msgstr "Latest Projects"
+
+#: templates/home.html:39
+msgid "Created on"
+msgstr "Created on"
+
+#: templates/home.html:41
+msgid "View Details"
+msgstr "View Details"
+
+#: templates/home.html:44
+msgid "No projects available yet."
+msgstr "No projects available yet."
+
+#: templates/home.html:49
+msgid "Lead Preview"
+msgstr "Lead Preview"
+
+#: templates/home.html:56
+msgid "No leads available at the moment."
+msgstr "No leads available at the moment."
+
+#: templates/home.html:63
+msgid "Welcome to Auftragnetz"
+msgstr "Welcome to Auftragnetz"
+
+#: templates/home.html:66
+msgid "Find and post projects easily. Connect with companies, clients, and freelancers in one place."
+msgstr "Find and post projects easily. Connect with companies, clients, and freelancers in one place."
+
+#: templates/home.html:73
+msgid "Post Projects"
+msgstr "Post Projects"
+
+#: templates/home.html:74
+msgid "Create projects and attract the right freelancers."
+msgstr "Create projects and attract the right freelancers."
+
+#: templates/home.html:77
+msgid "Discover Opportunities"
+msgstr "Discover Opportunities"
+
+#: templates/home.html:78
+msgid "Find freelance gigs, jobs, and collaborations."
+msgstr "Find freelance gigs, jobs, and collaborations."
+
+#: templates/home.html:81
+msgid "Connect & Grow"
+msgstr "Connect & Grow"
+
+#: templates/home.html:82
+msgid "Build lasting connections with clients and businesses."
+msgstr "Build lasting connections with clients and businesses."
+
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en\n"
+
+msgid "Company Dashboard"
+msgstr "Company Dashboard"
+
+msgid "Overview"
+msgstr "Overview"
+
+msgid "Leads"
+msgstr "Leads"
+
+msgid "Products"
+msgstr "Products"
+
+msgid "Jobs"
+msgstr "Jobs"
+
+msgid "Profile"
+msgstr "Profile"
+
+msgid "Profile Visits"
+msgstr "Profile Visits"
+
+msgid "Total visitors to your profile"
+msgstr "Total visitors to your profile"
+
+msgid "Active Leads"
+msgstr "Active Leads"
+
+msgid "Leads collected from your offers"
+msgstr "Leads collected from your offers"
+
+msgid "Available with an active plan"
+msgstr "Available with an active plan"
+
+msgid "Coming Soon"
+msgstr "Coming Soon"
+
+msgid "Lead Einstellungen"
+msgstr "Lead Settings"
+
+msgid "No leads yet."
+msgstr "No leads yet."
+
+msgid "Leads are only available with an active plan."
+msgstr "Leads are only available with an active plan."
+
+msgid "Your Job Offers"
+msgstr "Your Job Offers"
+
+msgid "Create Job"
+msgstr "Create Job"
+
+msgid "Budget"
+msgstr "Budget"
+
+msgid "Created"
+msgstr "Created"
+
+msgid "You have no job offers yet."
+msgstr "You have no job offers yet."
+
+msgid "Profile Settings"
+msgstr "Profile Settings"
+
+msgid "Your profile details and company information."
+msgstr "Your profile details and company information."
+
+msgid "Pläne"
+msgstr "Plans"
+
+msgid "Orders"
+msgstr "Orders"
+
+msgid "Filter Orders"
+msgstr "Filter Orders"
+
+msgid "Search orders..."
+msgstr "Search orders..."
+
+msgid "Categories"
+msgstr "Categories"
+
+msgid "Posted within"
+msgstr "Posted within"
+
+msgid "Any time"
+msgstr "Any time"
+
+msgid "Last 24 hours"
+msgstr "Last 24 hours"
+
+msgid "Last 7 days"
+msgstr "Last 7 days"
+
+msgid "Last 30 days"
+msgstr "Last 30 days"
+
+msgid "Advertisement"
+msgstr "Advertisement"
+
+msgid "Available Orders"
+msgstr "Available Orders"
+
+msgid "No orders found."
+msgstr "No orders found."
+
+msgid "Apply for this order"
+msgstr "Apply for this order"
+
+msgid "Update Order Status"
+msgstr "Update Order Status"
+
+msgid "Save Status"
+msgstr "Save Status"
+
+msgid "Apply for"
+msgstr "Apply for"
+
+msgid "Apply for order:"
+msgstr "Apply for order:"
+
+msgid "Send Application"
+msgstr "Send Application"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Choose Your Plan"
+msgstr "Choose Your Plan"
+
+msgid "Your active plan"
+msgstr "Your active plan"
+
+msgid "Valid until"
+msgstr "Valid until"
+
+msgid "Applications per month"
+msgstr "Applications per month"
+
+msgid "Product limit"
+msgstr "Product limit"
+
+msgid "Boosters"
+msgstr "Boosters"
+
+msgid "Buy Plan"
+msgstr "Buy Plan"
+
+msgid "No active plans available."
+msgstr "No active plans available."
+
+msgid "Redeem Code"
+msgstr "Redeem Code"
+
+msgid "Redeem a Plan Code"
+msgstr "Redeem a Plan Code"
+
+msgid "Enter your code"
+msgstr "Enter your code"
+
+msgid "No profile found"
+msgstr "No profile found"
+
+msgid "has not created a profile yet."
+msgstr "has not created a profile yet."
+
+msgid "Back to Home"
+msgstr "Back to Home"
+
+msgid "Edit Profile"
+msgstr "Edit Profile"
+
+msgid "Edit your Profile"
+msgstr "Edit your Profile"
+
+msgid "Save Profile"
+msgstr "Save Profile"
+
+msgid "Profile of"
+msgstr "Profile of"
+
+msgid "Company Details"
+msgstr "Company Details"
+
+msgid "Company"
+msgstr "Company"
+
+msgid "Employees"
+msgstr "Employees"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Phone"
+msgstr "Phone"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "Address"
+msgstr "Address"
+
+msgid "Location"
+msgstr "Location"
+
+msgid "Freelancer Details"
+msgstr "Freelancer Details"
+
+msgid "Skills"
+msgstr "Skills"
+
+msgid "Hourly Rate"
+msgstr "Hourly Rate"
+
+msgid "Availability"
+msgstr "Availability"
+
+msgid "Languages"
+msgstr "Languages"
+
+msgid "Certifications"
+msgstr "Certifications"
+
+msgid "Portfolio"
+msgstr "Portfolio"
+
+msgid "Other Profile"
+msgstr "Other Profile"
+
+msgid "Additional Info"
+msgstr "Additional Info"
+
+msgid "Resume"
+msgstr "Resume"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "Visitors"
+msgstr "Visitors"
+
+msgid "Back"
+msgstr "Back"
+

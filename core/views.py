@@ -5,8 +5,10 @@ from django.utils import timezone
 from products.models import Product
 from profiles.models import ProfileVisit
 from core.models import Lead
-from orders.models import Order
+from orders.models import Order, Category
+from .models import LeadPreference
 from plans.models import UserPlan
+from django.contrib.auth.decorators import login_required
 
 
 def home(request):
@@ -38,34 +40,26 @@ def create_order(request):
     return render(request, "main/create_order.html")
 
 def company_dashboard(request):
-    # Aktiver Plan prüfen
     active_plan = UserPlan.objects.filter(user=request.user, expires_at__gte=timezone.now()).first()
-
-    # Besucherzählung aus aktivem Profil ermitteln
     profile_visits_count = 0
-    profile = None
-    if hasattr(request.user, "companyprofile"):
-        profile = request.user.companyprofile
-    elif hasattr(request.user, "freelancerprofile"):
-        profile = request.user.freelancerprofile
-    elif hasattr(request.user, "sonstiges"):
-        profile = request.user.sonstiges
-
+    profile = getattr(request.user, "companyprofile", None) or getattr(request.user, "freelancerprofile", None)
     if profile:
-        profile_visits_count = profile.visitor_count
+        profile_visits_count = getattr(profile, "visitor_count", 0)
 
-    # Leads nur wenn Plan aktiv
-    leads = Lead.objects.filter(company=request.user) if active_plan else []
+    leads = []
+    if active_plan:
+        pref = getattr(request.user, "lead_preference", None)
+        if pref:
+            leads = Lead.objects.filter(source__in=pref.categories.values_list("name", flat=True))
+        else:
+            leads = Lead.objects.all()
 
-    # Produkte des Unternehmens
     products = Product.objects.filter(owner=request.user)
-
-    # Jobangebote
     jobs = Order.objects.filter(user=request.user)
 
     context = {
         "profile_visits_count": profile_visits_count,
-        "leads_count": leads.count() if active_plan else 0,
+        "leads_count": len(leads) if active_plan else 0,
         "leads": leads,
         "products_count": products.count(),
         "products": products,
@@ -74,3 +68,20 @@ def company_dashboard(request):
     }
 
     return render(request, "main/company_dashboard.html", context)
+
+@login_required
+def lead_preferences(request):
+    categories = Category.objects.all()
+
+    # Vorhandene Einstellungen laden oder neu anlegen
+    pref, created = LeadPreference.objects.get_or_create(company=request.user)
+
+    if request.method == "POST":
+        selected = request.POST.getlist("categories")
+        pref.categories.set(selected)
+        return redirect("company_dashboard")
+
+    return render(request, "main/lead_preferences.html", {
+        "categories": categories,
+        "selected_categories": pref.categories.all()
+    })

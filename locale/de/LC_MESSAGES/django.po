@@ -1,0 +1,488 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: de\n"
+
+#: templates/base.html:33
+msgid "AuftragNetz"
+msgstr "AuftragNetz"
+
+#: templates/base.html:74
+msgid "Toggle Dark Mode"
+msgstr "Dunkelmodus umschalten"
+
+#: templates/base.html:78
+msgid "Hello"
+msgstr "Hallo"
+
+#: templates/base.html:85
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: templates/base.html:86
+msgid "Chats"
+msgstr "Chats"
+
+#: templates/base.html:87
+msgid "Logout"
+msgstr "Abmelden"
+
+#: templates/base.html:91
+msgid "Register"
+msgstr "Registrieren"
+
+#: templates/base.html:92
+msgid "Login"
+msgstr "Anmelden"
+
+#: templates/base.html:151
+msgid "Finde Projekte, Freelancer und Unternehmen – alles an einem Ort."
+msgstr "Finde Projekte, Freelancer und Unternehmen – alles an einem Ort."
+
+#: templates/base.html:155
+msgid "Quick Links"
+msgstr "Schnellzugriff"
+
+#: templates/base.html:158
+msgid "Home"
+msgstr "Startseite"
+
+#: templates/base.html:159
+msgid "Aufträge Finden"
+msgstr "Aufträge Finden"
+
+#: templates/base.html:160
+msgid "Freelancer und Unternehmen"
+msgstr "Freelancer und Unternehmen"
+
+#: templates/base.html:164
+msgid "Rechtliches"
+msgstr "Rechtliches"
+
+#: templates/base.html:165
+msgid "Imprint"
+msgstr "Impressum"
+
+#: templates/base.html:166
+msgid "Datenschutz"
+msgstr "Datenschutz"
+
+#: templates/home.html:4
+msgid "Welcome"
+msgstr "Willkommen"
+
+#: templates/home.html:11
+msgid "Welcome back,"
+msgstr "Willkommen zurück,"
+
+#: templates/home.html:13
+msgid "Here’s a quick overview of your profile, projects, leads, and activity."
+msgstr "Hier ist ein kurzer Überblick über dein Profil, Projekte, Leads und Aktivitäten."
+
+#: templates/home.html:21
+msgid "Find Projects"
+msgstr "Projekte finden"
+
+#: templates/home.html:22
+msgid "Browse and manage available projects"
+msgstr "Durchsuche und verwalte verfügbare Projekte"
+
+#: templates/home.html:28
+msgid "Companies, Freelancers & Products"
+msgstr "Unternehmen, Freelancer & Produkte"
+
+#: templates/home.html:29
+msgid "Explore freelancers, companies, and products"
+msgstr "Entdecke Freelancer, Unternehmen und Produkte"
+
+#: templates/home.html:35
+msgid "Latest Projects"
+msgstr "Neueste Projekte"
+
+#: templates/home.html:39
+msgid "Created on"
+msgstr "Erstellt am"
+
+#: templates/home.html:41
+msgid "View Details"
+msgstr "Details ansehen"
+
+#: templates/home.html:44
+msgid "No projects available yet."
+msgstr "Noch keine Projekte verfügbar."
+
+#: templates/home.html:49
+msgid "Lead Preview"
+msgstr "Lead-Vorschau"
+
+#: templates/home.html:56
+msgid "No leads available at the moment."
+msgstr "Derzeit keine Leads verfügbar."
+
+#: templates/home.html:63
+msgid "Welcome to Auftragnetz"
+msgstr "Willkommen bei Auftragnetz"
+
+#: templates/home.html:66
+msgid "Find and post projects easily. Connect with companies, clients, and freelancers in one place."
+msgstr "Finde und erstelle Projekte einfach. Vernetze dich mit Unternehmen, Kunden und Freelancern an einem Ort."
+
+#: templates/home.html:73
+msgid "Post Projects"
+msgstr "Projekte erstellen"
+
+#: templates/home.html:74
+msgid "Create projects and attract the right freelancers."
+msgstr "Erstelle Projekte und ziehe die passenden Freelancer an."
+
+#: templates/home.html:77
+msgid "Discover Opportunities"
+msgstr "Chancen entdecken"
+
+#: templates/home.html:78
+msgid "Find freelance gigs, jobs, and collaborations."
+msgstr "Finde Freelance-Jobs, Aufträge und Kooperationen."
+
+#: templates/home.html:81
+msgid "Connect & Grow"
+msgstr "Vernetzen & Wachsen"
+
+#: templates/home.html:82
+msgid "Build lasting connections with clients and businesses."
+msgstr "Baue dauerhafte Verbindungen zu Kunden und Unternehmen auf."
+
+#: templates/company_dashboard.html:4
+msgid "Company Dashboard"
+msgstr "Unternehmens-Dashboard"
+
+#: templates/company_dashboard.html:12
+msgid "Overview"
+msgstr "Übersicht"
+
+#: templates/company_dashboard.html:17
+msgid "Leads"
+msgstr "Leads"
+
+#: templates/company_dashboard.html:22
+msgid "Products"
+msgstr "Produkte"
+
+#: templates/company_dashboard.html:27
+msgid "Jobs"
+msgstr "Jobs"
+
+#: templates/company_dashboard.html:32
+msgid "Profile"
+msgstr "Profil"
+
+#: templates/company_dashboard.html:41
+msgid "Profile Visits"
+msgstr "Profilbesuche"
+
+#: templates/company_dashboard.html:43
+msgid "Total visitors to your profile"
+msgstr "Gesamtanzahl der Besucher auf deinem Profil"
+
+#: templates/company_dashboard.html:48
+msgid "Active Leads"
+msgstr "Aktive Leads"
+
+#: templates/company_dashboard.html:51
+msgid "Leads collected from your offers"
+msgstr "Leads, die aus deinen Angeboten gesammelt wurden"
+
+#: templates/company_dashboard.html:55
+msgid "Available with an active plan"
+msgstr "Verfügbar mit einem aktiven Plan"
+
+#: templates/company_dashboard.html:60
+msgid "Products"
+msgstr "Produkte"
+
+#: templates/company_dashboard.html:61
+msgid "Coming Soon"
+msgstr "Kommt bald"
+
+#: templates/company_dashboard.html:72
+msgid "Leads"
+msgstr "Leads"
+
+#: templates/company_dashboard.html:75
+msgid "Lead Einstellungen"
+msgstr "Lead-Einstellungen"
+
+#: templates/company_dashboard.html:115
+msgid "No leads yet."
+msgstr "Noch keine Leads."
+
+#: templates/company_dashboard.html:119
+msgid "Leads are only available with an active plan."
+msgstr "Leads sind nur mit einem aktiven Plan verfügbar."
+
+#: templates/company_dashboard.html:129
+msgid "Products"
+msgstr "Produkte"
+
+#: templates/company_dashboard.html:130
+msgid "Coming Soon..."
+msgstr "Kommt bald..."
+
+#: templates/company_dashboard.html:140
+msgid "Your Job Offers"
+msgstr "Deine Jobangebote"
+
+#: templates/company_dashboard.html:144
+msgid "Create Job"
+msgstr "Job erstellen"
+
+#: templates/company_dashboard.html:159
+msgid "Budget"
+msgstr "Budget"
+
+#: templates/company_dashboard.html:160
+msgid "Created"
+msgstr "Erstellt am"
+
+#: templates/company_dashboard.html:166
+msgid "You have no job offers yet."
+msgstr "Du hast noch keine Jobangebote."
+
+#: templates/company_dashboard.html:173
+msgid "Profile Settings"
+msgstr "Profil-Einstellungen"
+
+#: templates/company_dashboard.html:174
+msgid "Your profile details and company information."
+msgstr "Deine Profildetails und Unternehmensinformationen."
+
+#: templates/company_dashboard.html:179
+msgid "Edit Profile"
+msgstr "Profil bearbeiten"
+
+#: templates/company_dashboard.html:182
+msgid "Pläne"
+msgstr "Pläne"
+
+#: templates/order_list.html:4
+msgid "Orders"
+msgstr "Aufträge"
+
+#: templates/order_list.html:12
+msgid "Filter Orders"
+msgstr "Aufträge filtern"
+
+#: templates/order_list.html:16
+msgid "Search orders..."
+msgstr "Aufträge suchen..."
+
+#: templates/order_list.html:24
+msgid "Categories"
+msgstr "Kategorien"
+
+#: templates/order_list.html:44
+msgid "Posted within"
+msgstr "Veröffentlicht innerhalb"
+
+#: templates/order_list.html:47
+msgid "Any time"
+msgstr "Jederzeit"
+
+#: templates/order_list.html:48
+msgid "Last 24 hours"
+msgstr "Letzte 24 Stunden"
+
+#: templates/order_list.html:49
+msgid "Last 7 days"
+msgstr "Letzte 7 Tage"
+
+#: templates/order_list.html:50
+msgid "Last 30 days"
+msgstr "Letzte 30 Tage"
+
+#: templates/order_list.html:58
+msgid "Advertisement"
+msgstr "Werbung"
+
+#: templates/order_list.html:72
+msgid "Available Orders"
+msgstr "Verfügbare Aufträge"
+
+#: templates/order_list.html:107
+msgid "No orders found."
+msgstr "Keine Aufträge gefunden."
+
+#: templates/order_detail.html:24
+msgid "Budget"
+msgstr "Budget"
+
+#: templates/order_detail.html:25
+msgid "Deadline"
+msgstr "Frist"
+
+#: templates/order_detail.html:33
+msgid "Apply for this order"
+msgstr "Auf diesen Auftrag bewerben"
+
+#: templates/order_detail.html:42
+msgid "Update Order Status"
+msgstr "Auftragsstatus aktualisieren"
+
+#: templates/order_detail.html:51
+msgid "Save Status"
+msgstr "Status speichern"
+
+#: templates/apply_order.html:6
+msgid "Apply for"
+msgstr "Bewerben auf"
+
+#: templates/apply_order.html:12
+msgid "Apply for order:"
+msgstr "Auf Auftrag bewerben:"
+
+#: templates/apply_order.html:39
+msgid "Send Application"
+msgstr "Bewerbung senden"
+
+#: templates/apply_order.html:44
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: templates/plans.html:6
+msgid "Plans"
+msgstr "Pläne"
+
+#: templates/plans.html:10
+msgid "Choose Your Plan"
+msgstr "Wähle deinen Plan"
+
+#: templates/plans.html:13
+msgid "Your active plan"
+msgstr "Dein aktiver Plan"
+
+#: templates/plans.html:14
+msgid "Valid until"
+msgstr "Gültig bis"
+
+#: templates/plans.html:23
+msgid "Applications per month"
+msgstr "Bewerbungen pro Monat"
+
+#: templates/plans.html:26
+msgid "Product limit"
+msgstr "Produktlimit"
+
+#: templates/plans.html:29
+msgid "Boosters"
+msgstr "Booster"
+
+#: templates/plans.html:47
+msgid "Buy Plan"
+msgstr "Plan kaufen"
+
+#: templates/plans.html:53
+msgid "No active plans available."
+msgstr "Keine aktiven Pläne verfügbar."
+
+#: templates/plans.html:60
+msgid "Redeem Code"
+msgstr "Code einlösen"
+
+#: templates/redeem_code.html:6
+msgid "Redeem Code"
+msgstr "Code einlösen"
+
+#: templates/redeem_code.html:10
+msgid "Redeem a Plan Code"
+msgstr "Einen Plan-Code einlösen"
+
+#: templates/redeem_code.html:24
+msgid "Enter your code"
+msgstr "Gib deinen Code ein"
+
+#: templates/redeem_code.html:27
+msgid "Redeem"
+msgstr "Einlösen"
+
+msgid "No profile found"
+msgstr "Kein Profil gefunden"
+
+msgid "has not created a profile yet."
+msgstr "hat bisher kein Profil erstellt."
+
+msgid "Back to Home"
+msgstr "Zurück zur Startseite"
+
+msgid "Edit Profile"
+msgstr "Profil bearbeiten"
+
+msgid "Edit your Profile"
+msgstr "Bearbeite dein Profil"
+
+msgid "Save Profile"
+msgstr "Profil speichern"
+
+msgid "Profile of"
+msgstr "Profil von"
+
+msgid "Company Details"
+msgstr "Firmendetails"
+
+msgid "Company"
+msgstr "Firma"
+
+msgid "Employees"
+msgstr "Mitarbeiter"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Phone"
+msgstr "Telefon"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Location"
+msgstr "Ort"
+
+msgid "Freelancer Details"
+msgstr "Freelancer Details"
+
+msgid "Skills"
+msgstr "Fähigkeiten"
+
+msgid "Hourly Rate"
+msgstr "Stundensatz"
+
+msgid "Availability"
+msgstr "Verfügbarkeit"
+
+msgid "Languages"
+msgstr "Sprachen"
+
+msgid "Certifications"
+msgstr "Zertifikate"
+
+msgid "Portfolio"
+msgstr "Portfolio"
+
+msgid "Other Profile"
+msgstr "Sonstiges Profil"
+
+msgid "Additional Info"
+msgstr "Weitere Infos"
+
+msgid "Resume"
+msgstr "Lebenslauf"
+
+msgid "Download"
+msgstr "Herunterladen"
+
+msgid "Visitors"
+msgstr "Besucher"
+
+msgid "Back"
+msgstr "Zurück"

@@ -3,36 +3,52 @@
 {% block title %}{% trans "Freelancers" %}{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
-  <h1 class="text-2xl font-bold mb-6">{% trans "Freelancers" %}</h1>
+<div class="max-w-5xl mx-auto py-10">
+  <h1 class="text-2xl font-bold mb-6">{% trans "Find Freelancers" %}</h1>
 
-  <form method="get" class="flex items-center space-x-2 mb-6">
-    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="{% trans 'Search by name or email' %}"
-      class="flex-1 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-3 py-2">
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+  <form method="get" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 bg-white/10 dark:bg-gray-800/30 p-4 rounded-xl shadow">
+    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="{% trans 'Search name or email' %}"
+      class="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full">
+    
+    <select name="category" class="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full">
+      <option value="">{% trans "All Categories" %}</option>
+      {% for cat in categories %}
+        <option value="{{ cat.id }}" {% if cat.id|stringformat:'s' == request.GET.category %}selected{% endif %}>
+          {{ cat.name }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <input type="text" name="location" value="{{ request.GET.location }}" placeholder="{% trans 'Location (e.g. Berlin)' %}"
+      class="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full">
+
+    <button type="submit" class="col-span-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition">
       {% trans "Search" %}
     </button>
   </form>
 
   {% if freelancers %}
-  <ul class="space-y-4">
-    {% for f in freelancers %}
-    <li>
-      <a href="{% url 'profile_detail' f.username %}" 
-         class="block bg-white dark:bg-gray-800 p-4 rounded-lg shadow flex justify-between items-center hover:shadow-lg transition cursor-pointer">
-        <div>
-          <p class="font-semibold">{{ f.username }}</p>
-          <p class="text-sm text-gray-500 dark:text-gray-400">{{ f.email }}</p>
-        </div>
-        <div class="text-sm text-gray-500 dark:text-gray-400">
-          {% trans "Applications" %}: {{ f.app_count }}
-        </div>
-      </a>
-    </li>
-    {% endfor %}
-  </ul>
+    <ul class="space-y-4">
+      {% for f in freelancers %}
+      <li>
+        <a href="{% url 'profile_detail' f.username %}" 
+           class="block bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:shadow-lg transition">
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="font-semibold text-lg">{{ f.username }}</p>
+              <p class="text-gray-500 text-sm">{{ f.email }}</p>
+              {% if f.profile.city %}<p class="text-gray-400 text-sm">📍 {{ f.profile.city }}</p>{% endif %}
+            </div>
+            <div class="text-right text-sm text-gray-500">
+              {% trans "Applications" %}: {{ f.app_count }}
+            </div>
+          </div>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
   {% else %}
-    <p class="text-gray-600 dark:text-gray-400">{% trans "No freelancers found." %}</p>
+    <p class="text-gray-400">{% trans "No freelancers found." %}</p>
   {% endif %}
 </div>
 {% endblock %}

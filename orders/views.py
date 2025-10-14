@@ -5,11 +5,13 @@ from django.utils import timezone
 from datetime import datetime
 from .models import Order, Application, Category, Chat, Message
 from accounts.models import User
-from .forms import ApplicationForm, MessageForm
+from .forms import ApplicationForm, MessageForm, OrderStatusForm
 from plans.models import UserPlan
+from products.models import Product
 import calendar
 from datetime import timedelta
 from django.utils.dateparse import parse_date
+from core.models import Lead
 
 def order_list(request):
     qs = Order.objects.filter(status__in=["open", "in_progress"]).order_by("-created_at")
@@ -50,10 +52,24 @@ def order_detail(request, pk):
     order = get_object_or_404(Order, pk=pk)
     applications = order.applications.select_related("applicant").all()
 
+    # Status-Update nur für den Ersteller
+    if request.user == order.created_by:
+        if request.method == "POST":
+            form = OrderStatusForm(request.POST, instance=order)
+            if form.is_valid():
+                form.save()
+                return redirect("order_detail", pk=order.pk)
+        else:
+            form = OrderStatusForm(instance=order)
+    else:
+        form = None
+
     return render(request, "orders/order_detail.html", {
         "order": order,
         "applications": applications,
+        "form": form,
     })
+
 
 
 @login_required
@@ -185,11 +201,47 @@ def apply_order(request, pk):
 
 
 def freelancer_list(request):
-    qs = User.objects.annotate(app_count=Count("application")).all()
-    search = request.GET.get("q")
-    if search:
-        qs = qs.filter(Q(username__icontains=search) | Q(email__icontains=search))
-    return render(request, "orders/freelancer_list.html", {"freelancers": qs})
+    # 🔹 Freelancer & Companys laden
+    qs = User.objects.filter(account_type__in=["freelancer", "company"]).annotate(app_count=Count("application"))
+
+    search_category = request.GET.get("category")
+    location = request.GET.get("location")
+
+    # 🔹 Kategorie-/Skill-Suche
+    if search_category:
+        qs = qs.filter(
+            Q(skills__name__icontains=search_category) |
+            Q(profile__category__name__icontains=search_category)
+        ).distinct()
+
+        # 💡 Lead automatisch erstellen
+        if request.user.is_authenticated:
+            Lead.objects.create(
+                company=request.user,
+                name=f"Suchanfrage nach {search_category}",
+                email=request.user.email,
+                phone=getattr(request.user, "phone_number", ""),
+                message=f"{request.user.username} hat nach Freelancern oder Companys in {search_category} gesucht.",
+                source=search_category,
+                status="new"
+            )
+
+    # 🔹 Standortfilter
+    if location:
+        qs = qs.filter(profile__location__icontains=location)
+
+    # 🔹 Kategorien & Produkte laden
+    categories = Category.objects.all()
+    products = Product.objects.all()  # falls du Produkttypen trennen willst, kannst du hier filtern
+
+    return render(request, "orders/freelancer_list.html", {
+        "freelancers": qs,
+        "categories": categories,
+        "products": products,
+        "selected_category": search_category,
+        "location": location,
+    })
+
 
 
 @login_required

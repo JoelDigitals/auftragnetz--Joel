@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from django.utils import timezone
+from orders.models import Category
 
 class TwoFactorCode(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -39,3 +39,14 @@ class Lead(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.email})"
+    
+class LeadPreference(models.Model):
+    company = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="lead_preference"
+    )
+    categories = models.ManyToManyField(Category, blank=True)
+
+    def __str__(self):
+        return f"Lead Preferences for {self.company.username}"

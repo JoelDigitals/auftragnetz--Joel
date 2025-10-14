@@ -9,4 +9,5 @@ urlpatterns = [
     path("accounts/register/done/", views.registration_done, name="registration_done"),
     path("orders/create/", views.create_order, name="create_order"),
     path("company/dashboard/", views.company_dashboard, name="company_dashboard"),
+    path("leads/settings/", views.lead_preferences, name="lead_preferences"),
 ]

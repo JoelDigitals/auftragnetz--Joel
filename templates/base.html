@@ -52,6 +52,7 @@
             }
         });
     </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300 flex flex-col min-h-screen">
 
@@ -136,6 +137,45 @@
     <!-- Hauptbereich -->
     <main class="flex-1 max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
         {% block content %}{% endblock %}
+            <!-- Cookie Banner -->
+    <div id="cookieBanner" class="fixed bottom-0 left-0 w-full bg-gray-900 text-white p-4 shadow-lg z-50 hidden">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+            <p class="text-sm md:text-base text-center md:text-left">
+                {% if LANGUAGE_CODE == "de" %}
+                    Wir verwenden Cookies, um Ihr Erlebnis zu verbessern. Durch die Nutzung dieser Website stimmen Sie der Verwendung von Cookies zu.
+                {% elif LANGUAGE_CODE == "fr" %}
+                    Nous utilisons des cookies pour améliorer votre expérience. En utilisant ce site, vous acceptez l'utilisation des cookies.
+                {% else %}
+                    We use cookies to improve your experience. By using this site, you agree to our use of cookies.
+                {% endif %}
+            </p>
+            <div class="flex space-x-3">
+                <a href="https://joel-digitals.de/privacy/" 
+                   class="underline text-blue-400 hover:text-blue-300 text-sm">{% trans "Privacy Policy" %}</a>
+                <button id="acceptCookies" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition">
+                    {% trans "Accept" %}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const banner = document.getElementById("cookieBanner");
+            const acceptBtn = document.getElementById("acceptCookies");
+
+            if (!localStorage.getItem("cookiesAccepted")) {
+                banner.classList.remove("hidden");
+            }
+
+            acceptBtn.addEventListener("click", () => {
+                localStorage.setItem("cookiesAccepted", "true");
+                banner.classList.add("hidden");
+            });
+        });
+    </script>
+
     </main>
 
     <!-- Footer -->
@@ -152,13 +192,15 @@
                     <li><a href="{% url 'home' %}" class="hover:underline">{% trans "Home" %}</a></li>
                     <li><a href="{% url 'login' %}" class="hover:underline">{% trans "Login" %}</a></li>
                     <li><a href="{% url 'register' %}" class="hover:underline">{% trans "Register" %}</a></li>
+                    <li><a href="{% url 'order_list' %}" class="hover:underline">{% trans "Aufträge Finden" %}</a></li>
+                    <li><a href="{% url 'freelancer_list' %}" class="hover:underline">{% trans "Freelancer und Unternehmen" %}</a></li>
                 </ul>
             </div>
 
             <div>
                 <h3 class="text-lg font-semibold text-white">{% trans "Rechtliches" %}</h3>
-                <a href="{% url 'home' %}" class="hover:underline">{% trans "Imprint" %}</a><br>
-                <a href="{% url 'login' %}" class="hover:underline">{% trans "Datenschutz" %}</a>
+                <a href="https://joel-digitals.de/imprint/" class="hover:underline">{% trans "Imprint" %}</a><br>
+                <a href="https://joel-digitals.de/privacy/" class="hover:underline">{% trans "Datenschutz" %}</a>
             </div>
         </div>
         <div class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">&copy; 2025 Joel Digitals</div>

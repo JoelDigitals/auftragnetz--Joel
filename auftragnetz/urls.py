@@ -32,5 +32,6 @@ urlpatterns = [
     path('', include('orders.urls')),
     path('profiles/', include('profiles.urls')),
     path('plans/', include('plans.urls')),
+    path('i18n/', include('django.conf.urls.i18n')),
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -23,7 +23,7 @@ def edit_profile(request):
         form = form_class(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            return redirect("profile_dashboard")  # Dashboard-Ansicht
+            return redirect("profile_detail", username=user.username)  # Dashboard-Ansicht
     else:
         form = form_class(instance=profile)
 
