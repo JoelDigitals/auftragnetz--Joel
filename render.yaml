@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: auftragnetz
+    env: python
+    plan: free
+
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+
+    startCommand: python3 -m gunicorn auftragnetz.wsgi:application
+
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: auftragnetz.settings
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: PORT
+        value: "8000"
