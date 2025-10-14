@@ -82,6 +82,7 @@
               <tr class="border-b border-gray-300 dark:border-gray-600">
                 <th class="px-4 py-2 whitespace-nowrap">{% trans "Name" %}</th>
                 <th class="px-4 py-2 whitespace-nowrap">{% trans "Email" %}</th>
+                <th class="px-4 py-2 whitespace-nowrap">{% trans "Number" %}</th>
                 <th class="px-4 py-2 whitespace-nowrap">{% trans "Message" %}</th>
                 <th class="px-4 py-2 whitespace-nowrap">{% trans "Date" %}</th>
               </tr>
@@ -91,6 +92,7 @@
               <tr class="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                 <td class="px-4 py-2">{{ lead.name }}</td>
                 <td class="px-4 py-2">{{ lead.email }}</td>
+                <td class="px-4 py-2">{{ lead.phone }}</td>
                 <td class="px-4 py-2">{{ lead.message }}</td>
                 <td class="px-4 py-2">{{ lead.created_at|date:"d.m.Y H:i" }}</td>
               </tr>

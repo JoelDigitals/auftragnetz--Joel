@@ -49,10 +49,13 @@ def company_dashboard(request):
     leads = []
     if active_plan:
         pref = getattr(request.user, "lead_preference", None)
-        if pref:
-            leads = Lead.objects.filter(source__in=pref.categories.values_list("name", flat=True))
+        if pref and pref.categories.exists():
+            leads = Lead.objects.filter(category__in=pref.categories.all()).distinct().order_by('-created_at')
         else:
-            leads = Lead.objects.all()
+            leads = Lead.objects.all().order_by('-created_at')
+    else:
+        leads = []
+
 
     products = Product.objects.filter(owner=request.user)
     jobs = Order.objects.filter(user=request.user)

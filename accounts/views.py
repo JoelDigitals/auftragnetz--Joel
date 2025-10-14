@@ -64,31 +64,31 @@ def register(request):
         if form.is_valid():
             try:
                 user = form.save(commit=False)
-                user.is_active = False
-                user.email_confirmed = False
+                user.is_active = True
+                user.email_confirmed = True
                 user.save()
 
-                uid = urlsafe_base64_encode(force_bytes(user.pk))
-                token = default_token_generator.make_token(user)
-                current_site = get_current_site(request)
-
-                subject = _("Bitte bestätige deine E-Mail-Adresse")
-                html_content = render_to_string("accounts/activation_email.html", {
-                    "user": user,
-                    "domain": current_site.domain,
-                    "uidb64": uid,
-                    "token": token,
-                })
-
-                email = EmailMultiAlternatives(
-                    subject,
-                    "",
-                    settings.DEFAULT_FROM_EMAIL,
-                    [user.email],
-                )
-                email.attach_alternative(html_content, "text/html")
-                email.send(fail_silently=False)
-
+                #uid = urlsafe_base64_encode(force_bytes(user.pk))
+                #token = default_token_generator.make_token(user)
+                #current_site = get_current_site(request)
+#
+                #subject = _("Bitte bestätige deine E-Mail-Adresse")
+                #html_content = render_to_string("accounts/activation_email.html", {
+                #    "user": user,
+                #    "domain": current_site.domain,
+                #    "uidb64": uid,
+                #    "token": token,
+                #})
+#
+                #email = EmailMultiAlternatives(
+                #    subject,
+                #    "",
+                #    settings.DEFAULT_FROM_EMAIL,
+                #    [user.email],
+                #)
+                #email.attach_alternative(html_content, "text/html")
+                #email.send(fail_silently=False)
+#
                 messages.success(request, _("Registrierung erfolgreich! Bitte bestätige deine E-Mail-Adresse."))
                 return redirect("login")
 

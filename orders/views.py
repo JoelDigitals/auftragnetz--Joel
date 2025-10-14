@@ -198,51 +198,74 @@ def apply_order(request, pk):
         "order": order,
         "form": form
     })
-
-
 def freelancer_list(request):
-    # 🔹 Freelancer & Companys laden
-    qs = User.objects.filter(account_type__in=["freelancer", "company"]).annotate(app_count=Count("application"))
+    # 🔹 Alle relevanten User laden
+    qs = User.objects.filter(account_type__in=["freelancer", "company", "sonstiges"]).annotate(
+        app_count=Count("application")
+    )
 
-    search_category = request.GET.get("category")
-    location = request.GET.get("location")
+    # 🔹 Filterparameter auslesen
+    search_categories = request.GET.getlist("category")  # mehrere möglich
+    location = request.GET.get("location", "").strip()
+    q = request.GET.get("q", "").strip()
 
-    # 🔹 Kategorie-/Skill-Suche
-    if search_category:
+    # 🔹 Suchtext (Name, E-Mail)
+    if q:
         qs = qs.filter(
-            Q(skills__name__icontains=search_category) |
-            Q(profile__category__name__icontains=search_category)
+            Q(username__icontains=q) |
+            Q(email__icontains=q) |
+            Q(freelancerprofile__Categorys__name__icontains=q) |
+            Q(companyprofile__Categorys__name__icontains=q) |
+            Q(sonstiges__Categorys__name__icontains=q)
+        ).distinct()
+
+    # 🔹 Kategorie-/Skill-Filter
+    if search_categories:
+        qs = qs.filter(
+            Q(freelancerprofile__Categorys__id__in=search_categories) |
+            Q(companyprofile__Categorys__id__in=search_categories) |
+            Q(sonstiges__Categorys__id__in=search_categories)
         ).distinct()
 
         # 💡 Lead automatisch erstellen
         if request.user.is_authenticated:
-            Lead.objects.create(
+            cat_objs = Category.objects.filter(id__in=search_categories)
+            lead = Lead.objects.create(
                 company=request.user,
-                name=f"Suchanfrage nach {search_category}",
+                name=f"Suchanfrage nach {', '.join(c.name for c in cat_objs)}",
                 email=request.user.email,
                 phone=getattr(request.user, "phone_number", ""),
-                message=f"{request.user.username} hat nach Freelancern oder Companys in {search_category} gesucht.",
-                source=search_category,
-                status="new"
+                message=f"{request.user.username} hat nach Freelancern/Companys in {', '.join(c.name for c in cat_objs)} gesucht.",
+                source="Freelancer Suche",
+                status="new",
             )
+            lead.category.set(cat_objs)
+        
 
     # 🔹 Standortfilter
     if location:
-        qs = qs.filter(profile__location__icontains=location)
+        qs = qs.filter(
+            Q(freelancerprofile__location__icontains=location) |
+            Q(companyprofile__location__icontains=location) |
+            Q(sonstiges__location__icontains=location)
+        )
 
     # 🔹 Kategorien & Produkte laden
     categories = Category.objects.all()
-    products = Product.objects.all()  # falls du Produkttypen trennen willst, kannst du hier filtern
+    products = Product.objects.all()
 
-    return render(request, "orders/freelancer_list.html", {
-        "freelancers": qs,
-        "categories": categories,
-        "products": products,
-        "selected_category": search_category,
-        "location": location,
-    })
-
-
+    return render(
+        request,
+        "orders/freelancer_list.html",
+        {
+            "freelancers": qs.distinct(),
+            "categories": categories,
+            "products": products,
+            "selected_categories": [int(c) for c in search_categories],
+            "location": location,
+            "q": q,
+        },
+    )
 
 @login_required
 def start_chat(request, username):
