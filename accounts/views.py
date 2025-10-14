@@ -41,43 +41,61 @@ def user_logout(request):
     messages.success(request, _("Du wurdest ausgeloggt."))
     return redirect("home")
 
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.utils.translation import gettext as _
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
+from django.conf import settings
+from django.contrib.auth.tokens import default_token_generator
+from django.db import IntegrityError
+
+from .models import User
+from .forms import RegisterForm
+
+
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            # User speichern, aber noch nicht aktiv
-            user = form.save(commit=False)
-            user.is_active = False
-            user.email_confirmed = False
-            user.save()  # unbedingt speichern, sonst keine PK
+            try:
+                user = form.save(commit=False)
+                user.is_active = False
+                user.email_confirmed = False
+                user.save()
 
-            # UID und Token erstellen
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                token = default_token_generator.make_token(user)
+                current_site = get_current_site(request)
 
-            # Aktiverungs-Mail rendern
-            current_site = get_current_site(request)
-            subject = "Bitte bestätige deine E-Mail-Adresse"
-            html_content = render_to_string("accounts/activation_email.html", {
-                "user": user,
-                "domain": current_site.domain,
-                "uidb64": uid,
-                "token": token,
-                "current_year": 2025,
-            })
+                subject = _("Bitte bestätige deine E-Mail-Adresse")
+                html_content = render_to_string("accounts/activation_email.html", {
+                    "user": user,
+                    "domain": current_site.domain,
+                    "uidb64": uid,
+                    "token": token,
+                })
 
-            # HTML-Mail versenden
-            email = EmailMultiAlternatives(
-                subject,
-                "",  # Textversion leer oder alternativ kurze Textversion
-                settings.DEFAULT_FROM_EMAIL,
-                [user.email],
-            )
-            email.attach_alternative(html_content, "text/html")
-            email.send(fail_silently=False)
+                email = EmailMultiAlternatives(
+                    subject,
+                    "",
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user.email],
+                )
+                email.attach_alternative(html_content, "text/html")
+                email.send(fail_silently=False)
 
-            messages.success(request, "Registrierung erfolgreich! Bitte bestätige deine E-Mail-Adresse.")
-            return redirect("login")
+                messages.success(request, _("Registrierung erfolgreich! Bitte bestätige deine E-Mail-Adresse."))
+                return redirect("login")
+
+            except IntegrityError:
+                messages.error(request, _("Dieser Benutzer existiert bereits."))
+        else:
+            messages.error(request, _("Bitte überprüfe deine Eingaben."))
     else:
         form = RegisterForm()
 
@@ -91,12 +109,12 @@ def activate(request, uidb64, token):
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
 
-    if user and email_verification_token.check_token(user, token):
+    if user and default_token_generator.check_token(user, token):
         user.email_confirmed = True
         user.is_active = True
         user.save()
-        messages.success(request, "Deine E-Mail wurde bestätigt. Du kannst dich nun anmelden.")
+        messages.success(request, _("E-Mail bestätigt! Du kannst dich jetzt anmelden."))
         return redirect("login")
     else:
-        messages.error(request, "Der Verifizierungslink ist ungültig oder abgelaufen.")
+        messages.error(request, _("Der Verifizierungslink ist ungültig oder abgelaufen."))
         return redirect("home")
