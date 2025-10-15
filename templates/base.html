@@ -14,23 +14,24 @@
      crossorigin="anonymous"></script>
 
     <!-- SEO Meta Tags -->
-    <title>{% block title %}Auftragnetz – Projekte, Freelancer & Unternehmen finden{% endblock %}</title>
-    <meta name="description" content="{% trans 'Finde Projekte, Freelancer und Unternehmen auf Auftragnetz. Vernetze dich, erstelle Angebote, und entdecke passende Aufträge.' %}">
-    <meta name="keywords" content="Freelancer, Projekte, Auftraggeber, Auftragnetz, Jobs, Unternehmen, Dienstleistungen">
+    <title>{% block title %}Auftragnetz – Freelancer, Unternehmen & Aufträge international finden{% endblock %}</title>
+    <meta name="description" content="{% trans 'Finde Freelancer, Unternehmen und Projekte weltweit auf Auftragnetz. Entdecke neue Aufträge, erstelle Angebote und vernetze dich mit Auftraggebern.' %}">
+    <meta name="keywords" content="Freelancer finden, Aufträge finden, Online Ausschreibungen, Neue Aufträge, Unternehmen, Auftragnetz, Projekte, Dienstleistungen">
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph / Social Sharing -->
-    <meta property="og:title" content="Auftragnetz – Projekte, Freelancer & Unternehmen finden">
-    <meta property="og:description" content="Finde Projekte, Freelancer und Unternehmen auf Auftragnetz. Vernetze dich, erstelle Angebote, und entdecke passende Aufträge.">
+    <meta property="og:title" content="Auftragnetz – Freelancer, Unternehmen & Aufträge international finden">
+    <meta property="og:description" content="Finde Freelancer, Unternehmen und Projekte weltweit auf Auftragnetz. Entdecke neue Aufträge, erstelle Angebote und vernetze dich mit Auftraggebern.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:image" content="{% static 'images/logo.png' %}">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Auftragnetz – Projekte, Freelancer & Unternehmen finden">
-    <meta name="twitter:description" content="Finde Projekte, Freelancer und Unternehmen auf Auftragnetz. Vernetze dich, erstelle Angebote, und entdecke passende Aufträge.">
+    <meta name="twitter:title" content="Auftragnetz – Freelancer, Unternehmen & Aufträge international finden">
+    <meta name="twitter:description" content="Finde Freelancer, Unternehmen und Projekte weltweit auf Auftragnetz. Entdecke neue Aufträge, erstelle Angebote und vernetze dich mit Auftraggebern.">
     <meta name="twitter:image" content="{% static 'images/logo.png' %}">
+
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -104,6 +105,12 @@
                         <span class="text-sm text-gray-700 dark:text-gray-300">{% trans "Hello" %}, <strong>{{ user.username }}</strong></span>
                         <a href="{% url 'company_dashboard' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Dashboard" %}</a>
                         <a href="{% url 'chat_list' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Chats" %}</a>
+                        {% if not user.profile.has_active_plan %}
+                            <a href="{% url 'plans' %}" 
+                               class="ml-4 bg-green-500 text-white px-3 py-1 rounded-lg shadow hover:bg-green-600 transition font-medium">
+                                {% trans "Upgrade Plan NOW!" %}
+                            </a>
+                        {% endif %}
                         <a href="{% url 'logout' %}" class="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition">{% trans "Logout" %}</a>
                     {% else %}
                         <a href="{% url 'register' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Register" %}</a>
