@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Delete Product" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto card text-center">
+    <h2 class="text-xl font-bold mb-4">
+        {% trans "Delete product?" %}
+    </h2>
+
+    <p class="mb-6">
+        "{{ product.title }}"
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="flex justify-center gap-4">
+            <a href="{% url 'company_dashboard' %}"
+               class="px-4 py-2 rounded bg-gray-300 dark:bg-gray-700">
+                {% trans "Cancel" %}
+            </a>
+            <button class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                {% trans "Delete" %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

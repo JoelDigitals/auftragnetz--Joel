@@ -88,3 +88,48 @@ def lead_preferences(request):
         "categories": categories,
         "selected_categories": pref.categories.all()
     })
+
+import requests
+from django.contrib.auth import login
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
+
+def joel_callback(request):
+    code = request.GET.get('code')
+
+    # 1️⃣ Code → Access Token tauschen
+    token_response = requests.post(
+        'https://joel-digital.de/o/token/',
+        data={
+            'grant_type': 'authorization_code',
+            'code': code,
+            'redirect_uri': 'https://auftragsnetz.de/auth/joel/callback/',
+            'client_id': 'JYQgmcexNerZk2KqvFdhCpwtZIA5ljGaM60qiS1Y',
+            'client_secret': 'pbkdf2_sha256$1000000$4L8DGdVkw3sW5h3cvWE8iT$oYdRIQGjPyjrnOMw3E9RdgjfF0gbG3RKoUDOiocDAA0=',
+        }
+    )
+
+    token = token_response.json()['access_token']
+
+    # 2️⃣ User-Daten holen
+    user_response = requests.get(
+        'https://joel-digital.de/api/user/',
+        headers={'Authorization': f'Bearer {token}'}
+    )
+
+    data = user_response.json()
+
+    # 3️⃣ User lokal anlegen oder holen
+    user, created = User.objects.get_or_create(
+        username=data['email'],
+        defaults={
+            'email': data['email'],
+            'first_name': data['first_name'],
+            'last_name': data['last_name'],
+        }
+    )
+
+    # 4️⃣ Login
+    login(request, user)
+
+    return redirect('/')

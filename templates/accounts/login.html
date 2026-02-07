@@ -36,7 +36,14 @@
             {% trans "Login" %}
         </button>
     </form>
-
+    <br>
+    <a href="https://joel-digital.de/o/authorize/?response_type=code&client_id={{ CLIENT_ID }}&redirect_uri=https://auftragsnetz.de/auth/joel/callback/&scope=profile"
+   style="display: inline-flex; align-items: center; gap: 10px; background-color: #03225f; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-family: system-ui, -apple-system, sans-serif; font-weight: 500; transition: background-color 0.2s;">
+    <img src="https://joel-digitals.de/static/logo.png" alt="" style="height: 24px; width: auto;">
+    <span>Login</span>
+</a>
+    
+    
     <!-- Forgot Password -->
     <p class="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
         <!--<a href="#" class="text-blue-600 hover:underline">{% trans "Forgot Password?" %}</a>-->

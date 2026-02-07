@@ -1,13 +1,11 @@
 {% load i18n static %}
 {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE }}" class="transition-colors duration-300 min-h-screen flex flex-col">
-    <meta name="google-site-verification" content="4vc6rGiRxzQJZpwnjoV8lolSyiSd32SEV1tFEwYd7Ys" />
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <!-- Google Verification -->
     <meta name="google-site-verification" content="4vc6rGiRxzQJZpwnjoV8lolSyiSd32SEV1tFEwYd7Ys" />
     <meta name="google-adsense-account" content="ca-pub-2104824979844525">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2104824979844525"
@@ -32,56 +30,42 @@
     <meta name="twitter:description" content="Finde Freelancer, Unternehmen und Projekte weltweit auf Auftragnetz. Entdecke neue Aufträge, erstelle Angebote und vernetze dich mit Auftraggebern.">
     <meta name="twitter:image" content="{% static 'images/logo.png' %}">
 
-
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' };
-
-        function toggleDarkMode() {
-            const htmlEl = document.documentElement;
-            const icon = document.getElementById('darkModeIcon');
-            if(htmlEl.classList.contains('dark')) {
-                htmlEl.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-                icon.textContent = '🌙';
-            } else {
-                htmlEl.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                icon.textContent = '☀️';
+    </script>
+    <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
+    
+    <style>
+        html {
+            min-height: 100vh;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+        
+        /* Desktop Menu - immer sichtbar ab 768px */
+        @media (min-width: 768px) {
+            #desktopMenu {
+                display: flex !important;
             }
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const htmlEl = document.documentElement;
-            const icon = document.getElementById('darkModeIcon');
-            if(localStorage.getItem('theme') === 'dark') {
-                htmlEl.classList.add('dark');
-                icon.textContent = '☀️';
-            } else {
-                icon.textContent = '🌙';
+        
+        /* Mobile Menu - nur unter 768px */
+        @media (max-width: 767px) {
+            #desktopMenu {
+                display: none !important;
             }
-
-            const langSelect = document.getElementById('languageSelect');
-            if(langSelect) {
-                langSelect.addEventListener('change', () => {
-                    langSelect.form.submit();
-                });
-            }
-
-            const menuBtn = document.getElementById('mobileMenuBtn');
-            const menu = document.getElementById('mobileMenu');
-            if(menuBtn) {
-                menuBtn.addEventListener('click', () => {
-                    menu.classList.toggle('hidden');
-                });
-            }
-        });
-    </script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
+        }
+    </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300 flex flex-col min-h-screen">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300">
 
     <!-- Navigation -->
     <nav class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 transition-colors duration-300">
@@ -95,33 +79,52 @@
                 </div>
 
                 <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-4">
-                    <button onclick="toggleDarkMode()" title="{% trans 'Toggle Dark Mode' %}" 
-                            class="px-3 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                <div id="desktopMenu" class="items-center space-x-4">
+                    <!-- Dark Mode Toggle -->
+                    <button onclick="toggleDarkMode()" type="button" title="{% trans 'Toggle Dark Mode' %}" 
+                            class="px-3 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition">
                         <span id="darkModeIcon">🌙</span>
                     </button>
 
                     {% if user.is_authenticated %}
-                        <span class="text-sm text-gray-700 dark:text-gray-300">{% trans "Hello" %}, <strong>{{ user.username }}</strong></span>
-                        <a href="{% url 'company_dashboard' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Dashboard" %}</a>
-                        <a href="{% url 'chat_list' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Chats" %}</a>
+                        <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                            {% trans "Hello" %}, <strong>{{ user.username }}</strong>
+                        </span>
+                        <a href="{% url 'company_dashboard' %}" 
+                           class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium whitespace-nowrap">
+                            {% trans "Dashboard" %}
+                        </a>
+                        <a href="{% url 'chat_list' %}" 
+                           class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium whitespace-nowrap">
+                            {% trans "Chats" %}
+                        </a>
                         {% if not user.profile.has_active_plan %}
                             <a href="{% url 'plans' %}" 
-                               class="ml-4 bg-green-500 text-white px-3 py-1 rounded-lg shadow hover:bg-green-600 transition font-medium">
+                               class="bg-green-500 text-white px-3 py-2 rounded-lg shadow hover:bg-green-600 transition font-medium whitespace-nowrap">
                                 {% trans "Upgrade Plan NOW!" %}
                             </a>
                         {% endif %}
-                        <a href="{% url 'logout' %}" class="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition">{% trans "Logout" %}</a>
+                        <a href="{% url 'logout' %}" 
+                           class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition whitespace-nowrap">
+                            {% trans "Logout" %}
+                        </a>
                     {% else %}
-                        <a href="{% url 'register' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Register" %}</a>
-                        <a href="{% url 'login' %}" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition">{% trans "Login" %}</a>
+                        <a href="{% url 'register' %}" 
+                           class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium whitespace-nowrap">
+                            {% trans "Register" %}
+                        </a>
+                        <a href="{% url 'login' %}" 
+                           class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition whitespace-nowrap">
+                            {% trans "Login" %}
+                        </a>
                     {% endif %}
 
-                    <!-- Sprache Dropdown -->
-                    <form action="/i18n/setlang/" method="post" class="ml-2">
+                    <!-- Sprache Dropdown Desktop -->
+                    <form action="/i18n/setlang/" method="post" class="inline-block">
                         {% csrf_token %}
                         {% get_available_languages as LANGUAGES %}
-                        <select name="language" id="languageSelect" class="bg-gray-100 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm">
+                        <select name="language" id="languageSelect" 
+                                class="bg-gray-100 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm cursor-pointer">
                             {% for lang in LANGUAGES %}
                                 <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
                                     {{ lang.1 }}
@@ -133,7 +136,8 @@
 
                 <!-- Mobile Hamburger -->
                 <div class="md:hidden flex items-center">
-                    <button id="mobileMenuBtn" class="text-gray-700 dark:text-gray-300 focus:outline-none">
+                    <button id="mobileMenuBtn" type="button"
+                            class="text-gray-700 dark:text-gray-300 focus:outline-none text-3xl px-2">
                         ☰
                     </button>
                 </div>
@@ -141,22 +145,50 @@
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobileMenu" class="hidden md:hidden bg-white dark:bg-gray-800 px-4 py-2 space-y-2">
-            <button onclick="toggleDarkMode()" title="{% trans 'Toggle Dark Mode' %}" class="px-3 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition">
-                <span id="darkModeIconMobile">🌙</span>
+        <div id="mobileMenu" class="hidden bg-white dark:bg-gray-800 px-4 py-4 space-y-3 border-t border-gray-200 dark:border-gray-700 md:!hidden">
+            <button onclick="toggleDarkMode()" type="button" title="{% trans 'Toggle Dark Mode' %}" 
+                    class="w-full text-left px-3 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                <span id="darkModeIconMobile">🌙</span> {% trans "Dark Mode" %}
             </button>
+            
             {% if user.is_authenticated %}
-                <span class="block text-gray-700 dark:text-gray-300">{% trans "Hello" %}, <strong>{{ user.username }}</strong></span>
-                <a href="{% url 'company_dashboard' %}" class="block text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Dashboard" %}</a>
-                <a href="{% url 'chat_list' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Chats" %}</a>
-                <a href="{% url 'logout' %}" class="block bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition">{% trans "Logout" %}</a>
+                <div class="px-3 py-2 text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
+                    {% trans "Hello" %}, <strong>{{ user.username }}</strong>
+                </div>
+                <a href="{% url 'company_dashboard' %}" 
+                   class="block px-3 py-2 text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded font-medium">
+                    {% trans "Dashboard" %}
+                </a>
+                <a href="{% url 'chat_list' %}" 
+                   class="block px-3 py-2 text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded font-medium">
+                    {% trans "Chats" %}
+                </a>
+                {% if not user.profile.has_active_plan %}
+                    <a href="{% url 'plans' %}" 
+                       class="block bg-green-500 text-white px-3 py-2 rounded-lg shadow hover:bg-green-600 transition font-medium text-center">
+                        {% trans "Upgrade Plan NOW!" %}
+                    </a>
+                {% endif %}
+                <a href="{% url 'logout' %}" 
+                   class="block bg-red-500 text-white px-3 py-2 rounded-lg shadow hover:bg-red-600 transition text-center">
+                    {% trans "Logout" %}
+                </a>
             {% else %}
-                <a href="{% url 'register' %}" class="block text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">{% trans "Register" %}</a>
-                <a href="{% url 'login' %}" class="block bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition">{% trans "Login" %}</a>
+                <a href="{% url 'register' %}" 
+                   class="block px-3 py-2 text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded font-medium">
+                    {% trans "Register" %}
+                </a>
+                <a href="{% url 'login' %}" 
+                   class="block bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition text-center">
+                    {% trans "Login" %}
+                </a>
             {% endif %}
-            <form action="/i18n/setlang/" method="post">
+            
+            <!-- Sprache Dropdown Mobile -->
+            <form action="/i18n/setlang/" method="post" class="pt-2">
                 {% csrf_token %}
-                <select name="language" id="languageSelectMobile" class="bg-gray-100 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm w-full mt-2">
+                <select name="language" id="languageSelectMobile" 
+                        class="w-full bg-gray-100 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-sm">
                     {% for lang in LANGUAGES %}
                         <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
                             {{ lang.1 }}
@@ -168,52 +200,14 @@
     </nav>
 
     <!-- Hauptbereich -->
-    <main class="flex-1 max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+    <main class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
         {% block content %}{% endblock %}
-            <!-- Cookie Banner -->
-    <div id="cookieBanner" class="fixed bottom-0 left-0 w-full bg-gray-900 text-white p-4 shadow-lg z-50 hidden">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
-            <p class="text-sm md:text-base text-center md:text-left">
-                {% if LANGUAGE_CODE == "de" %}
-                    Wir verwenden Cookies, um Ihr Erlebnis zu verbessern. Durch die Nutzung dieser Website stimmen Sie der Verwendung von Cookies zu.
-                {% elif LANGUAGE_CODE == "fr" %}
-                    Nous utilisons des cookies pour améliorer votre expérience. En utilisant ce site, vous acceptez l'utilisation des cookies.
-                {% else %}
-                    We use cookies to improve your experience. By using this site, you agree to our use of cookies.
-                {% endif %}
-            </p>
-            <div class="flex space-x-3">
-                <a href="https://joel-digitals.de/privacy/" 
-                   class="underline text-blue-400 hover:text-blue-300 text-sm">{% trans "Privacy Policy" %}</a>
-                <button id="acceptCookies" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition">
-                    {% trans "Accept" %}
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const banner = document.getElementById("cookieBanner");
-            const acceptBtn = document.getElementById("acceptCookies");
-
-            if (!localStorage.getItem("cookiesAccepted")) {
-                banner.classList.remove("hidden");
-            }
-
-            acceptBtn.addEventListener("click", () => {
-                localStorage.setItem("cookiesAccepted", "true");
-                banner.classList.add("hidden");
-            });
-        });
-    </script>
-
+        {% include 'cookie_banner.html' %}
     </main>
 
     <!-- Footer -->
     <footer class="bg-gray-900 dark:bg-gray-800 text-gray-300 py-10 transition-colors duration-300 mt-auto">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
                 <h3 class="text-lg font-semibold text-white">{% trans "Auftragnetz" %}</h3>
                 <p class="mt-2 text-sm">{% trans "Finde Projekte, Freelancer und Unternehmen – alles an einem Ort." %}</p>
@@ -232,12 +226,77 @@
 
             <div>
                 <h3 class="text-lg font-semibold text-white">{% trans "Rechtliches" %}</h3>
-                <a href="https://joel-digitals.de/imprint/" class="hover:underline">{% trans "Imprint" %}</a><br>
-                <a href="https://joel-digitals.de/privacy/" class="hover:underline">{% trans "Datenschutz" %}</a>
+                <ul class="mt-2 space-y-1 text-sm">
+                    <li><a href="https://joel-digitals.de/imprint/" class="hover:underline">{% trans "Imprint" %}</a></li>
+                    <li><a href="https://joel-digitals.de/privacy/" class="hover:underline">{% trans "Datenschutz" %}</a></li>
+                </ul>
             </div>
         </div>
-        <div class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">&copy; 2025 Joel Digitals</div>
+        <div class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">&copy; 2025-2026 Joel Digitals</div>
     </footer>
 
+    <!-- JavaScript am Ende für bessere Performance -->
+    <script>
+        function toggleDarkMode() {
+            const htmlEl = document.documentElement;
+            const iconDesktop = document.getElementById('darkModeIcon');
+            const iconMobile = document.getElementById('darkModeIconMobile');
+            
+            if(htmlEl.classList.contains('dark')) {
+                htmlEl.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                if(iconDesktop) iconDesktop.textContent = '🌙';
+                if(iconMobile) iconMobile.textContent = '🌙';
+            } else {
+                htmlEl.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                if(iconDesktop) iconDesktop.textContent = '☀️';
+                if(iconMobile) iconMobile.textContent = '☀️';
+            }
+        }
+
+        // Initialisierung nach DOM-Load
+        document.addEventListener('DOMContentLoaded', function() {
+            const htmlEl = document.documentElement;
+            const iconDesktop = document.getElementById('darkModeIcon');
+            const iconMobile = document.getElementById('darkModeIconMobile');
+            
+            // Theme laden
+            const savedTheme = localStorage.getItem('theme');
+            if(savedTheme === 'dark') {
+                htmlEl.classList.add('dark');
+                if(iconDesktop) iconDesktop.textContent = '☀️';
+                if(iconMobile) iconMobile.textContent = '☀️';
+            } else {
+                if(iconDesktop) iconDesktop.textContent = '🌙';
+                if(iconMobile) iconMobile.textContent = '🌙';
+            }
+
+            // Sprachauswahl Desktop
+            const langSelect = document.getElementById('languageSelect');
+            if(langSelect) {
+                langSelect.addEventListener('change', function() {
+                    this.form.submit();
+                });
+            }
+            
+            // Sprachauswahl Mobile
+            const langSelectMobile = document.getElementById('languageSelectMobile');
+            if(langSelectMobile) {
+                langSelectMobile.addEventListener('change', function() {
+                    this.form.submit();
+                });
+            }
+
+            // Mobile Menu Toggle
+            const menuBtn = document.getElementById('mobileMenuBtn');
+            const menu = document.getElementById('mobileMenu');
+            if(menuBtn && menu) {
+                menuBtn.addEventListener('click', function() {
+                    menu.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

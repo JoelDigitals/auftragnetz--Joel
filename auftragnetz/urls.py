@@ -33,5 +33,6 @@ urlpatterns = [
     path('profiles/', include('profiles.urls')),
     path('plans/', include('plans.urls')),
     path('i18n/', include('django.conf.urls.i18n')),
+    path('products/', include('products.urls'))
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

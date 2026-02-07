@@ -16,6 +16,8 @@ from .utils import email_verification_token
 
 
 def user_login(request):
+    CLIENT_ID = "JYQgmcexNerZk2KqvFdhCpwtZIA5ljGaM60qiS1Y"
+    CLIENT_SECRET = "pbkdf2_sha256$1000000$4L8DGdVkw3sW5h3cvWE8iT$oYdRIQGjPyjrnOMw3E9RdgjfF0gbG3RKoUDOiocDAA0="
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -33,7 +35,7 @@ def user_login(request):
         else:
             messages.error(request, _("Ungültiger Benutzername oder Passwort."))
 
-    return render(request, "accounts/login.html")
+    return render(request, "accounts/login.html", {"CLIENT_ID": CLIENT_ID, "CLIENT_SECRET": CLIENT_SECRET})
 
 
 def user_logout(request):
@@ -118,3 +120,4 @@ def activate(request, uidb64, token):
     else:
         messages.error(request, _("Der Verifizierungslink ist ungültig oder abgelaufen."))
         return redirect("home")
+
