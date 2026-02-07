@@ -124,6 +124,11 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
 
+JOEL_CLIENT_ID = "JYQgmcexNerZk2KqvFdhCpwtZIA5ljGaM60qiS1Y"
+JOEL_REDIRECT_URI = "https://auftragsnetz.de/auth/joel/callback/"
+
+
+
 # Twilio configs via env:
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")

@@ -91,45 +91,54 @@ def lead_preferences(request):
 
 import requests
 from django.contrib.auth import login
-from django.contrib.auth.models import User
 from django.shortcuts import redirect
+from django.conf import settings
+from accounts.models import User
 
 def joel_callback(request):
-    code = request.GET.get('code')
+    code = request.GET.get("code")
+    verifier = request.session.get("pkce_verifier")
 
-    # 1️⃣ Code → Access Token tauschen
+    if not code or not verifier:
+        return redirect("/login/")
+
     token_response = requests.post(
-        'https://joel-digital.de/o/token/',
+        "https://joel-digitals.de/o/token/",
         data={
-            'grant_type': 'authorization_code',
-            'code': code,
-            'redirect_uri': 'https://auftragsnetz.de/auth/joel/callback/',
-            'client_id': 'JYQgmcexNerZk2KqvFdhCpwtZIA5ljGaM60qiS1Y',
-            'client_secret': 'pbkdf2_sha256$1000000$4L8DGdVkw3sW5h3cvWE8iT$oYdRIQGjPyjrnOMw3E9RdgjfF0gbG3RKoUDOiocDAA0=',
-        }
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": settings.JOEL_REDIRECT_URI,
+            "client_id": settings.JOEL_CLIENT_ID,
+            "code_verifier": verifier,
+        },
+        timeout=10,
     )
 
-    token = token_response.json()['access_token']
+    token_data = token_response.json()
+    access_token = token_data.get("access_token")
 
-    # 2️⃣ User-Daten holen
+    if not access_token:
+        print("TOKEN ERROR:", token_data)
+        return redirect("/login/")
+
     user_response = requests.get(
-        'https://joel-digital.de/api/user/',
-        headers={'Authorization': f'Bearer {token}'}
+        "https://joel-digitals.de/api/user/",
+        headers={"Authorization": f"Bearer {access_token}"},
+        timeout=10,
     )
 
     data = user_response.json()
 
-    # 3️⃣ User lokal anlegen oder holen
-    user, created = User.objects.get_or_create(
-        username=data['email'],
+    user, _ = User.objects.get_or_create(
+        email=data["email"],
         defaults={
-            'email': data['email'],
-            'first_name': data['first_name'],
-            'last_name': data['last_name'],
-        }
+            "username": data["email"],
+            "first_name": data.get("first_name", ""),
+            "last_name": data.get("last_name", ""),
+            "is_active": True,
+            "email_confirmed": True,
+        },
     )
 
-    # 4️⃣ Login
     login(request, user)
-
-    return redirect('/')
+    return redirect("/")

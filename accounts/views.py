@@ -121,3 +121,22 @@ def activate(request, uidb64, token):
         messages.error(request, _("Der Verifizierungslink ist ungültig oder abgelaufen."))
         return redirect("home")
 
+from django.shortcuts import redirect
+from django.conf import settings
+from .utils import generate_pkce
+
+def joel_login(request):
+    verifier, challenge = generate_pkce()
+    request.session["pkce_verifier"] = verifier
+
+    url = (
+        "https://joel-digitals.de/o/authorize/"
+        "?response_type=code"
+        f"&client_id={settings.JOEL_CLIENT_ID}"
+        f"&redirect_uri={settings.JOEL_REDIRECT_URI}"
+        "&scope=read"
+        f"&code_challenge={challenge}"
+        "&code_challenge_method=S256"
+    )
+
+    return redirect(url)
