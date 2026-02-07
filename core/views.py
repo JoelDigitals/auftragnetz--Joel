@@ -96,12 +96,19 @@ from django.conf import settings
 from accounts.models import User
 
 def joel_callback(request):
+    print("=== JOEL CALLBACK GESTARTET ===")
+    
     code = request.GET.get("code")
     verifier = request.session.get("pkce_verifier")
+    
+    print(f"Code: {code}")
+    print(f"Verifier: {verifier}")
 
     if not code or not verifier:
+        print("FEHLER: Code oder Verifier fehlt")
         return redirect("/login/")
 
+    print("=== TOKEN REQUEST ===")
     token_response = requests.post(
         "https://joel-digitals.de/o/token/",
         data={
@@ -114,22 +121,29 @@ def joel_callback(request):
         timeout=10,
     )
 
+    print(f"Token Response Status: {token_response.status_code}")
     token_data = token_response.json()
+    print(f"Token Data: {token_data}")
+    
     access_token = token_data.get("access_token")
 
     if not access_token:
         print("TOKEN ERROR:", token_data)
         return redirect("/login/")
 
+    print("=== USER INFO REQUEST ===")
     user_response = requests.get(
         "https://joel-digitals.de/api/user/",
         headers={"Authorization": f"Bearer {access_token}"},
         timeout=10,
     )
 
+    print(f"User Response Status: {user_response.status_code}")
     data = user_response.json()
+    print(f"User Data: {data}")
 
-    user, _ = User.objects.get_or_create(
+    print("=== USER ERSTELLEN/ABRUFEN ===")
+    user, created = User.objects.get_or_create(
         email=data["email"],
         defaults={
             "username": data["email"],
@@ -139,6 +153,12 @@ def joel_callback(request):
             "email_confirmed": True,
         },
     )
+    
+    print(f"User: {user.email}, Created: {created}")
 
+    print("=== LOGIN ===")
     login(request, user)
+    print("Login erfolgreich!")
+    
+    print("=== REDIRECT ZU / ===")
     return redirect("/")

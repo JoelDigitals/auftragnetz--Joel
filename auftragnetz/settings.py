@@ -73,6 +73,10 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",  # fallback
 ]
 
+# settings.py
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # oder was du verwendest
+SESSION_COOKIE_SECURE = False  # für lokale Entwicklung
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 ROOT_URLCONF = "auftragnetz.urls"
 TEMPLATES = [{ "BACKEND":"django.template.backends.django.DjangoTemplates",
@@ -125,7 +129,7 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
 
 JOEL_CLIENT_ID = "JYQgmcexNerZk2KqvFdhCpwtZIA5ljGaM60qiS1Y"
-JOEL_REDIRECT_URI = "https://auftragsnetz.de/auth/joel/callback/"
+JOEL_REDIRECT_URI = "https://auftragnetz.de/auth/joel/callback/"
 
 
 
