@@ -88,7 +88,6 @@ def lead_preferences(request):
         "categories": categories,
         "selected_categories": pref.categories.all()
     })
-
 import requests
 from django.contrib.auth import login
 from django.shortcuts import redirect
@@ -122,7 +121,21 @@ def joel_callback(request):
     )
 
     print(f"Token Response Status: {token_response.status_code}")
-    token_data = token_response.json()
+    print(f"Token Response Text: {token_response.text}")  # ← WICHTIG!
+    
+    # Prüfe ob die Response erfolgreich war
+    if token_response.status_code != 200:
+        print(f"TOKEN REQUEST FEHLGESCHLAGEN: Status {token_response.status_code}")
+        print(f"Response: {token_response.text}")
+        return redirect("/login/")
+    
+    try:
+        token_data = token_response.json()
+    except requests.exceptions.JSONDecodeError:
+        print("FEHLER: Token Response ist kein gültiges JSON")
+        print(f"Response Text: {token_response.text}")
+        return redirect("/login/")
+    
     print(f"Token Data: {token_data}")
     
     access_token = token_data.get("access_token")
@@ -139,7 +152,19 @@ def joel_callback(request):
     )
 
     print(f"User Response Status: {user_response.status_code}")
-    data = user_response.json()
+    
+    if user_response.status_code != 200:
+        print(f"USER INFO REQUEST FEHLGESCHLAGEN: Status {user_response.status_code}")
+        print(f"Response: {user_response.text}")
+        return redirect("/login/")
+    
+    try:
+        data = user_response.json()
+    except requests.exceptions.JSONDecodeError:
+        print("FEHLER: User Response ist kein gültiges JSON")
+        print(f"Response Text: {user_response.text}")
+        return redirect("/login/")
+    
     print(f"User Data: {data}")
 
     print("=== USER ERSTELLEN/ABRUFEN ===")
