@@ -163,7 +163,7 @@ def joel_callback(request):
     except requests.exceptions.JSONDecodeError:
         print("FEHLER: User Response ist kein gültiges JSON")
         print(f"Response Text: {user_response.text}")
-        return redirect("/login/")
+        return redirect("/accounts/login/")
     
     print(f"User Data: {data}")
 
