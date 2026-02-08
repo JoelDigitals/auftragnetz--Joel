@@ -1,192 +1,296 @@
-{% extends "base.html" %}
-{% load i18n %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Joel Digitals</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 28px;
+            text-align: center;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+            text-align: center;
+        }
 
-{% block title %}{% trans "Register" %}{% endblock %}
+        /* SSO Button */
+        .sso-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #03225f, #043a9d);
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            text-decoration: none;
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(3,34,95,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .sso-button img {
+            height: 26px;
+            width: auto;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+        }
+        .sso-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 28px rgba(3,34,95,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
+            filter: brightness(1.05);
+        }
 
-{% block content %}
-<div class="max-w-md mx-auto bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-8 rounded-xl shadow-lg mt-10 border border-gray-200 dark:border-gray-700 transition-colors duration-300">
-    <h2 class="text-3xl font-extrabold text-center text-blue-600 mb-6">
-        {% trans "Create your Account" %}
-    </h2>
+        /* Divider */
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+        }
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e0e0e0;
+        }
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            color: #999;
+            font-size: 14px;
+            position: relative;
+        }
 
-    <form method="post" class="space-y-4">
-        {% csrf_token %}
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
 
-        <!-- Username -->
-        <div>
-            <label for="id_username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{% trans "Username" %}</label>
-            <input type="text" name="username" id="id_username"
-                   value="{{ form.username.value|default:'' }}"
-                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100/80 dark:bg-gray-700/70 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
-            {% for error in form.username.errors %}
-              <p class="text-red-500 dark:text-red-400 text-sm mt-1">{{ error }}</p>
-            {% endfor %}
-        </div>
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+        }
 
-        <!-- Email -->
-        <div>
-            <label for="id_email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{% trans "Email" %}</label>
-            <input type="email" name="email" id="id_email"
-                   value="{{ form.email.value|default:'' }}"
-                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100/80 dark:bg-gray-700/70 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
-            {% for error in form.email.errors %}
-              <p class="text-red-500 dark:text-red-400 text-sm mt-1">{{ error }}</p>
-            {% endfor %}
-        </div>
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
 
-        <!-- Phone -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{% trans "Phone Number" %}</label>
-            <input type="text" name="phone_number" id="id_phone_number"
-                   value="{{ form.phone_number.value|default:'' }}"
-                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100/80 dark:bg-gray-700/70 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
-            {% if form.phone_number.errors %}
-                <p class="text-red-500 dark:text-red-400 text-sm mt-1">{{ form.phone_number.errors.0 }}</p>
-            {% endif %}
-        </div>
+        .password-rules li {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
 
-        <!-- Account type -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{% trans "Account Type" %}</label>
-            <select name="account_type" id="id_account_type"
-                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100/80 dark:bg-gray-700/70 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
-                {% for choice in form.account_type.field.choices %}
-                    <option value="{{ choice.0 }}" {% if form.account_type.value == choice.0 %}selected{% endif %}>
-                        {{ choice.1 }}
-                    </option>
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .register-link a {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .responsive-img {
+            width: 425px;
+            max-width: 100%;
+            height: auto;
+        }
+        @media (max-width: 600px) {
+            .responsive-img {
+                width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Erstelle deinen Account</h1>
+        <p class="subtitle">Registriere dich oder verbinde dich über SSO</p>
+
+        {% if form.non_field_errors %}
+        <div class="error">{{ form.non_field_errors.0 }}</div>
+        {% endif %}
+
+        <!-- SSO Button -->
+        <a href="{% url 'sso_connect' %}">
+            <img class="sign-in responsive-img" src="http://127.0.0.1:8001/static/button.png" alt="Joel Digitals Logo">
+        </a>
+
+        <div class="divider"><span>oder manuell registrieren</span></div>
+
+        <!-- Register Form -->
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Benutzername</label>
+                <input type="text" name="username" value="{{ form.username.value|default:'' }}">
+                {% for error in form.username.errors %}
+                    <div class="error">{{ error }}</div>
                 {% endfor %}
-            </select>
-            {% if form.account_type.errors %}
-                <p class="text-red-500 dark:text-red-400 text-sm mt-1">{{ form.account_type.errors.0 }}</p>
-            {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" value="{{ form.email.value|default:'' }}">
+                {% for error in form.email.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label>Telefonnummer</label>
+                <input type="text" name="phone_number" value="{{ form.phone_number.value|default:'' }}">
+                {% if form.phone_number.errors %}
+                    <div class="error">{{ form.phone_number.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>Account Typ</label>
+                <select name="account_type">
+                    {% for choice in form.account_type.field.choices %}
+                        <option value="{{ choice.0 }}" {% if form.account_type.value == choice.0 %}selected{% endif %}>
+                            {{ choice.1 }}
+                        </option>
+                    {% endfor %}
+                </select>
+                {% if form.account_type.errors %}
+                    <div class="error">{{ form.account_type.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>Passwort</label>
+                <input type="password" name="password1" id="id_password1">
+                <ul class="password-rules">
+                    <li id="rule-length" class="text-red-500">✖ Mindestens 8 Zeichen</li>
+                    <li id="rule-uppercase" class="text-red-500">✖ Mindestens ein Großbuchstabe</li>
+                    <li id="rule-number" class="text-red-500">✖ Mindestens eine Zahl</li>
+                    <li id="rule-special" class="text-red-500">✖ Mindestens ein Sonderzeichen</li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label>Passwort bestätigen</label>
+                <input type="password" name="password2" id="id_password2">
+                <div id="password-match" class="error">✖ Passwörter stimmen nicht überein</div>
+            </div>
+
+            <button type="submit">Registrieren</button>
+        </form>
+
+        <div class="register-link">
+            Schon einen Account? <a href="{% url 'login' %}">Hier einloggen</a>
         </div>
+    </div>
 
-        <!-- Password -->
-        <div>
-            <label for="password1" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{% trans "Password" %}</label>
-            <input type="password" name="password1" id="id_password1"
-                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100/80 dark:bg-gray-700/70 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
-            <ul class="mt-2 space-y-1 text-sm" id="password-rules">
-                <li id="rule-length" class="text-red-500">✖ {% trans "At least 8 characters" %}</li>
-                <li id="rule-uppercase" class="text-red-500">✖ {% trans "At least one uppercase letter" %}</li>
-                <li id="rule-number" class="text-red-500">✖ {% trans "At least one number" %}</li>
-                <li id="rule-special" class="text-red-500">✖ {% trans "At least one special character (!@#$...)" %}</li>
-            </ul>
-        </div>
+    <!-- Passwort Check Script -->
+    <script>
+        const password1 = document.getElementById("id_password1");
+        const password2 = document.getElementById("id_password2");
+        const matchMsg = document.getElementById("password-match");
 
-        <!-- Password confirmation -->
-        <div>
-            <label for="password2" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{% trans "Confirm Password" %}</label>
-            <input type="password" name="password2" id="id_password2"
-                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100/80 dark:bg-gray-700/70 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
-            <p id="password-match" class="mt-2 text-sm text-red-500">✖ {% trans "Passwords do not match" %}</p>
-        </div>
+        function validatePassword() {
+            const val = password1.value;
+            const rules = {
+                length: val.length >= 8,
+                uppercase: /[A-Z]/.test(val),
+                number: /[0-9]/.test(val),
+                special: /[^A-Za-z0-9]/.test(val),
+            };
 
-        <!-- Submit -->
-        <button type="submit"
-                class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition">
-            {% trans "Register" %}
-        </button>
-    </form>
-    <a href="{% url 'joel_login' %}"
-   class="joel-login-btn">
-    <img src="https://joel-digitals.de/static/logo.png" alt="Joël">
-    <span>Login</span>
-</a>
+            for (let [rule, passed] of Object.entries(rules)) {
+                const el = document.getElementById("rule-" + rule);
+                if (passed) {
+                    el.classList.remove("text-red-500");
+                    el.classList.add("text-green-600");
+                    el.innerHTML = "✔ " + el.textContent.replace("✖ ", "").replace("✔ ", "");
+                } else {
+                    el.classList.remove("text-green-600");
+                    el.classList.add("text-red-500");
+                    el.innerHTML = "✖ " + el.textContent.replace("✔ ", "").replace("✖ ", "");
+                }
+            }
 
-<style>
-.joel-login-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-
-    padding: 14px 26px;
-    border-radius: 14px;
-
-    background: linear-gradient(135deg, #03225f, #043a9d);
-    color: #fff;
-    text-decoration: none;
-
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-
-    box-shadow:
-        0 8px 20px rgba(3, 34, 95, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
-
-    transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease,
-        filter 0.15s ease;
-}
-
-.joel-login-btn img {
-    height: 26px;
-    width: auto;
-    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
-}
-
-.joel-login-btn:hover {
-    transform: translateY(-1px);
-    box-shadow:
-        0 12px 28px rgba(3, 34, 95, 0.45),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    filter: brightness(1.05);
-}
-
-.joel-login-btn:active {
-    transform: translateY(0);
-    box-shadow:
-        0 6px 14px rgba(3, 34, 95, 0.35),
-        inset 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-</style>
-
-
-</div>
-
-<!-- Passwort Check Script -->
-<script>
-    const password1 = document.getElementById("id_password1");
-    const password2 = document.getElementById("id_password2");
-    const matchMsg = document.getElementById("password-match");
-
-    function validatePassword() {
-        const val = password1.value;
-        const rules = {
-            length: val.length >= 8,
-            uppercase: /[A-Z]/.test(val),
-            number: /[0-9]/.test(val),
-            special: /[^A-Za-z0-9]/.test(val),
-        };
-
-        for (let [rule, passed] of Object.entries(rules)) {
-            const el = document.getElementById("rule-" + rule);
-            if (passed) {
-                el.classList.remove("text-red-500");
-                el.classList.add("text-green-600");
-                el.innerHTML = "✔ " + el.textContent.replace("✖ ", "").replace("✔ ", "");
+            if (password1.value && password2.value && password1.value === password2.value) {
+                matchMsg.textContent = "✔ Passwörter stimmen überein";
+                matchMsg.classList.remove("text-red-500");
+                matchMsg.classList.add("text-green-600");
             } else {
-                el.classList.remove("text-green-600");
-                el.classList.add("text-red-500");
-                el.innerHTML = "✖ " + el.textContent.replace("✔ ", "").replace("✖ ", "");
+                matchMsg.textContent = "✖ Passwörter stimmen nicht überein";
+                matchMsg.classList.remove("text-green-600");
+                matchMsg.classList.add("text-red-500");
             }
         }
 
-        if (password1.value && password2.value && password1.value === password2.value) {
-            matchMsg.textContent = "✔ {% trans 'Passwords match' %}";
-            matchMsg.classList.remove("text-red-500");
-            matchMsg.classList.add("text-green-600");
-        } else {
-            matchMsg.textContent = "✖ {% trans 'Passwords do not match' %}";
-            matchMsg.classList.remove("text-green-600");
-            matchMsg.classList.add("text-red-500");
-        }
-    }
-
-    password1.addEventListener("input", validatePassword);
-    password2.addEventListener("input", validatePassword);
-</script>
-{% endblock %}
+        password1.addEventListener("input", validatePassword);
+        password2.addEventListener("input", validatePassword);
+    </script>
+</body>
+</html>

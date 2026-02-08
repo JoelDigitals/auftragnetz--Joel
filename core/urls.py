@@ -18,6 +18,9 @@ urlpatterns = [
     path("leads/settings/", views.lead_preferences, name="lead_preferences"),
     path('auth/joel/callback/', views.joel_callback, name='joel_callback'),
 
+    path('auth/sso/login/', views.sso_login, name='sso_login'),
+    path('auth/sso/callback/', views.sso_callback, name='sso_callback'),
+
     
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}),
 ]

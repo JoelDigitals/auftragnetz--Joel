@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "plans",
     "products",
     "core",
+    "oauth2_provider",
 ]
 
 MIDDLEWARE = [
@@ -127,11 +128,33 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
+AUTHENTICATION_BACKENDS = (
+    'oauth2_provider.backends.OAuth2Backend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SSO_SHARED_SECRET = "Iay01SJILCeOtgo99wjdEf3b6kBULkYMD6e5mfiqZHGIdAUUs9uOvOcgF9utVRVp7oVL9bIDH9MdYLWMIuUk3ECmhFd7hXtfRiPDL0Eu2DffIjrIYD1bJkZgzzbBv9C5E9Fosg6aBu1mEliHcG39wYTbbdRk7YzyEEW7uvjRdDkWSeAtXuKHkm"
 
 JOEL_CLIENT_ID = "JYQgmcexNerZk2KqvFdhCpwtZIA5ljGaM60qiS1Y"
-JOEL_REDIRECT_URI = "https://auftragnetz.de/auth/joel/callback/"
+JOEL_REDIRECT_URI = "http://127.0.0.1:8000/auth/joel/callback/"
+JOEL_CLIENT_SECRET = "pbkdf2_sha256$1000000$4L8DGdVkw3sW5h3cvWE8iT$oYdRIQGjPyjrnOMw3E9RdgjfF0gbG3RKoUDOiocDAA0="
 
+# SSO Konfiguration
+# SSO Konfiguration
+SSO_PROVIDER_URL = "https://joel-digitals.de"  # Oder http://127.0.0.1:8001 für lokal
+SSO_CLIENT_ID = "JYQgmcexNerZk2KqvFdhCpwtZIA5ljGaM60qiS1Y"
+SSO_CLIENT_SECRET = "pbkdf2_sha256$1000000$4L8DGdVkw3sW5h3cvWE8iT$oYdRIQGjPyjrnOMw3E9RdgjfF0gbG3RKoUDOiocDAA0="
+SSO_CALLBACK_URL = "https://auftragnetz.de/accounts/register/callback/"  # Für Produktion
 
+# Session Settings
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # oder 'cached_db'
+SESSION_COOKIE_AGE = 1209600  # 2 Wochen
+SESSION_SAVE_EVERY_REQUEST = False
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'  # WICHTIG für Cross-Domain!
+
+# Für Development (localhost + .local)
+SESSION_COOKIE_DOMAIN = None  # NICHT setzen für localhost!
 
 # Twilio configs via env:
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")

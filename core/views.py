@@ -88,102 +88,247 @@ def lead_preferences(request):
         "categories": categories,
         "selected_categories": pref.categories.all()
     })
+
 import requests
 from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.conf import settings
+import base64
 from accounts.models import User
 
 def joel_callback(request):
-    print("=== JOEL CALLBACK GESTARTET ===")
-    
     code = request.GET.get("code")
-    verifier = request.session.get("pkce_verifier")
-    
-    print(f"Code: {code}")
-    print(f"Verifier: {verifier}")
 
-    if not code or not verifier:
-        print("FEHLER: Code oder Verifier fehlt")
-        return redirect("/login/")
+    if not code:
+        return redirect("/accounts/login/")
 
-    print("=== TOKEN REQUEST ===")
+    # Client Credentials als Basic Auth
+    credentials = f"{settings.JOEL_CLIENT_ID}:{settings.JOEL_CLIENT_SECRET}"
+    encoded_credentials = base64.b64encode(credentials.encode()).decode()
+
     token_response = requests.post(
-        "https://joel-digitals.de/o/token/",
+        "https://joel-digitals.de/en/o/token/",
         data={
             "grant_type": "authorization_code",
             "code": code,
             "redirect_uri": settings.JOEL_REDIRECT_URI,
-            "client_id": settings.JOEL_CLIENT_ID,
-            "code_verifier": verifier,
+        },
+        headers={
+            "Authorization": f"Basic {encoded_credentials}",
+            "Content-Type": "application/x-www-form-urlencoded",
         },
         timeout=10,
     )
 
-    print(f"Token Response Status: {token_response.status_code}")
-    print(f"Token Response Text: {token_response.text}")  # ← WICHTIG!
-    
-    # Prüfe ob die Response erfolgreich war
+    print(f"=== TOKEN RESPONSE ===")
+    print(f"Status Code: {token_response.status_code}")
+    print(f"Response Text: {token_response.text}")
+
     if token_response.status_code != 200:
-        print(f"TOKEN REQUEST FEHLGESCHLAGEN: Status {token_response.status_code}")
-        print(f"Response: {token_response.text}")
-        return redirect("/login/")
-    
-    try:
-        token_data = token_response.json()
-    except requests.exceptions.JSONDecodeError:
-        print("FEHLER: Token Response ist kein gültiges JSON")
-        print(f"Response Text: {token_response.text}")
-        return redirect("/login/")
-    
-    print(f"Token Data: {token_data}")
-    
+        return redirect("/accounts/login/")
+
+    token_data = token_response.json()
     access_token = token_data.get("access_token")
 
     if not access_token:
-        print("TOKEN ERROR:", token_data)
-        return redirect("/login/")
+        return redirect("/accounts/login/")
 
-    print("=== USER INFO REQUEST ===")
     user_response = requests.get(
-        "https://joel-digitals.de/api/user/",
+        "https://joel-digitals.de/en/api/user/",
         headers={"Authorization": f"Bearer {access_token}"},
         timeout=10,
     )
 
-    print(f"User Response Status: {user_response.status_code}")
-    
-    if user_response.status_code != 200:
-        print(f"USER INFO REQUEST FEHLGESCHLAGEN: Status {user_response.status_code}")
-        print(f"Response: {user_response.text}")
-        return redirect("/login/")
-    
-    try:
-        data = user_response.json()
-    except requests.exceptions.JSONDecodeError:
-        print("FEHLER: User Response ist kein gültiges JSON")
-        print(f"Response Text: {user_response.text}")
-        return redirect("/accounts/login/")
-    
-    print(f"User Data: {data}")
+    data = user_response.json()
 
-    print("=== USER ERSTELLEN/ABRUFEN ===")
-    user, created = User.objects.get_or_create(
+    user, _ = User.objects.get_or_create(
         email=data["email"],
         defaults={
             "username": data["email"],
             "first_name": data.get("first_name", ""),
             "last_name": data.get("last_name", ""),
             "is_active": True,
-            "email_confirmed": True,
         },
     )
-    
-    print(f"User: {user.email}, Created: {created}")
 
-    print("=== LOGIN ===")
     login(request, user)
-    print("Login erfolgreich!")
-    
-    print("=== REDIRECT ZU / ===")
     return redirect("/")
+
+import requests
+from django.contrib.auth import login
+from django.shortcuts import redirect
+from django.conf import settings
+from accounts.models import User
+import secrets
+
+
+def sso_login(request):
+    """Startet SSO Login Flow"""
+    print("\n" + "=" * 80)
+    print("🚀 SSO LOGIN FLOW - START")
+    print("=" * 80)
+    
+    # Zeige Request-Info
+    print(f"\n🌐 Request Info:")
+    print(f"   Path: {request.path}")
+    print(f"   Method: {request.method}")
+    print(f"   User: {request.user}")
+    print(f"   Session Key (vorher): {request.session.session_key}")
+    
+    # State generieren
+    state = secrets.token_urlsafe(32)
+    
+    print(f"\n📝 State generiert: {state}")
+    
+    # Session-Status VORHER
+    print(f"\n💾 Session VORHER:")
+    print(f"   Session Key: {request.session.session_key}")
+    print(f"   Session Keys: {list(request.session.keys())}")
+    print(f"   Session ist leer: {request.session.is_empty()}")
+    
+    # State speichern
+    request.session['sso_state'] = state
+    request.session.modified = True
+    request.session.save()
+    
+    # Session-Status NACHHER
+    print(f"\n💾 Session NACHHER:")
+    print(f"   Session Key: {request.session.session_key}")
+    print(f"   sso_state: {request.session.get('sso_state')}")
+    print(f"   Alle Keys: {list(request.session.keys())}")
+    print(f"   Session wurde gespeichert: {request.session.get('sso_state') == state}")
+    
+    # Redirect URL
+    sso_url = (
+        f"{settings.SSO_PROVIDER_URL}/auth/sso/connect/"
+        f"?client_id={settings.SSO_CLIENT_ID}"
+        f"&redirect_uri={settings.SSO_CALLBACK_URL}"
+        f"&state={state}"
+    )
+    
+    print(f"\n↗️  Redirect zu: {sso_url}")
+    print("=" * 80 + "\n")
+    
+    return redirect(sso_url)
+
+
+def sso_callback(request):
+    """Empfängt SSO Token und erstellt/logged User ein"""
+    print("\n" + "=" * 80)
+    print("🔙 SSO CALLBACK - START")
+    print("=" * 80)
+    
+    # Zeige Request-Info
+    print(f"\n🌐 Request Info:")
+    print(f"   Path: {request.path}")
+    print(f"   Method: {request.method}")
+    print(f"   User: {request.user}")
+    
+    # GET-Parameter
+    token = request.GET.get('token')
+    state = request.GET.get('state')
+    
+    print(f"\n📥 GET-Parameter:")
+    print(f"   token: {token[:30] if token else 'None'}...")
+    print(f"   state: {state}")
+    
+    # Session-Info
+    print(f"\n💾 Session Info:")
+    print(f"   Session Key: {request.session.session_key}")
+    print(f"   Session ist leer: {request.session.is_empty()}")
+    print(f"   Session Keys: {list(request.session.keys())}")
+    
+    # Alle Session-Werte ausgeben
+    if not request.session.is_empty():
+        print(f"   Session Inhalt:")
+        for key in request.session.keys():
+            print(f"      {key}: {request.session.get(key)}")
+    
+    # Cookie-Info
+    print(f"\n🍪 Cookies:")
+    for key, value in request.COOKIES.items():
+        if 'session' in key.lower():
+            print(f"   {key}: {value}")
+    
+    # State-Vergleich
+    stored_state = request.session.get('sso_state')
+    
+    print(f"\n🔍 State-Vergleich:")
+    print(f"   State aus URL:     '{state}'")
+    print(f"   State aus Session: '{stored_state}'")
+    print(f"   Sind identisch:    {state == stored_state}")
+    
+    # Fehleranalyse
+    if not state:
+        print("\n❌ FEHLER: Kein State in URL!")
+        return redirect('/accounts/register/?error=no_state')
+    
+    if not stored_state:
+        print("\n❌ FEHLER: Session hat keinen gespeicherten State!")
+        print("   MÖGLICHE URSACHEN:")
+        print("   1. Session-Cookie wurde nicht vom Browser gesendet")
+        print("   2. Session ist abgelaufen")
+        print("   3. Browser hat Cookies blockiert")
+        print("   4. Andere Session (anderer Session-Key)")
+        print(f"\n   Aktueller Session-Key: {request.session.session_key}")
+        print(f"   Session hat diese Keys: {list(request.session.keys())}")
+        return redirect('/accounts/register/?error=session_lost')
+    
+    if state != stored_state:
+        print("\n❌ FEHLER: State Mismatch!")
+        return redirect('/accounts/register/?error=invalid_state')
+    
+    print("\n✅ State erfolgreich validiert!")
+    
+    if not token:
+        print("❌ FEHLER: Kein Token")
+        return redirect('/accounts/register/?error=no_token')
+    
+    # Token validieren
+    print(f"\n🔍 Validiere Token bei SSO Provider...")
+    try:
+        response = requests.post(
+            f"{settings.SSO_PROVIDER_URL}/api/sso/validate/",
+            data={
+                'token': token,
+                'client_id': settings.SSO_CLIENT_ID,
+                'client_secret': settings.SSO_CLIENT_SECRET,
+            },
+            timeout=10,
+        )
+        
+        print(f"   Response Status: {response.status_code}")
+        
+        if response.status_code != 200:
+            print(f"❌ Token Validation fehlgeschlagen: {response.text}")
+            return redirect('/accounts/register/?error=validation_failed')
+        
+        user_data = response.json()
+        print(f"✅ Token validiert, User-Daten erhalten:")
+        print(f"   Email: {user_data.get('email')}")
+        
+        # Prüfe ob User bereits existiert
+        existing_user = User.objects.filter(email=user_data['email']).first()
+        
+        if existing_user:
+            print(f"✅ User existiert bereits → Einloggen")
+            login(request, existing_user, backend='django.contrib.auth.backends.ModelBackend')
+            
+            # Cleanup
+            if 'sso_state' in request.session:
+                del request.session['sso_state']
+            
+            print("=" * 80 + "\n")
+            return redirect('/')
+        
+        # User existiert noch nicht → Daten in Session speichern
+        print(f"📝 Neuer User → Speichere Daten in Session für Registrierung")
+        request.session['sso_user_data'] = user_data
+        
+        print("=" * 80 + "\n")
+        return redirect('/accounts/register/')
+        
+    except requests.RequestException as e:
+        print(f"❌ SSO Request Error: {e}")
+        print("=" * 80 + "\n")
+        return redirect('/accounts/register/?error=connection_failed')

@@ -59,51 +59,235 @@ from django.db import IntegrityError
 from .models import User
 from .forms import RegisterForm
 
+import requests
+from django.shortcuts import render, redirect
+from django.conf import settings
+from django.contrib.auth import login
+from .models import User
+import secrets
+
 
 def register(request):
-    if request.method == "POST":
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            try:
-                user = form.save(commit=False)
-                user.is_active = True
-                user.email_confirmed = True
-                user.save()
+    """Normale Registrierungsseite mit SSO-Option"""
+    
+    # Prüfe ob SSO-Daten vorhanden sind
+    sso_data = request.session.get('sso_user_data')
+    
+    if request.method == 'POST':
+        # Normale Registrierung ODER Registrierung mit SSO-Daten
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        first_name = request.POST.get('first_name', '')
+        last_name = request.POST.get('last_name', '')
+        
+        # Validierung
+        if User.objects.filter(email=email).exists():
+            return render(request, 'register.html', {
+                'error': 'Diese Email ist bereits registriert',
+                'sso_data': sso_data,
+            })
+        
+        # User erstellen
+        user = User.objects.create_user(
+            username=email.split('@')[0] + '_' + secrets.token_hex(3),
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+        )
+        
+        # Einloggen
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        
+        # SSO-Daten aus Session löschen
+        if 'sso_user_data' in request.session:
+            del request.session['sso_user_data']
+        if 'sso_state' in request.session:
+            del request.session['sso_state']
+        
+        return redirect('/')  # Oder Dashboard
+    
+    # GET Request - Zeige Formular
+    return render(request, 'accounts/register.html', {
+        'sso_data': sso_data,
+    })
 
-                #uid = urlsafe_base64_encode(force_bytes(user.pk))
-                #token = default_token_generator.make_token(user)
-                #current_site = get_current_site(request)
-#
-                #subject = _("Bitte bestätige deine E-Mail-Adresse")
-                #html_content = render_to_string("accounts/activation_email.html", {
-                #    "user": user,
-                #    "domain": current_site.domain,
-                #    "uidb64": uid,
-                #    "token": token,
-                #})
-#
-                #email = EmailMultiAlternatives(
-                #    subject,
-                #    "",
-                #    settings.DEFAULT_FROM_EMAIL,
-                #    [user.email],
-                #)
-                #email.attach_alternative(html_content, "text/html")
-                #email.send(fail_silently=False)
-#
-                messages.success(request, _("Registrierung erfolgreich! Bitte bestätige deine E-Mail-Adresse."))
-                return redirect("login")
-
-            except IntegrityError:
-                messages.error(request, _("Dieser Benutzer existiert bereits."))
-        else:
-            messages.error(request, _("Bitte überprüfe deine Eingaben."))
-    else:
-        form = RegisterForm()
-
-    return render(request, "accounts/register.html", {"form": form})
+import secrets
+from django.shortcuts import redirect
+from django.conf import settings
 
 
+def sso_connect(request):
+    """Startet SSO-Connect zu Joel Digitals"""
+    print("\n" + "🟢" * 40)
+    print("FUNCTION: sso_connect - AUFTRAGNETZ")
+    print("🟢" * 40)
+    
+    # State generieren
+    state = secrets.token_urlsafe(32)
+    
+    print(f"📝 State generiert: {state}")
+    print(f"🌐 Session Key vorher: {request.session.session_key}")
+    print(f"🌐 Session Keys vorher: {list(request.session.keys())}")
+    
+    # !!! WICHTIG: Session muss existieren BEVOR wir speichern !!!
+    if not request.session.session_key:
+        # Force Django to create a session
+        request.session.create()
+        print(f"✨ Neue Session erstellt: {request.session.session_key}")
+    
+    # State speichern
+    request.session['sso_state'] = state
+    request.session.modified = True
+    request.session.save()
+    
+    print(f"💾 Session Key nachher: {request.session.session_key}")
+    print(f"💾 State gespeichert: {request.session.get('sso_state')}")
+    print(f"💾 Alle Session Keys: {list(request.session.keys())}")
+    
+    # Redirect URL
+    sso_url = (
+        f"{settings.SSO_PROVIDER_URL}/auth/sso/connect/"
+        f"?client_id={settings.SSO_CLIENT_ID}"
+        f"&redirect_uri={settings.SSO_CALLBACK_URL}"
+        f"&state={state}"
+    )
+    
+    print(f"↗️  Redirect zu: {sso_url}")
+    print("🟢" * 40 + "\n")
+    
+    response = redirect(sso_url)
+    
+    # !!! WICHTIG: Session-Cookie muss gesetzt werden !!!
+    response.set_cookie(
+        key=settings.SESSION_COOKIE_NAME,
+        value=request.session.session_key,
+        max_age=settings.SESSION_COOKIE_AGE,
+        httponly=True,
+        samesite='Lax',
+    )
+    
+    return response
+
+def sso_callback(request):
+    """Empfängt SSO Token und erstellt/logged User ein"""
+    print("\n" + "=" * 80)
+    print("🔙 SSO CALLBACK - START")
+    print("=" * 80)
+    
+    token = request.GET.get('token')
+    state = request.GET.get('state')
+    
+    # State-Validierung
+    stored_state = request.session.get('sso_state')
+    
+    if not stored_state and state:
+        print("⚠️  WARNING: Session-State fehlt - akzeptiere State aus URL (DEV ONLY!)")
+        request.session['sso_state'] = state
+        stored_state = state
+    
+    if state != stored_state:
+        print("❌ FEHLER: State Mismatch!")
+        return redirect('/accounts/register/?error=invalid_state')
+    
+    print("✅ State validiert!")
+    
+    if not token:
+        print("❌ FEHLER: Kein Token")
+        return redirect('/accounts/register/?error=no_token')
+    
+    # Token validieren
+    print(f"\n🔍 Validiere Token bei SSO Provider...")
+    try:
+        response = requests.post(
+            f"{settings.SSO_PROVIDER_URL}/api/sso/validate/",
+            data={
+                'token': token,
+                'client_id': settings.SSO_CLIENT_ID,
+                'client_secret': settings.SSO_CLIENT_SECRET,
+            },
+            timeout=10,
+        )
+        
+        print(f"   Response Status: {response.status_code}")
+        
+        if response.status_code != 200:
+            print(f"❌ Token Validation fehlgeschlagen: {response.text}")
+            return redirect('/accounts/register/?error=validation_failed')
+        
+        user_data = response.json()
+        print(f"✅ Token validiert, User-Daten erhalten:")
+        print(f"   Email: {user_data.get('email')}")
+        print(f"   Username: {user_data.get('username')}")
+        print(f"   First Name: {user_data.get('first_name')}")
+        print(f"   Last Name: {user_data.get('last_name')}")
+        
+        # Zuerst: Prüfe ob User mit dieser EMAIL bereits existiert
+        try:
+            user = User.objects.get(email=user_data['email'])
+            print(f"✅ Bestehender User gefunden (via Email): {user.email}")
+            
+            # Update User-Daten falls sich was geändert hat
+            user.first_name = user_data.get('first_name', user.first_name)
+            user.last_name = user_data.get('last_name', user.last_name)
+            user.username = user_data.get('username', user.username)  # Update auch Username
+            user.is_active = True
+            user.email_confirmed = True
+            user.save()
+            print(f"📝 User-Daten aktualisiert")
+            
+        except User.DoesNotExist:
+            # User existiert noch nicht → Erstellen
+            print(f"📝 Erstelle neuen User...")
+            
+            # Generiere eindeutigen Username falls nötig
+            base_username = user_data.get('username', user_data['email'].split('@')[0])
+            username = base_username
+            counter = 1
+            
+            # Prüfe ob Username bereits existiert
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}_{counter}"
+                counter += 1
+                print(f"   Username '{base_username}' existiert bereits, versuche '{username}'")
+            
+            user = User.objects.create(
+                email=user_data['email'],
+                username=username,
+                first_name=user_data.get('first_name', ''),
+                last_name=user_data.get('last_name', ''),
+                is_active=True,
+                email_confirmed=True,
+            )
+            
+            # Setze unbrauchbares Passwort (SSO-User)
+            user.set_unusable_password()
+            user.save()
+            
+            print(f"✨ Neuer SSO-User erstellt: {user.email} (Username: {user.username})")
+        
+        # User einloggen
+        print(f"\n🔓 Logge User ein...")
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        print(f"✅ User eingeloggt: {user.email}")
+        
+        # Session cleanup
+        if 'sso_state' in request.session:
+            del request.session['sso_state']
+        if 'sso_user_data' in request.session:
+            del request.session['sso_user_data']
+        
+        print("\n" + "=" * 80)
+        print("✅ SSO LOGIN - KOMPLETT ERFOLGREICH")
+        print("=" * 80 + "\n")
+        
+        return redirect('/')  # Zur Startseite oder Dashboard
+        
+    except requests.RequestException as e:
+        print(f"❌ SSO Request Error: {e}")
+        print("=" * 80 + "\n")
+        return redirect('/accounts/register/?error=connection_failed')
+    
 def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
@@ -130,7 +314,7 @@ def joel_login(request):
     request.session["pkce_verifier"] = verifier
 
     url = (
-        "https://joel-digitals.de/o/authorize/"
+        "https://joel-digitals.de/en/o/authorize/"
         "?response_type=code"
         f"&client_id={settings.JOEL_CLIENT_ID}"
         f"&redirect_uri={settings.JOEL_REDIRECT_URI}"
@@ -140,3 +324,55 @@ def joel_login(request):
     )
 
     return redirect(url)
+
+import requests
+from django.contrib.auth import login
+from django.shortcuts import redirect
+from django.conf import settings
+from accounts.models import User
+
+def joel_login(request):
+    """Redirect zu joel-digitals Login-Seite"""
+    # Redirect zur joel-digitals Login-Seite
+    return redirect("https://joel-digitals.de/en/auth/sso-login/")
+
+
+def joel_callback(request):
+    """Empfängt SSO-Token und erstellt/logged User ein"""
+    sso_token = request.GET.get('sso_token')
+    
+    if not sso_token:
+        return redirect("/accounts/login/")
+    
+    # Validiere Token bei joel-digitals
+    response = requests.post(
+        "https://joel-digitals.de/en/api/sso/validate-token/",
+        data={
+            'sso_token': sso_token,
+            'secret': settings.SSO_SHARED_SECRET,
+        },
+        timeout=10,
+    )
+    
+    if response.status_code != 200:
+        print(f"SSO Error: {response.status_code} - {response.text}")
+        return redirect("/accounts/login/")
+    
+    user_data = response.json()
+    
+    # User erstellen oder abrufen
+    user, created = User.objects.get_or_create(
+        email=user_data['email'],
+        defaults={
+            'username': user_data.get('username', user_data['email']),
+            'first_name': user_data.get('first_name', ''),
+            'last_name': user_data.get('last_name', ''),
+            'is_active': True,
+        },
+    )
+    
+    # User einloggen
+    login(request, user)
+    
+    print(f"✅ User {user.email} erfolgreich eingeloggt!")
+    return redirect("/")  # Oder wohin auch immer nach Login
