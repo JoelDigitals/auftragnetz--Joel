@@ -230,7 +230,6 @@ def sso_callback(request):
             # Update User-Daten falls sich was geändert hat
             user.first_name = user_data.get('first_name', user.first_name)
             user.last_name = user_data.get('last_name', user.last_name)
-            user.username = user_data.get('username', user.username)  # Update auch Username
             user.is_active = True
             user.email_confirmed = True
             user.save()
