@@ -146,6 +146,8 @@ SSO_CLIENT_ID = "JYQgmcexNerZk2KqvFdhCpwtZIA5ljGaM60qiS1Y"
 SSO_CLIENT_SECRET = "pbkdf2_sha256$1000000$4L8DGdVkw3sW5h3cvWE8iT$oYdRIQGjPyjrnOMw3E9RdgjfF0gbG3RKoUDOiocDAA0="
 SSO_CALLBACK_URL = "https://auftragnetz.de/accounts/register/callback/"  # Für Produktion
 
+IMGBB_API_KEY = os.getenv("IMGBB_API_KEY")
+
 # Session Settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # oder 'cached_db'
 SESSION_COOKIE_AGE = 1209600  # 2 Wochen

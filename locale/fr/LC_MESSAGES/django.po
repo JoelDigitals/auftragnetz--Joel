@@ -398,3 +398,988 @@ msgstr "Visiteurs"
 
 msgid "Back"
 msgstr "Retour"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+msgid "Apply for"
+msgstr "Postuler pour"
+
+msgid "Home"
+msgstr "Accueil"
+
+msgid "Orders"
+msgstr "Projets"
+
+msgid "Apply"
+msgstr "Postuler"
+
+msgid "You are applying for"
+msgstr "Vous postulez pour"
+
+msgid "Budget"
+msgstr "Budget"
+
+msgid "Project Description"
+msgstr "Description du projet"
+
+msgid "View full details"
+msgstr "Voir les détails"
+
+msgid "Your Application"
+msgstr "Votre candidature"
+
+msgid "Introduce yourself and explain why you're the right fit for this project."
+msgstr "Présentez-vous et expliquez pourquoi vous êtes le candidat idéal pour ce projet."
+
+msgid "Send Application"
+msgstr "Envoyer la candidature"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Tips for a successful application"
+msgstr "Conseils pour une candidature réussie"
+
+msgid "Personalize your message for this specific project"
+msgstr "Personnalisez votre message pour ce projet"
+
+msgid "Highlight relevant experience and skills"
+msgstr "Mettez en avant vos compétences et expériences pertinentes"
+
+msgid "Be clear about your availability and timeline"
+msgstr "Soyez clair concernant votre disponibilité et vos délais"
+
+msgid "Ask clarifying questions if needed"
+msgstr "Posez des questions si nécessaire"
+
+msgid "Create Order"
+msgstr "Créer un projet"
+
+msgid "Create"
+msgstr "Créer"
+
+msgid "Create a New Order"
+msgstr "Créer un nouveau projet"
+
+msgid "Describe your project and find the perfect freelancer"
+msgstr "Décrivez votre projet et trouvez le freelance idéal"
+
+msgid "Title"
+msgstr "Titre"
+
+msgid "e.g. Website redesign for small business"
+msgstr "ex. Refonte de site web pour petite entreprise"
+
+msgid "Keep it short and descriptive"
+msgstr "Soyez bref et descriptif"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Describe your project requirements, goals, and any specific skills needed..."
+msgstr "Décrivez les exigences, objectifs et compétences nécessaires..."
+
+msgid "Be as detailed as possible"
+msgstr "Soyez aussi détaillé que possible"
+
+msgid "characters"
+msgstr "caractères"
+
+msgid "Leave empty for negotiation"
+msgstr "Laisser vide pour négociation"
+
+msgid "Deadline"
+msgstr "Date limite"
+
+msgid "When do you need this completed?"
+msgstr "Pour quand avez-vous besoin de ce projet ?"
+
+msgid "Categories"
+msgstr "Catégories"
+
+msgid "Select all that apply"
+msgstr "Sélectionnez toutes les options applicables"
+
+msgid "No categories available. Please contact support."
+msgstr "Aucune catégorie disponible. Veuillez contacter le support."
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "Only change if you want to save as draft"
+msgstr "Modifier uniquement pour enregistrer comme brouillon"
+
+msgid "Tips for a great order"
+msgstr "Conseils pour un excellent projet"
+
+msgid "Be specific about deliverables and requirements"
+msgstr "Soyez précis sur les livrables et exigences"
+
+msgid "Set a realistic budget to attract quality freelancers"
+msgstr "Fixez un budget réaliste pour attirer des freelances qualifiés"
+
+msgid "Choose relevant categories for better visibility"
+msgstr "Choisissez des catégories pertinentes pour plus de visibilité"
+
+msgid "Set a reasonable deadline with buffer time"
+msgstr "Fixez une date limite raisonnable avec marge"
+
+msgid "No categories"
+msgstr "Aucune catégorie"
+
+msgid "Urgent"
+msgstr "Urgent"
+
+msgid "remaining"
+msgstr "restant"
+
+msgid "No deadline specified"
+msgstr "Aucune date limite spécifiée"
+
+msgid "Posted by"
+msgstr "Publié par"
+
+msgid "views"
+msgstr "vues"
+
+msgid "proposals"
+msgstr "propositions"
+
+msgid "Interested in this project?"
+msgstr "Intéressé par ce projet ?"
+
+msgid "Submit your proposal now and start working!"
+msgstr "Soumettez votre proposition et commencez à travailler !"
+
+msgid "Apply for this order"
+msgstr "Postuler pour ce projet"
+
+msgid "Manage Order"
+msgstr "Gérer le projet"
+
+msgid "Save Status"
+msgstr "Enregistrer le statut"
+
+msgid "Applications"
+msgstr "Candidatures"
+
+msgid "Available Orders"
+msgstr "Commandes disponibles"
+
+msgid "Find projects and start working today"
+msgstr "Trouvez des projets et commencez à travailler dès aujourd’hui"
+
+msgid "Filter Orders"
+msgstr "Filtrer les commandes"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Search orders..."
+msgstr "Rechercher des commandes..."
+
+msgid "Categories"
+msgstr "Catégories"
+
+msgid "Posted within"
+msgstr "Publié dans"
+
+msgid "Any time"
+msgstr "À tout moment"
+
+msgid "Last 24 hours"
+msgstr "Dernières 24 heures"
+
+msgid "Last 7 days"
+msgstr "7 derniers jours"
+
+msgid "Last 30 days"
+msgstr "30 derniers jours"
+
+msgid "Clear all filters"
+msgstr "Effacer tous les filtres"
+
+msgid "Advertisement"
+msgstr "Publicité"
+
+msgid "No results found"
+msgstr "Aucun résultat trouvé"
+
+msgid "Newest first"
+msgstr "Les plus récents"
+
+msgid "Deadline soonest"
+msgstr "Date limite la plus proche"
+
+msgid "Budget: High to Low"
+msgstr "Budget : décroissant"
+
+msgid "Budget: Low to High"
+msgstr "Budget : croissant"
+
+msgid "View Details"
+msgstr "Voir les détails"
+
+msgid "Choose Your Plan"
+msgstr "Choisissez votre formule"
+
+msgid "Your active plan"
+msgstr "Votre formule active"
+
+msgid "Valid until"
+msgstr "Valable jusqu’au"
+
+msgid "Unlimited"
+msgstr "Illimité"
+
+msgid "Subscribe Now"
+msgstr "S’abonner maintenant"
+
+msgid "Coming Soon"
+msgstr "Bientôt disponible"
+
+msgid "Have a promo code?"
+msgstr "Vous avez un code promo ?"
+
+msgid "Redeem Now"
+msgstr "Utiliser maintenant"
+
+msgid "Back to Plans"
+msgstr "Retour aux formules"
+
+msgid "Secure SSL Encryption"
+msgstr "Chiffrement SSL sécurisé"
+
+msgid "Edit your Profile"
+msgstr "Modifier votre profil"
+
+msgid "Delete Account"
+msgstr "Supprimer le compte"
+
+msgid "Profil"
+msgstr "Profil"
+
+msgid "Bewertungen"
+msgstr "Avis"
+
+msgid "Besuche"
+msgstr "Visites"
+
+msgid "Mitglied seit"
+msgstr "Membre depuis"
+
+msgid "Bewertung schreiben"
+msgstr "Écrire un avis"
+
+msgid "Profil bearbeiten"
+msgstr "Modifier le profil"
+
+msgid "Über"
+msgstr "À propos"
+
+msgid "Produkte"
+msgstr "Produits"
+
+msgid "Firmendetails"
+msgstr "Détails de l’entreprise"
+
+msgid "Berufliche Details"
+msgstr "Détails professionnels"
+
+msgid "Fähigkeiten"
+msgstr "Compétences"
+
+msgid "Stundensatz"
+msgstr "Tarif horaire"
+
+msgid "Verfügbarkeit"
+msgstr "Disponibilité"
+
+msgid "Zertifikate"
+msgstr "Certifications"
+
+msgid "Zusätzliche Informationen"
+msgstr "Informations supplémentaires"
+
+msgid "Telefon"
+msgstr "Téléphone"
+
+msgid "Webseite"
+msgstr "Site web"
+
+msgid "Sprachen"
+msgstr "Langues"
+
+msgid "Adresse"
+msgstr "Adresse"
+
+msgid "Lebenslauf"
+msgstr "CV"
+
+msgid "Preis auf Anfrage"
+msgstr "Prix sur demande"
+
+msgid "Details ansehen"
+msgstr "Voir les détails"
+
+msgid "Kontakt"
+msgstr "Contact"
+
+msgid "Statistiken"
+msgstr "Statistiques"
+
+msgid "Profil teilen"
+msgstr "Partager le profil"
+
+msgid "Zurück zur vorherigen Seite"
+msgstr "Retour à la page précédente"
+
+msgid "Your Chats"
+msgstr "Vos discussions"
+
+msgid "Messages"
+msgstr "Messages"
+
+msgid "conversations"
+msgstr "conversations"
+
+msgid "Search conversations..."
+msgstr "Rechercher des conversations..."
+
+msgid "You:"
+msgstr "Vous :"
+
+msgid "No messages yet"
+msgstr "Pas encore de messages"
+
+msgid "No conversations yet"
+msgstr "Pas encore de conversations"
+
+msgid "Start chatting with other users."
+msgstr "Commencez à discuter avec d'autres utilisateurs."
+
+msgid "Chat"
+msgstr "Discussion"
+
+msgid "Scroll to bottom"
+msgstr "Faire défiler vers le bas"
+
+msgid "Today"
+msgstr "Aujourd'hui"
+
+msgid "Attachment"
+msgstr "Pièce jointe"
+
+msgid "Read"
+msgstr "Lu"
+
+msgid "Sent"
+msgstr "Envoyé"
+
+msgid "Start the conversation!"
+msgstr "Commencez la conversation !"
+
+msgid "typing..."
+msgstr "écrit..."
+
+msgid "Type a message..."
+msgstr "Écrire un message..."
+
+msgid "Delete Account"
+msgstr "Supprimer le compte"
+
+msgid "Warning"
+msgstr "Avertissement"
+
+msgid "This action cannot be undone. All your data will be permanently deleted."
+msgstr "Cette action est irréversible. Toutes vos données seront définitivement supprimées."
+
+msgid "We're sorry to see you go"
+msgstr "Nous sommes désolés de vous voir partir"
+
+msgid "You will lose:"
+msgstr "Vous perdrez :"
+
+msgid "Your profile and all data"
+msgstr "Votre profil et toutes vos données"
+
+msgid "All active orders and applications"
+msgstr "Toutes les commandes et candidatures actives"
+
+msgid "Message history"
+msgstr "Historique des messages"
+
+msgid "Reviews and ratings"
+msgstr "Avis et évaluations"
+
+msgid "Confirm Password"
+msgstr "Confirmer le mot de passe"
+
+msgid "Enter your password"
+msgstr "Entrez votre mot de passe"
+
+msgid "Please enter your password to confirm"
+msgstr "Veuillez entrer votre mot de passe pour confirmer"
+
+msgid "I understand that this action is permanent and cannot be undone."
+msgstr "Je comprends que cette action est définitive et irréversible."
+
+msgid "Permanently Delete Account"
+msgstr "Supprimer définitivement le compte"
+
+msgid "Cancel and Go Back"
+msgstr "Annuler et revenir"
+
+msgid "Having second thoughts?"
+msgstr "Vous hésitez ?"
+
+msgid "Contact support for help"
+msgstr "Contacter le support"
+
+msgid "Change Password"
+msgstr "Changer le mot de passe"
+
+msgid "Update your password to keep your account secure"
+msgstr "Mettez à jour votre mot de passe pour sécuriser votre compte"
+
+msgid "Security Tips:"
+msgstr "Conseils de sécurité :"
+
+msgid "Use at least 8 characters"
+msgstr "Utilisez au moins 8 caractères"
+
+msgid "Mix letters, numbers, and symbols"
+msgstr "Mélangez lettres, chiffres et symboles"
+
+msgid "Avoid common words or patterns"
+msgstr "Évitez les mots ou motifs courants"
+
+msgid "Current Password"
+msgstr "Mot de passe actuel"
+
+msgid "Enter current password"
+msgstr "Entrez le mot de passe actuel"
+
+msgid "New Password"
+msgstr "Nouveau mot de passe"
+
+msgid "Enter new password"
+msgstr "Entrez le nouveau mot de passe"
+
+msgid "Password strength"
+msgstr "Sécurité du mot de passe"
+
+msgid "Confirm New Password"
+msgstr "Confirmer le nouveau mot de passe"
+
+msgid "Confirm new password"
+msgstr "Confirmer le nouveau mot de passe"
+
+msgid "Update Password"
+msgstr "Mettre à jour le mot de passe"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Weak"
+msgstr "Faible"
+
+msgid "Fair"
+msgstr "Moyen"
+
+msgid "Good"
+msgstr "Bon"
+
+msgid "Strong"
+msgstr "Fort"
+
+msgid "Passwords match"
+msgstr "Les mots de passe correspondent"
+
+msgid "Passwords do not match"
+msgstr "Les mots de passe ne correspondent pas"
+
+msgid "Welcome to Auftragnetz!"
+msgstr "Bienvenue sur Auftragnetz !"
+
+msgid "Welcome aboard!"
+msgstr "Bienvenue à bord !"
+
+msgid "Your registration is complete. You're now ready to explore Auftragnetz and connect with freelancers, companies, and exciting projects."
+msgstr "Votre inscription est terminée. Vous pouvez maintenant explorer Auftragnetz et entrer en contact avec des freelances, des entreprises et des projets passionnants."
+
+msgid "Find Projects"
+msgstr "Trouver des projets"
+
+msgid "Network"
+msgstr "Réseauter"
+
+msgid "Grow"
+msgstr "Développer"
+
+msgid "Log In Now"
+msgstr "Se connecter maintenant"
+
+msgid "Back to Home"
+msgstr "Retour à l'accueil"
+
+msgid "What's next?"
+msgstr "Et maintenant ?"
+
+msgid "Complete your profile, browse projects, and start connecting with the community."
+msgstr "Complétez votre profil, parcourez les projets et commencez à vous connecter avec la communauté."
+
+msgid "Join 10,000+ users"
+msgstr "Rejoignez plus de 10 000 utilisateurs"
+
+msgid "Complete Your Profile"
+msgstr "Complétez votre profil"
+
+msgid "Tell us a bit more about yourself"
+msgstr "Parlez-nous un peu plus de vous"
+
+msgid "Full Name"
+msgstr "Nom complet"
+
+msgid "Max Mustermann"
+msgstr "Max Mustermann"
+
+msgid "Email Address"
+msgstr "Adresse e-mail"
+
+msgid "max@beispiel.de"
+msgstr "max@exemple.fr"
+
+msgid "Phone Number"
+msgstr "Numéro de téléphone"
+
+msgid "optional"
+msgstr "optionnel"
+
+msgid "+49 123 456789"
+msgstr "+33 6 12 34 56 78"
+
+msgid "Your data is securely encrypted"
+msgstr "Vos données sont chiffrées de manière sécurisée"
+
+msgid "Complete Registration"
+msgstr "Finaliser l'inscription"
+
+msgid "Back"
+msgstr "Retour"
+
+msgid "SSL Secure"
+msgstr "Sécurisé SSL"
+
+msgid "GDPR Compliant"
+msgstr "Conforme RGPD"
+
+msgid "Privacy Protected"
+msgstr "Confidentialité protégée"
+
+msgid "Processing..."
+msgstr "Traitement en cours..."
+
+msgid "Company Dashboard"
+msgstr "Tableau de bord entreprise"
+
+msgid "Overview"
+msgstr "Aperçu"
+
+msgid "Besuche"
+msgstr "Visites"
+
+msgid "Profilbesucher"
+msgstr "Visiteurs du profil"
+
+msgid "Kontaktanfragen"
+msgstr "Demandes de contact"
+
+msgid "Nur mit Plan"
+msgstr "Disponible avec abonnement"
+
+msgid "Unlock Insights & Besuche"
+msgstr "Débloquez les statistiques et visites"
+
+msgid "See who contacted you and detailed analytics"
+msgstr "Découvrez qui vous a contacté avec des analyses détaillées"
+
+msgid "Upgrade Now"
+msgstr "Passer à Premium"
+
+msgid "Last 2 Months"
+msgstr "2 derniers mois"
+
+msgid "2-6 Months"
+msgstr "2–6 mois"
+
+msgid "No visitors yet"
+msgstr "Aucun visiteur pour le moment"
+
+msgid "Complete your profile to attract more visitors."
+msgstr "Complétez votre profil pour attirer plus de visiteurs."
+
+msgid "No inquiries yet"
+msgstr "Aucune demande pour le moment"
+
+msgid "When users contact you, it appears here."
+msgstr "Lorsque des utilisateurs vous contactent, cela apparaît ici."
+
+msgid "Insights"
+msgstr "Statistiques"
+
+msgid "Views this month"
+msgstr "Vues ce mois-ci"
+
+msgid "Click Rate"
+msgstr "Taux de clic"
+
+msgid "Search Appearances"
+msgstr "Apparitions dans les recherches"
+
+msgid "Premium Feature"
+msgstr "Fonctionnalité Premium"
+
+msgid "limited preview"
+msgstr "aperçu limité"
+
+msgid "Manage leads and track conversions"
+msgstr "Gérez les prospects et suivez les conversions"
+
+msgid "Detailed insights and statistics"
+msgstr "Statistiques et analyses détaillées"
+
+msgid "Are you sure?"
+msgstr "Êtes-vous sûr ?"
+
+msgid "Start selling by adding your first product."
+msgstr "Commencez à vendre en ajoutant votre premier produit."
+
+msgid "Create your first job offer to find talent."
+msgstr "Créez votre première offre d'emploi pour trouver des talents."
+
+msgid "Profile Settings"
+msgstr "Paramètres du profil"
+
+msgid "Account Statistics"
+msgstr "Statistiques du compte"
+
+msgid "Member since"
+msgstr "Membre depuis"
+
+msgid "Last login"
+msgstr "Dernière connexion"
+
+msgid "Expires"
+msgstr "Expire le"
+
+msgid "Visitor Details"
+msgstr "Détails du visiteur"
+
+msgid "Visited on"
+msgstr "Visité le"
+
+msgid "Lead Details"
+msgstr "Détails du prospect"
+
+msgid "Received on"
+msgstr "Reçu le"
+
+msgid "Welcome"
+msgstr "Bienvenue"
+
+msgid "Welcome back,"
+msgstr "Bon retour,"
+
+msgid "Ready to find your next project, discover products, or connect with new clients?"
+msgstr "Prêt à trouver votre prochain projet, découvrir des produits ou entrer en contact avec de nouveaux clients ?"
+
+msgid "Browse Projects"
+msgstr "Parcourir les projets"
+
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+msgid "Find Your Next"
+msgstr "Trouvez votre prochaine"
+
+msgid "Opportunity"
+msgstr "opportunité"
+
+msgid "Join thousands of freelancers, companies, and buyers. Browse projects, discover products, and grow your business."
+msgstr "Rejoignez des milliers de freelances, entreprises et acheteurs. Parcourez les projets, découvrez des produits et développez votre activité."
+
+msgid "Get Started Free"
+msgstr "Commencer gratuitement"
+
+msgid "Quick Access"
+msgstr "Accès rapide"
+
+msgid "Projects"
+msgstr "Projets"
+
+msgid "Browse & post jobs"
+msgstr "Parcourir et publier des missions"
+
+msgid "Professionals"
+msgstr "Professionnels"
+
+msgid "Freelancer & Companies"
+msgstr "Freelances & Entreprises"
+
+msgid "Products"
+msgstr "Produits"
+
+msgid "Browse marketplace"
+msgstr "Parcourir la marketplace"
+
+msgid "Manage everything"
+msgstr "Tout gérer"
+
+msgid "Messages"
+msgstr "Messages"
+
+msgid "Your chats"
+msgstr "Vos discussions"
+
+msgid "Login"
+msgstr "Connexion"
+
+msgid "Access account"
+msgstr "Accéder au compte"
+
+msgid "Register"
+msgstr "S'inscrire"
+
+msgid "Join free"
+msgstr "Rejoindre gratuitement"
+
+msgid "Featured Products"
+msgstr "Produits en vedette"
+
+msgid "View All Products"
+msgstr "Voir tous les produits"
+
+msgid "Boosted"
+msgstr "Mis en avant"
+
+msgid "View"
+msgstr "Voir"
+
+msgid "No products available yet."
+msgstr "Aucun produit disponible pour le moment."
+
+msgid "Be the first to sell a product!"
+msgstr "Soyez le premier à vendre un produit !"
+
+msgid "Latest Projects"
+msgstr "Derniers projets"
+
+msgid "View All"
+msgstr "Voir tout"
+
+msgid "General"
+msgstr "Général"
+
+msgid "Remote"
+msgstr "À distance"
+
+msgid "View Details"
+msgstr "Voir les détails"
+
+msgid "No projects available yet."
+msgstr "Aucun projet disponible pour le moment."
+
+msgid "Be the first to post a project!"
+msgstr "Soyez le premier à publier un projet !"
+
+msgid "Top Professionals"
+msgstr "Top professionnels"
+
+msgid "views"
+msgstr "vues"
+
+msgid "View Profile"
+msgstr "Voir le profil"
+
+msgid "No professionals yet."
+msgstr "Aucun professionnel pour le moment."
+
+msgid "Why Choose"
+msgstr "Pourquoi choisir"
+
+msgid "Fast & Easy"
+msgstr "Rapide & Facile"
+
+msgid "Post projects and products in minutes."
+msgstr "Publiez des projets et produits en quelques minutes."
+
+msgid "Secure"
+msgstr "Sécurisé"
+
+msgid "Verified users and trusted marketplace."
+msgstr "Utilisateurs vérifiés et marketplace fiable."
+
+msgid "Global Reach"
+msgstr "Portée mondiale"
+
+msgid "Connect worldwide."
+msgstr "Connectez-vous dans le monde entier."
+
+msgid "Marketplace"
+msgstr "Marketplace"
+
+msgid "Buy & sell products."
+msgstr "Achetez & vendez des produits."
+
+msgid "Ready to Get Started?"
+msgstr "Prêt à commencer ?"
+
+msgid "Join our community today. It's free!"
+msgstr "Rejoignez notre communauté dès aujourd'hui. C'est gratuit !"
+
+msgid "Create Free Account"
+msgstr "Créer un compte gratuit"
+
+msgid "AuftragNetz"
+msgstr "AuftragNetz"
+
+msgid "Experts"
+msgstr "Experts"
+
+msgid "Toggle Dark Mode"
+msgstr "Activer/Désactiver le mode sombre"
+
+msgid "Chats"
+msgstr "Discussions"
+
+msgid "Upgrade"
+msgstr "Mettre à niveau"
+
+msgid "Logout"
+msgstr "Déconnexion"
+
+msgid "Get Started"
+msgstr "Commencer"
+
+msgid "Dark Mode"
+msgstr "Mode sombre"
+
+msgid "Upgrade Plan NOW!"
+msgstr "Mettre à niveau maintenant !"
+
+msgid "The leading platform for experts, products and projects worldwide. Find new orders, create offers and network with clients."
+msgstr "La plateforme leader pour experts, produits et projets dans le monde entier. Trouvez de nouvelles missions, créez des offres et développez votre réseau."
+
+msgid "Quick Links"
+msgstr "Liens rapides"
+
+msgid "Home"
+msgstr "Accueil"
+
+msgid "Find Projects"
+msgstr "Trouver des projets"
+
+msgid "Legal"
+msgstr "Mentions légales"
+
+msgid "Imprint"
+msgstr "Mentions légales"
+
+msgid "Privacy Policy"
+msgstr "Politique de confidentialité"
+
+msgid "Terms of Service"
+msgstr "Conditions d'utilisation"
+
+msgid "All rights reserved."
+msgstr "Tous droits réservés."

@@ -264,6 +264,22 @@ def sso_callback(request):
             user.save()
             
             print(f"✨ Neuer SSO-User erstellt: {user.email} (Username: {user.username})")
+
+            print(f"\n🔓 Logge User ein...")
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            print(f"✅ User eingeloggt: {user.email}")
+
+            # Session cleanup
+            if 'sso_state' in request.session:
+                del request.session['sso_state']
+            if 'sso_user_data' in request.session:
+                del request.session['sso_user_data']
+
+            print("\n" + "=" * 80)
+            print("✅ SSO LOGIN - KOMPLETT ERFOLGREICH")
+            print("=" * 80 + "\n")
+
+            return redirect('/accounts/register/step1/')  # Zur Startseite oder Dashboard
         
         # User einloggen
         print(f"\n🔓 Logge User ein...")
@@ -375,3 +391,52 @@ def joel_callback(request):
     
     print(f"✅ User {user.email} erfolgreich eingeloggt!")
     return redirect("/")  # Oder wohin auch immer nach Login
+
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
+from django.shortcuts import render, redirect
+
+@login_required
+def password_change(request):
+    if request.method == "POST":
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            
+            # Wichtig! Sonst wird der User ausgeloggt
+            update_session_auth_hash(request, user)
+
+            messages.success(request, "Your password was successfully updated!")
+            return redirect("profile")  # Passe URL an
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, "accounts/password_change.html", {"form": form})
+
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth import authenticate, logout
+from django.shortcuts import render, redirect
+
+@login_required
+def account_delete(request):
+    if request.method == "POST":
+        password = request.POST.get("password")
+
+        user = authenticate(
+            request,
+            username=request.user.username,
+            password=password
+        )
+
+        if user is not None:
+            request.user.delete()
+            messages.success(request, "Your account has been deleted.")
+            return redirect("home")  # Passe URL-Name an
+        else:
+            messages.error(request, "Incorrect password.")
+
+    return render(request, "accounts/account_delete.html")

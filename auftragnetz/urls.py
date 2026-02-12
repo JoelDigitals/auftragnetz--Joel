@@ -20,13 +20,31 @@ from django.urls import path, include
 from django.conf.urls.i18n import i18n_patterns
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
 
-urlpatterns = [
-    path("i18n/", include("django.conf.urls.i18n")),  # Sprache wechseln
-]
+
+def assetlinks_view(request):
+    """Android Digital Links für Median.co App"""
+    data = [
+        {
+            "relation": [
+                "delegate_permission/common.handle_all_urls"
+            ],
+            "target": {
+                "namespace": "android_app",
+                "package_name": "co.median.android.eeneopp",
+                "sha256_cert_fingerprints": [
+                    "79:AF:6B:93:9C:A2:54:FA:40:58:D4:0C:CC:BB:8E:85:C6:28:D8:A2:15:99:A7:3F:B6:53:AC:D1:29:9C:A6:46"
+                ]
+            }
+        }
+    ]
+    return JsonResponse(data, safe=False, content_type='application/json')
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('.well-known/assetlinks.json', assetlinks_view, name='assetlinks'),
     path('', include('core.urls')),
     path('accounts/', include('accounts.urls')),
     path('', include('orders.urls')),

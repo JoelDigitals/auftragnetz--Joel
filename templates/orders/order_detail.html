@@ -1,60 +1,275 @@
 {% extends "base.html" %}
 {% load i18n %}
+
 {% block title %}{{ order.title }}{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto">
-  <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-    <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ order.title }}</h2>
-    <p class="mt-2 text-gray-600 dark:text-gray-400">
-      {{ order.get_status_display }} • {{ order.created_at|date:"d.m.Y" }}
-    </p>
+<div class="max-w-4xl mx-auto px-4 py-6 md:py-10">
 
-    <p class="mt-4">{{ order.description|linebreaks }}</p>
+  <!-- Main Card -->
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+    
+    <!-- Header Section -->
+    <div class="p-6 md:p-8 border-b border-gray-100 dark:border-gray-700">
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div class="flex-1">
+          <!-- Status Badge -->
+          <div class="flex items-center gap-2 mb-3">
+            <span class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold 
+              {% if order.status == 'open' %}bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400
+              {% elif order.status == 'in_progress' %}bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400
+              {% elif order.status == 'completed' %}bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400
+              {% else %}bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400{% endif %}">
+              <i class="fas fa-circle text-[8px]"></i>
+              {{ order.get_status_display }}
+            </span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">
+              <i class="far fa-clock mr-1"></i>{{ order.created_at|date:"d.m.Y" }}
+            </span>
+          </div>
+          
+          <!-- Title -->
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight">
+            {{ order.title }}
+          </h1>
+        </div>
+        
+        <!-- Budget Badge -->
+        {% if order.budget %}
+        <div class="flex-shrink-0">
+          <div class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-xl shadow-lg text-center">
+            <p class="text-xs opacity-90 uppercase tracking-wider">{% trans "Budget" %}</p>
+            <p class="text-2xl font-bold">{{ order.budget }} €</p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
 
-    <div class="mt-4 grid grid-cols-2 gap-4 text-sm text-gray-500 dark:text-gray-400">
-      <div><strong>{% if order.category.all %}
+    <!-- Content Section -->
+    <div class="p-6 md:p-8">
+      <!-- Description -->
+      <div class="prose dark:prose-invert max-w-none mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+          <i class="fas fa-align-left text-primary"></i>
+          {% trans "Description" %}
+        </h3>
+        <div class="text-gray-600 dark:text-gray-300 leading-relaxed">
+          {{ order.description|linebreaks }}
+        </div>
+      </div>
+
+      <!-- Details Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Categories -->
+        <div>
+          <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+            <i class="fas fa-tags text-primary"></i>
+            {% trans "Categories" %}
+          </h4>
+          <div class="flex flex-wrap gap-2">
+            {% if order.category.all %}
               {% for cat in order.category.all %}
-                <span class="px-2 py-1 text-xs rounded-full bg-blue-100/70 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 shadow-sm">
+                <a href="{% url 'order_list' %}?categories={{ cat.id }}" 
+                   class="px-3 py-1.5 text-sm font-medium rounded-full bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 hover:bg-primary/20 transition">
                   {{ cat.name }}
-                </span>
+                </a>
               {% endfor %}
             {% else %}
-              <span class="px-2 py-1 text-xs rounded-full bg-gray-200/50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">-</span>
-            {% endif %}</div>
-      <div><strong>{% trans "Budget" %}:</strong> {{ order.budget|default:"-" }}</div>
-      <div><strong>{% trans "Deadline" %}:</strong> {{ order.deadline|default:"-" }}</div>
+              <span class="px-3 py-1.5 text-sm rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                {% trans "No categories" %}
+              </span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Deadline -->
+        <div>
+          <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+            <i class="fas fa-calendar-check text-primary"></i>
+            {% trans "Deadline" %}
+          </h4>
+          <div class="flex items-center gap-3">
+            {% if order.deadline %}
+              <div class="px-4 py-2 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+                <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ order.deadline|date:"d.m.Y" }}</span>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  {% if order.is_urgent %}
+                    <span class="text-red-500 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>{% trans "Urgent" %}</span>
+                  {% else %}
+                    {{ order.deadline|timeuntil }} {% trans "remaining" %}
+                  {% endif %}
+                </p>
+              </div>
+            {% else %}
+              <span class="text-gray-500 dark:text-gray-400">{% trans "No deadline specified" %}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Meta Info -->
+      <div class="flex flex-wrap items-center gap-4 pt-6 border-t border-gray-100 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-user"></i>
+          <span>{% trans "Posted by" %}: <a href="{% url 'profile_detail' order.created_by.username %}" class="text-primary hover:underline">{{ order.created_by.get_full_name|default:order.created_by.username }}</a></span>
+        </div>
+        <span class="hidden md:inline">•</span>
+        <div class="flex items-center gap-2">
+          <i class="fas fa-eye"></i>
+          <span>{{ order.view_count|default:0 }} {% trans "views" %}</span>
+        </div>
+        {% if order.proposals_count %}
+        <span class="hidden md:inline">•</span>
+        <div class="flex items-center gap-2">
+          <i class="fas fa-users"></i>
+          <span>{{ order.proposals_count }} {% trans "proposals" %}</span>
+        </div>
+        {% endif %}
+      </div>
     </div>
-    {% if user.is_authenticated and user != order.created_by %}
-      <div class="mt-6">
-        <a href="{% url 'apply_order' order.pk %}"
-           class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-           {% trans "Apply for this order" %}
+
+    <!-- Action Section -->
+    {% if user.is_authenticated and user != order.created_by and order.status == 'open' %}
+    <div class="p-6 md:p-8 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-100 dark:border-gray-700">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <h3 class="font-semibold text-gray-900 dark:text-white mb-1">{% trans "Interested in this project?" %}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Submit your proposal now and start working!" %}</p>
+        </div>
+        <a href="{% url 'apply_order' order.pk %}" 
+           class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2">
+          <i class="fas fa-paper-plane"></i>
+          {% trans "Apply for this order" %}
         </a>
       </div>
-    {% endif %}
-    
-  </div>
-  
-
-  <!-- Bewerbungen -->
-  {% if user == order.created_by and form %}
-<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow mt-6">
-  <h3 class="text-lg font-semibold mb-4">{% trans "Update Order Status" %}</h3>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.status }}
-    <div class="mt-4">
-      <button type="submit"
-              class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-        {% trans "Save Status" %}
-      </button>
     </div>
-  </form>
+    {% endif %}
+
+    <!-- Owner Actions -->
+    {% if user == order.created_by %}
+    <div class="p-6 md:p-8 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-100 dark:border-gray-700">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <i class="fas fa-cog text-primary"></i>
+        {% trans "Manage Order" %}
+      </h3>
+      
+      {% if form %}
+      <form method="post" class="flex flex-col sm:flex-row items-end gap-4">
+        {% csrf_token %}
+        <div class="flex-1 w-full">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% trans "Status" %}</label>
+          <div class="relative">
+            {{ form.status }}
+            <i class="fas fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+          </div>
+        </div>
+        <button type="submit" 
+                class="w-full sm:w-auto bg-primary text-white font-semibold py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg hover:bg-secondary transition-all duration-200 flex items-center justify-center gap-2">
+          <i class="fas fa-save"></i>
+          {% trans "Save Status" %}
+        </button>
+      </form>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Applications Section (for owner) -->
+{% if user == order.created_by and order.applications.exists %}
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+  
+  <div class="p-6 md:p-8 border-b border-gray-100 dark:border-gray-700">
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+      <i class="fas fa-users text-primary"></i>
+      {% trans "Applications" %}
+      <span class="ml-auto text-sm font-normal text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
+        {{ order.applications.count }}
+      </span>
+    </h3>
+  </div>
+
+  <div class="divide-y divide-gray-100 dark:divide-gray-700">
+    {% for app in order.applications.all %}
+    <div class="p-6 md:p-8 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition">
+      
+      <div class="flex items-start gap-4">
+        
+        <!-- Avatar -->
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+          {{ app.applicant.username|first|upper }}
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 min-w-0">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+            <h4 class="font-bold text-gray-900 dark:text-white text-lg truncate">
+              {{ app.applicant.get_full_name|default:app.applicant.username }}
+            </h4>
+            <span class="text-sm text-gray-500 dark:text-gray-400">
+              {{ app.created_at|date:"d.m.Y" }}
+            </span>
+          </div>
+
+          <p class="text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
+            {{ app.message }}
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3">
+            
+            {% if app.phone %}
+            <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm rounded-lg">
+              <i class="fas fa-phone mr-1"></i>{{ app.phone }}
+            </span>
+            {% endif %}
+
+            {% if app.email %}
+            <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm rounded-lg">
+              <i class="fas fa-envelope mr-1"></i>{{ app.email }}
+            </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 </div>
 {% endif %}
 
-
-
 </div>
+
+<style>
+  /* Form styling to match design */
+  select {
+    appearance: none;
+    width: 100%;
+    padding: 0.625rem 2.5rem 0.625rem 1rem;
+    background-color: rgb(249 250 251);
+    border: 1px solid rgb(229 231 235);
+    border-radius: 0.75rem;
+    color: rgb(17 24 39);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  .dark select {
+    background-color: rgba(55, 65, 81, 0.5);
+    border-color: rgb(75 85 99);
+    color: rgb(255 255 255);
+  }
+  select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
+  }
+  
+  /* Line clamp */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
 {% endblock %}

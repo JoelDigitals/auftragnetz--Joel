@@ -1,15 +1,290 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Registration Step 2" %}{% endblock %}
+{% block title %}{% trans "Complete Your Profile" %}{% endblock %}
 
 {% block content %}
-<h2>{% trans "Enter your details" %}</h2>
-<form method="post">
-    {% csrf_token %}
-    <label>{% trans "Name" %} <input type="text" name="name"></label><br>
-    <label>{% trans "Email" %} <input type="email" name="email"></label><br>
-    <label>{% trans "Phone" %} <input type="tel" name="phone"></label><br>
-    <button type="submit">{% trans "Finish" %}</button>
-</form>
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-8 md:py-12">
+  <div class="w-full max-w-lg">
+    
+    <!-- Progress Steps -->
+    <div class="flex items-center justify-center mb-8">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm font-bold">
+          <i class="fas fa-check text-xs"></i>
+        </div>
+        <div class="w-16 h-1 bg-primary rounded-full"></div>
+        <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold shadow-lg shadow-primary/30">2</div>
+        <div class="w-16 h-1 bg-gray-200 dark:bg-gray-700 rounded-full">
+          <div class="w-0 h-full bg-primary rounded-full"></div>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 flex items-center justify-center text-sm font-bold">3</div>
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden">
+      <!-- Header -->
+      <div class="bg-gradient-to-br from-primary to-secondary p-6 md:p-8 text-center relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+          <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+        </div>
+        <div class="relative z-10">
+          <div class="w-16 h-16 mx-auto mb-4 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+            <i class="fas fa-user-edit text-3xl text-white"></i>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
+            {% trans "Complete Your Profile" %}
+          </h1>
+          <p class="text-white/80 text-sm md:text-base">
+            {% trans "Tell us a bit more about yourself" %}
+          </p>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="p-6 md:p-8">
+        <form method="post" id="detailsForm" class="space-y-5">
+          {% csrf_token %}
+
+          <!-- Name Input -->
+          <div class="form-group">
+            <label for="id_name" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              {% trans "Full Name" %} <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <i class="fas fa-user text-gray-400"></i>
+              </div>
+              <input 
+                type="text" 
+                id="id_name"
+                name="name" 
+                required
+                placeholder="{% trans 'Max Mustermann' %}"
+                class="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                autocomplete="name"
+              >
+            </div>
+            {% if form.name.errors %}
+            <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+              <i class="fas fa-exclamation-circle text-xs"></i>
+              {{ form.name.errors.0 }}
+            </p>
+            {% endif %}
+          </div>
+
+          <!-- Email Input -->
+          <div class="form-group">
+            <label for="id_email" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              {% trans "Email Address" %} <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <i class="fas fa-envelope text-gray-400"></i>
+              </div>
+              <input 
+                type="email" 
+                id="id_email"
+                name="email" 
+                required
+                placeholder="{% trans 'max@beispiel.de' %}"
+                class="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                autocomplete="email"
+              >
+            </div>
+            {% if form.email.errors %}
+            <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+              <i class="fas fa-exclamation-circle text-xs"></i>
+              {{ form.email.errors.0 }}
+            </p>
+            {% endif %}
+          </div>
+
+          <!-- Phone Input -->
+          <div class="form-group">
+            <label for="id_phone" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              {% trans "Phone Number" %}
+              <span class="text-gray-400 font-normal text-xs ml-1">({% trans "optional" %})</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <i class="fas fa-phone text-gray-400"></i>
+              </div>
+              <input 
+                type="tel" 
+                id="id_phone"
+                name="phone" 
+                placeholder="{% trans '+49 123 456789' %}"
+                class="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                autocomplete="tel"
+              >
+            </div>
+            {% if form.phone.errors %}
+            <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+              <i class="fas fa-exclamation-circle text-xs"></i>
+              {{ form.phone.errors.0 }}
+            </p>
+            {% endif %}
+            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+              <i class="fas fa-shield-alt"></i>
+              {% trans "Your data is securely encrypted" %}
+            </p>
+          </div>
+
+          <!-- Submit Button -->
+          <button 
+            type="submit" 
+            id="submitBtn"
+            class="w-full mt-6 py-4 px-6 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-bold text-lg shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2"
+          >
+            <span>{% trans "Complete Registration" %}</span>
+            <i class="fas fa-check-circle"></i>
+          </button>
+        </form>
+
+        <!-- Back Link -->
+        <div class="mt-6 text-center">
+          <a href="{% url 'register_step1' %}" class="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition text-sm font-medium">
+            <i class="fas fa-arrow-left text-xs"></i>
+            {% trans "Back" %}
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trust Badges -->
+    <div class="mt-6 flex items-center justify-center gap-6 text-gray-400 dark:text-gray-500 text-xs">
+      <div class="flex items-center gap-2">
+        <i class="fas fa-lock"></i>
+        <span>{% trans "SSL Secure" %}</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <i class="fas fa-shield-alt"></i>
+        <span>{% trans "GDPR Compliant" %}</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <i class="fas fa-user-shield"></i>
+        <span>{% trans "Privacy Protected" %}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Focus styles */
+  input:focus {
+    outline: none;
+  }
+  
+  /* Autofill styling */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: inherit;
+    -webkit-box-shadow: 0 0 0px 1000px #f9fafb inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+  
+  .dark input:-webkit-autofill,
+  .dark input:-webkit-autofill:hover,
+  .dark input:-webkit-autofill:focus {
+    -webkit-text-fill-color: white;
+    -webkit-box-shadow: 0 0 0px 1000px #374151 inset;
+  }
+  
+  /* Form group spacing */
+  .form-group {
+    position: relative;
+  }
+  
+  /* Mobile optimizations */
+  @media (max-width: 640px) {
+    input {
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
+  }
+  
+  /* Smooth transitions */
+  .form-group input {
+    transition: all 0.2s ease;
+  }
+  
+  /* Loading state */
+  .loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+</style>
+
+<script>
+  const form = document.getElementById('detailsForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const inputs = form.querySelectorAll('input[required]');
+  
+  // Real-time validation
+  inputs.forEach(input => {
+    input.addEventListener('blur', function() {
+      validateField(this);
+    });
+    
+    input.addEventListener('input', function() {
+      if (this.classList.contains('border-red-500')) {
+        validateField(this);
+      }
+    });
+  });
+  
+  function validateField(field) {
+    const isValid = field.checkValidity();
+    
+    if (isValid) {
+      field.classList.remove('border-red-500', 'focus:ring-red-200');
+      field.classList.add('border-green-500', 'focus:ring-green-200');
+    } else if (field.value) {
+      field.classList.remove('border-green-500', 'focus:ring-green-200');
+      field.classList.add('border-red-500', 'focus:ring-red-200');
+    }
+  }
+  
+  // Form submission
+  form.addEventListener('submit', function(e) {
+    let isValid = true;
+    
+    inputs.forEach(input => {
+      if (!input.checkValidity()) {
+        isValid = false;
+        input.classList.add('border-red-500', 'focus:ring-red-200');
+        input.focus();
+      }
+    });
+    
+    if (!isValid) {
+      e.preventDefault();
+      return;
+    }
+    
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.classList.add('loading');
+    submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> <span>{% trans "Processing..." %}</span>';
+  });
+  
+  // Focus first empty field on load
+  document.addEventListener('DOMContentLoaded', function() {
+    const emptyInputs = Array.from(inputs).filter(input => !input.value);
+    if (emptyInputs.length > 0) {
+      emptyInputs[0].focus();
+    }
+  });
+</script>
 {% endblock %}

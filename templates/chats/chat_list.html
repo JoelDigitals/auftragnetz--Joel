@@ -1,50 +1,125 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="max-w-3xl mx-auto p-6">
-  <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
-    Deine Chats
-  </h2>
+{% load i18n %}
 
+{% block title %}{% trans "Your Chats" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-4 md:py-6 min-h-screen md:min-h-0">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-4 md:mb-6">
+    <div>
+      <h1 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <span class="w-8 h-8 md:w-10 md:h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+          <i class="fas fa-comments text-primary text-sm md:text-base"></i>
+        </span>
+        {% trans "Messages" %}
+      </h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        {{ chats|length }} {% trans "conversations" %}
+      </p>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="relative mb-4">
+    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+    <input
+      type="text"
+      id="chatSearch"
+      placeholder="{% trans 'Search conversations...' %}"
+      class="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition shadow-sm"
+    >
+  </div>
+
+  <!-- Chat List -->
   {% if chats %}
-    <ul class="space-y-4">
+    <div class="space-y-2" id="chatList">
       {% for chat in chats %}
-        <li>
-          <a href="{% url 'chat_detail' chat.pk %}" 
-             class="flex items-center justify-between p-4 rounded-xl 
-                    bg-white dark:bg-gray-800 shadow-sm 
-                    hover:shadow-md transition duration-200">
-            <div class="flex flex-col">
-              <p class="font-semibold text-gray-900 dark:text-gray-100">
+        <a href="{% url 'chat_detail' chat.pk %}"
+           class="chat-item group flex items-center gap-3 p-3 md:p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-primary/30 hover:shadow-lg transition-all duration-200 {% if chat.unread_count > 0 %}bg-primary/5 dark:bg-primary/10{% endif %}">
+
+          <!-- Avatar -->
+          <div class="relative flex-shrink-0">
+            <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-gray-400 to-gray-600 flex items-center justify-center text-white font-bold text-lg">
+              {% for user in chat.participants.all %}
+                {% if user != request.user %}
+                  {{ user.username|first|upper }}
+                {% endif %}
+              {% endfor %}
+            </div>
+
+            <!-- Online Dot (Dummy) -->
+            <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
+
+            <!-- Unread Badge -->
+            {% if chat.unread_count > 0 %}
+              <div class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white dark:border-gray-800">
+                {{ chat.unread_count }}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between mb-0.5">
+              <h3 class="font-semibold text-gray-900 dark:text-white truncate pr-2 {% if chat.unread_count > 0 %}text-primary{% endif %}">
                 {% for user in chat.participants.all %}
                   {% if user != request.user %}
-                    {{ user.username }}
+                    {{ user.get_full_name|default:user.username }}
                   {% endif %}
                 {% endfor %}
-              </p>
-              <p class="text-gray-500 dark:text-gray-400 text-sm truncate max-w-xs">
-                {% if chat.messages.last %}
-                  {{ chat.messages.last.content }}
-                {% else %}
-                  <span class="italic text-gray-400 dark:text-gray-500">
-                    Keine Nachrichten
-                  </span>
-                {% endif %}
-              </p>
+              </h3>
+
+              <span class="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
+                {{ chat.updated_at|date:"H:i" }}
+              </span>
             </div>
-            <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap ml-4">
-              {% if chat.updated_at %}
-                {{ chat.updated_at|date:"H:i d.m.Y" }}
+
+            <p class="text-sm text-gray-500 dark:text-gray-400 truncate {% if chat.unread_count > 0 %}font-medium{% endif %}">
+              {% if chat.messages.last %}
+                {% if chat.messages.last.sender == request.user %}
+                  <span class="text-gray-400"><i class="fas fa-check text-xs mr-1"></i>{% trans "You:" %}</span>
+                {% endif %}
+                {{ chat.messages.last.text|truncatewords:8 }}
+              {% else %}
+                <span class="italic text-gray-400">
+                  {% trans "No messages yet" %}
+                </span>
               {% endif %}
-            </span>
-          </a>
-        </li>
+            </p>
+          </div>
+
+          <!-- Arrow -->
+          <div class="text-gray-300 group-hover:text-primary transition-colors flex-shrink-0">
+            <i class="fas fa-chevron-right"></i>
+          </div>
+        </a>
       {% endfor %}
-    </ul>
+    </div>
   {% else %}
-    <div class="text-center py-12 text-gray-500 dark:text-gray-400">
-      <p class="text-lg font-medium">Keine Chats vorhanden</p>
-      <p class="text-sm">Starte einen neuen Chat mit einem Kollegen 🚀</p>
+    <!-- Empty State -->
+    <div class="text-center py-16">
+      <div class="w-24 h-24 mx-auto mb-6 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+        <i class="fas fa-comments text-4xl text-gray-300"></i>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        {% trans "No conversations yet" %}
+      </h3>
+      <p class="text-gray-500 text-sm">
+        {% trans "Start chatting with other users." %}
+      </p>
     </div>
   {% endif %}
 </div>
+
+<script>
+  document.getElementById('chatSearch')?.addEventListener('input', function(e) {
+    const term = e.target.value.toLowerCase();
+    document.querySelectorAll('.chat-item').forEach(item => {
+      const text = item.innerText.toLowerCase();
+      item.style.display = text.includes(term) ? 'flex' : 'none';
+    });
+  });
+</script>
 {% endblock %}

@@ -8,4 +8,6 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('register/sso/', views.sso_connect, name='sso_connect'),
     path('register/callback/', views.sso_callback, name='sso_callback'),
+    path('password/change/', views.password_change, name='change_password'),
+    path('delete/', views.account_delete, name='account_delete')
 ]

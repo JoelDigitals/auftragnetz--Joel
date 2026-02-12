@@ -1,77 +1,161 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0044cc">
     <title>Register - Joel Digitals</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0044cc 0%, #0066ff 50%, #10b981 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 16px;
         }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
         .container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 32px 24px;
+            border-radius: 24px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.2);
+            max-width: 480px;
             width: 100%;
+            position: relative;
+            overflow: hidden;
         }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0044cc, #0066ff, #10b981);
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #0044cc, #0066ff);
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0,68,204,0.3);
+            margin-bottom: 16px;
+        }
+        
+        .logo i {
+            font-size: 40px;
+            color: white;
+        }
+        
         h1 {
-            margin-bottom: 10px;
-            color: #333;
-            font-size: 28px;
+            margin-bottom: 8px;
+            color: #111827;
+            font-size: 24px;
+            font-weight: 700;
             text-align: center;
         }
+        
         .subtitle {
-            color: #666;
-            margin-bottom: 30px;
+            color: #6b7280;
+            margin-bottom: 28px;
             font-size: 14px;
             text-align: center;
+            line-height: 1.5;
         }
-
+        
         /* SSO Button */
         .sso-button {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             background: linear-gradient(135deg, #03225f, #043a9d);
-            border-radius: 12px;
+            border-radius: 16px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 12px;
+            margin-bottom: 24px;
             text-decoration: none;
             color: #fff;
-            box-shadow: 0 8px 20px rgba(3,34,95,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+            box-shadow: 0 8px 24px rgba(3,34,95,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+            border: none;
+            position: relative;
+            overflow: hidden;
         }
+        
+        .sso-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .sso-button:hover::before {
+            left: 100%;
+        }
+        
         .sso-button img {
-            height: 26px;
+            height: 28px;
             width: auto;
-            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
         }
+        
         .sso-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 12px 28px rgba(3,34,95,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
-            filter: brightness(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(3,34,95,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
         }
-
+        
+        .sso-button:active {
+            transform: translateY(0);
+        }
+        
         /* Divider */
         .divider {
             text-align: center;
-            margin: 30px 0;
+            margin: 24px 0;
             position: relative;
         }
+        
         .divider::before {
             content: '';
             position: absolute;
@@ -79,170 +163,487 @@
             left: 0;
             right: 0;
             height: 1px;
-            background: #e0e0e0;
+            background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
         }
+        
         .divider span {
-            background: white;
-            padding: 0 15px;
-            color: #999;
-            font-size: 14px;
+            background: rgba(255,255,255,0.95);
+            padding: 0 16px;
+            color: #9ca3af;
+            font-size: 13px;
+            font-weight: 500;
             position: relative;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-
+        
         /* Form */
         .form-group {
             margin-bottom: 20px;
         }
+        
         label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
+            color: #374151;
+            font-weight: 600;
             font-size: 14px;
         }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 18px;
+        }
+        
         input, select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+            padding: 14px 16px 14px 48px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: #f9fafb;
+            font-family: inherit;
         }
+        
         input:focus, select:focus {
             outline: none;
-            border-color: #6366f1;
+            border-color: #0044cc;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0,68,204,0.1);
         }
-
+        
+        input::placeholder {
+            color: #9ca3af;
+        }
+        
+        select {
+            appearance: none;
+            cursor: pointer;
+            padding-right: 40px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+        }
+        
+        /* Password toggle */
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 18px;
+        }
+        
+        .password-toggle:hover {
+            color: #6b7280;
+        }
+        
         button[type="submit"] {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            padding: 16px;
+            background: linear-gradient(135deg, #0044cc 0%, #0066ff 100%);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(0,68,204,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
         }
+        
         button[type="submit"]:hover {
             transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,68,204,0.4);
+        }
+        
+        button[type="submit"]:active {
+            transform: translateY(0);
         }
 
         .error {
-            background: #fee;
-            color: #c33;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 10px;
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
             font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #fecaca;
+        }
+        
+        .error i {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .password-rules {
+            list-style: none;
+            margin-top: 12px;
+            padding-left: 0;
         }
 
         .password-rules li {
             font-size: 13px;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+
+        .password-rules li::before {
+            content: '✖';
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: bold;
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .password-rules li.valid {
+            color: #059669;
+        }
+
+        .password-rules li.valid::before {
+            content: '✔';
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .password-match {
+            margin-top: 8px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #dc2626;
+            transition: all 0.2s;
+        }
+
+        .password-match.valid {
+            color: #059669;
+        }
+
+        .password-match::before {
+            content: '✖';
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: bold;
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .password-match.valid::before {
+            content: '✔';
+            background: #d1fae5;
+            color: #059669;
         }
 
         .register-link {
             text-align: center;
-            margin-top: 20px;
-            color: #666;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
             font-size: 14px;
         }
+        
         .register-link a {
-            color: #6366f1;
+            color: #0044cc;
             text-decoration: none;
             font-weight: 600;
+            transition: color 0.2s;
         }
-
+        
+        .register-link a:hover {
+            color: #0066ff;
+            text-decoration: underline;
+        }
+        
+        /* Responsive SSO Image */
+        .sso-image-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        
         .responsive-img {
-            width: 425px;
-            max-width: 100%;
+            width: 100%;
+            max-width: 320px;
             height: auto;
+            border-radius: 16px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
         }
-        @media (max-width: 600px) {
-            .responsive-img {
-                width: 150px;
+        
+        .responsive-img:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0,68,204,0.25);
+        }
+        
+        /* Loading state */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+                align-items: flex-start;
+                padding-top: 24px;
+            }
+            
+            .container {
+                padding: 24px 20px;
+                border-radius: 20px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .subtitle {
+                font-size: 13px;
+                margin-bottom: 20px;
+            }
+            
+            .logo {
+                width: 64px;
+                height: 64px;
+            }
+            
+            .logo i {
+                font-size: 32px;
+            }
+            
+            input, select {
+                font-size: 16px;
+                padding: 12px 14px 12px 44px;
+            }
+            
+            .sso-button {
+                padding: 14px;
+                font-size: 15px;
+            }
+            
+            button[type="submit"] {
+                padding: 14px;
+            }
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #065f46 100%);
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Erstelle deinen Account</h1>
-        <p class="subtitle">Registriere dich oder verbinde dich über SSO</p>
+        <!-- Logo -->
+        <div class="logo-container">
+            <div class="logo">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h1>Erstelle deinen Account</h1>
+            <p class="subtitle">Registriere dich oder verbinde dich über SSO</p>
+        </div>
 
         {% if form.non_field_errors %}
-        <div class="error">{{ form.non_field_errors.0 }}</div>
+        <div class="error">
+            <i class="fas fa-exclamation-circle"></i>
+            {{ form.non_field_errors.0 }}
+        </div>
         {% endif %}
 
-        <!-- SSO Button -->
-        <a href="{% url 'sso_connect' %}">
-            <img class="sign-in responsive-img" src="https://joel-digitals.de/static/button.png" alt="Joel Digitals Logo">
+        <!-- SSO Connect Button -->
+        <a href="{% url 'sso_connect' %}" class="sso-image-container">
+            <img class="responsive-img" src="https://joel-digitals.de/static/button.png" alt="Mit Joel Digitals anmelden">
         </a>
 
-        <div class="divider"><span>oder manuell registrieren</span></div>
+        <div class="divider">
+            <span>oder manuell registrieren</span>
+        </div>
 
         <!-- Register Form -->
-        <form method="POST">
+        <form method="POST" id="registerForm">
             {% csrf_token %}
 
             <div class="form-group">
-                <label>Benutzername</label>
-                <input type="text" name="username" value="{{ form.username.value|default:'' }}">
+                <label for="id_username">Benutzername</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user input-icon"></i>
+                    <input 
+                        type="text" 
+                        id="id_username"
+                        name="username" 
+                        value="{{ form.username.value|default:'' }}"
+                        placeholder="max.mustermann"
+                        autocomplete="username"
+                    >
+                </div>
                 {% for error in form.username.errors %}
-                    <div class="error">{{ error }}</div>
+                    <div class="error" style="margin-top: 8px; margin-bottom: 0;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ error }}
+                    </div>
                 {% endfor %}
             </div>
 
             <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="email" value="{{ form.email.value|default:'' }}">
+                <label for="id_email">Email</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input 
+                        type="email" 
+                        id="id_email"
+                        name="email" 
+                        value="{{ form.email.value|default:'' }}"
+                        placeholder="max@beispiel.de"
+                        autocomplete="email"
+                    >
+                </div>
                 {% for error in form.email.errors %}
-                    <div class="error">{{ error }}</div>
+                    <div class="error" style="margin-top: 8px; margin-bottom: 0;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ error }}
+                    </div>
                 {% endfor %}
             </div>
 
             <div class="form-group">
-                <label>Telefonnummer</label>
-                <input type="text" name="phone_number" value="{{ form.phone_number.value|default:'' }}">
+                <label for="id_phone_number">Telefonnummer</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-phone input-icon"></i>
+                    <input 
+                        type="text" 
+                        id="id_phone_number"
+                        name="phone_number" 
+                        value="{{ form.phone_number.value|default:'' }}"
+                        placeholder="+49 123 4567890"
+                        autocomplete="tel"
+                    >
+                </div>
                 {% if form.phone_number.errors %}
-                    <div class="error">{{ form.phone_number.errors.0 }}</div>
+                    <div class="error" style="margin-top: 8px; margin-bottom: 0;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ form.phone_number.errors.0 }}
+                    </div>
                 {% endif %}
             </div>
 
             <div class="form-group">
-                <label>Account Typ</label>
-                <select name="account_type">
-                    {% for choice in form.account_type.field.choices %}
-                        <option value="{{ choice.0 }}" {% if form.account_type.value == choice.0 %}selected{% endif %}>
-                            {{ choice.1 }}
-                        </option>
-                    {% endfor %}
-                </select>
+                <label for="id_account_type">Account Typ</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-briefcase input-icon" style="top: 16px; transform: none;"></i>
+                    <select name="account_type" id="id_account_type" style="padding-left: 48px;">
+                        {% for choice in form.account_type.field.choices %}
+                            <option value="{{ choice.0 }}" {% if form.account_type.value == choice.0 %}selected{% endif %}>
+                                {{ choice.1 }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
                 {% if form.account_type.errors %}
-                    <div class="error">{{ form.account_type.errors.0 }}</div>
+                    <div class="error" style="margin-top: 8px; margin-bottom: 0;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ form.account_type.errors.0 }}
+                    </div>
                 {% endif %}
             </div>
 
             <div class="form-group">
-                <label>Passwort</label>
-                <input type="password" name="password1" id="id_password1">
+                <label for="id_password1">Passwort</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input 
+                        type="password" 
+                        id="id_password1"
+                        name="password1"
+                        placeholder="••••••••"
+                        autocomplete="new-password"
+                    >
+                    <button type="button" class="password-toggle" onclick="togglePassword('id_password1', 'toggleIcon1')">
+                        <i class="fas fa-eye" id="toggleIcon1"></i>
+                    </button>
+                </div>
                 <ul class="password-rules">
-                    <li id="rule-length" class="text-red-500">✖ Mindestens 8 Zeichen</li>
-                    <li id="rule-uppercase" class="text-red-500">✖ Mindestens ein Großbuchstabe</li>
-                    <li id="rule-number" class="text-red-500">✖ Mindestens eine Zahl</li>
-                    <li id="rule-special" class="text-red-500">✖ Mindestens ein Sonderzeichen</li>
+                    <li id="rule-length">Mindestens 8 Zeichen</li>
+                    <li id="rule-uppercase">Mindestens ein Großbuchstabe</li>
+                    <li id="rule-number">Mindestens eine Zahl</li>
+                    <li id="rule-special">Mindestens ein Sonderzeichen</li>
                 </ul>
             </div>
 
             <div class="form-group">
-                <label>Passwort bestätigen</label>
-                <input type="password" name="password2" id="id_password2">
-                <div id="password-match" class="error">✖ Passwörter stimmen nicht überein</div>
+                <label for="id_password2">Passwort bestätigen</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input 
+                        type="password" 
+                        id="id_password2"
+                        name="password2"
+                        placeholder="••••••••"
+                        autocomplete="new-password"
+                    >
+                    <button type="button" class="password-toggle" onclick="togglePassword('id_password2', 'toggleIcon2')">
+                        <i class="fas fa-eye" id="toggleIcon2"></i>
+                    </button>
+                </div>
+                <div id="password-match" class="password-match">Passwörter stimmen nicht überein</div>
             </div>
 
-            <button type="submit">Registrieren</button>
+            <button type="submit" id="submitBtn">
+                <span>Registrieren</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
         </form>
 
         <div class="register-link">
@@ -250,14 +651,32 @@
         </div>
     </div>
 
-    <!-- Passwort Check Script -->
     <script>
+        // Toggle password visibility
+        function togglePassword(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleIcon = document.getElementById(iconId);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
+        // Password validation
         const password1 = document.getElementById("id_password1");
         const password2 = document.getElementById("id_password2");
         const matchMsg = document.getElementById("password-match");
 
         function validatePassword() {
             const val = password1.value;
+            
+            // Check individual rules
             const rules = {
                 length: val.length >= 8,
                 uppercase: /[A-Z]/.test(val),
@@ -268,29 +687,44 @@
             for (let [rule, passed] of Object.entries(rules)) {
                 const el = document.getElementById("rule-" + rule);
                 if (passed) {
-                    el.classList.remove("text-red-500");
-                    el.classList.add("text-green-600");
-                    el.innerHTML = "✔ " + el.textContent.replace("✖ ", "").replace("✔ ", "");
+                    el.classList.add("valid");
                 } else {
-                    el.classList.remove("text-green-600");
-                    el.classList.add("text-red-500");
-                    el.innerHTML = "✖ " + el.textContent.replace("✔ ", "").replace("✖ ", "");
+                    el.classList.remove("valid");
                 }
             }
 
-            if (password1.value && password2.value && password1.value === password2.value) {
-                matchMsg.textContent = "✔ Passwörter stimmen überein";
-                matchMsg.classList.remove("text-red-500");
-                matchMsg.classList.add("text-green-600");
+            // Check match
+            if (password1.value && password2.value) {
+                if (password1.value === password2.value) {
+                    matchMsg.textContent = "Passwörter stimmen überein";
+                    matchMsg.classList.add("valid");
+                } else {
+                    matchMsg.textContent = "Passwörter stimmen nicht überein";
+                    matchMsg.classList.remove("valid");
+                }
             } else {
-                matchMsg.textContent = "✖ Passwörter stimmen nicht überein";
-                matchMsg.classList.remove("text-green-600");
-                matchMsg.classList.add("text-red-500");
+                matchMsg.textContent = "Passwörter stimmen nicht überein";
+                matchMsg.classList.remove("valid");
             }
         }
 
         password1.addEventListener("input", validatePassword);
         password2.addEventListener("input", validatePassword);
+        
+        // Form submission loading state
+        document.getElementById('registerForm').addEventListener('submit', function() {
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.classList.add('loading');
+            submitBtn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> <span>Registrieren...</span>';
+        });
+        
+        // Focus username on load
+        document.getElementById('id_username').focus();
+        
+        // Prevent zoom on iOS
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
     </script>
 </body>
 </html>

@@ -1,80 +1,584 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% block title %}{% trans "Freelancers" %}{% endblock %}
+
+{% block title %}{% trans "Find Professionals" %}{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto py-10 px-4">
-  <h1 class="text-3xl font-bold mb-8 text-center text-gray-800 dark:text-gray-100">
-    {% trans "Find Freelancers" %}
-  </h1>
+<div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+  
+  <!-- Header -->
+  <div class="text-center mb-6 md:mb-8">
+    <h1 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+      {% trans "Find Professionals" %}
+    </h1>
+    <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base">
+      {% trans "Discover talented freelancers and companies for your projects" %}
+    </p>
+  </div>
 
-  <!-- Suchformular -->
-  <form method="get" class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-white/70 dark:bg-gray-800/60 backdrop-blur rounded-2xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+  <!-- Search & Filter -->
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-6 md:mb-8">
+    <!-- Mobile Toggle Button -->
+    <button type="button" id="filterToggle" class="w-full md:hidden flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+      <span class="font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+        <i class="fas fa-filter"></i>
+        {% trans "Filters" %}
+      </span>
+      <i class="fas fa-chevron-down transition-transform duration-300" id="filterArrow"></i>
+    </button>
     
-    <!-- Kategorie -->
+    <!-- Filter Form - Immer sichtbar auf Desktop, togglebar auf Mobile -->
+    <form method="get" id="filterForm" class="filter-form-mobile-hidden md:block p-4 md:p-6">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+        
+        <!-- Haupt-Suchfeld -->
+        <div class="md:col-span-4">
+          <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <i class="fas fa-search mr-1"></i>{% trans "Search" %}
+          </label>
+          <div class="relative">
+            <input 
+              type="text" 
+              name="q" 
+              value="{{ q }}" 
+              placeholder="{% trans 'Name, skill, company, location...' %}"
+              class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
+            >
+            <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            {% if q %}
+            <a href="?{% if cat_q %}cat_q={{ cat_q }}&{% endif %}{% if user_type %}type={{ user_type }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if location %}location={{ location }}&{% endif %}{% if sort %}sort={{ sort }}{% endif %}" 
+               class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              <i class="fas fa-times-circle"></i>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Kategorie-Suchfeld -->
+        <div class="md:col-span-3">
+          <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <i class="fas fa-tags mr-1"></i>{% trans "Category Search" %}
+          </label>
+          <div class="relative">
+            <input 
+              type="text" 
+              name="cat_q" 
+              value="{{ cat_q }}" 
+              placeholder="{% trans 'Web Design, Marketing...' %}"
+              class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
+              list="category-suggestions"
+            >
+            <i class="fas fa-folder-open absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            {% if cat_q %}
+            <a href="?{% if q %}q={{ q }}&{% endif %}{% if user_type %}type={{ user_type }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if location %}location={{ location }}&{% endif %}{% if sort %}sort={{ sort }}{% endif %}" 
+               class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              <i class="fas fa-times-circle"></i>
+            </a>
+            {% endif %}
+            <datalist id="category-suggestions">
+              {% for cat in categories %}
+                <option value="{{ cat.name }}">
+              {% endfor %}
+            </datalist>
+          </div>
+          {% if not cat_q %}
+          <div class="flex flex-wrap gap-1 mt-2">
+            <span class="text-xs text-gray-500">{% trans "Popular:" %}</span>
+            {% for cat in popular_categories %}
+              <a href="?cat_q={{ cat.name|urlencode }}{% if q %}&q={{ q }}{% endif %}{% if user_type %}&type={{ user_type }}{% endif %}{% if location %}&location={{ location }}{% endif %}" 
+                 class="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full hover:bg-primary hover:text-white transition">
+                {{ cat.name }}
+              </a>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Type Filter -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <i class="fas fa-user-tag mr-1"></i>{% trans "Type" %}
+          </label>
+          <div class="relative">
+            <select 
+              name="type" 
+              class="w-full pl-10 pr-10 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white appearance-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
+            >
+              <option value="">{% trans "All" %}</option>
+              <option value="freelancer" {% if user_type == 'freelancer' %}selected{% endif %}>
+                {% trans "Freelancers" %}
+              </option>
+              <option value="company" {% if user_type == 'company' %}selected{% endif %}>
+                {% trans "Companies" %}
+              </option>
+              <option value="other" {% if user_type == 'other' %}selected{% endif %}>
+                {% trans "Others" %}
+              </option>
+            </select>
+            <i class="fas fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <i class="fas fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <i class="fas fa-map-marker-alt mr-1"></i>{% trans "Location" %}
+          </label>
+          <div class="relative">
+            <input 
+              type="text" 
+              name="location" 
+              value="{{ location }}" 
+              placeholder="{% trans 'City' %}"
+              class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
+            >
+            <i class="fas fa-map-marker-alt absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          </div>
+        </div>
+
+        <!-- Kategorie Dropdown -->
+        <div class="md:col-span-1">
+          <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <i class="fas fa-list mr-1"></i>
+          </label>
+          <div class="relative">
+            <select 
+              name="category" 
+              class="w-full pl-3 pr-8 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white appearance-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
+              title="{% trans 'Select Category' %}"
+            >
+              <option value="">{% trans "All" %}</option>
+              {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if selected_category == cat.id %}selected{% endif %}>
+                  {{ cat.name }}
+                </option>
+              {% endfor %}
+            </select>
+            <i class="fas fa-chevron-down absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="md:col-span-12 flex flex-wrap gap-2">
+          <button type="submit" class="bg-gradient-to-r from-primary to-secondary text-white font-semibold py-2.5 px-6 rounded-xl shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2">
+            <i class="fas fa-search"></i>
+            <span>{% trans "Search" %}</span>
+          </button>
+          
+          {% if q or cat_q or selected_category or location or user_type %}
+            <a href="{% url 'freelancer_list' %}" class="inline-flex items-center justify-center gap-2 py-2.5 px-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition border border-gray-300 dark:border-gray-600 rounded-xl">
+              <i class="fas fa-times"></i>
+              {% trans "Clear all" %}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Results Info -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
     <div>
-      <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">{% trans "Category" %}</label>
-      <select name="category" multiple
-        class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
-        {% for cat in categories %}
-          <option value="{{ cat.id }}" {% if cat.id in selected_categories %}selected{% endif %}>
-            {{ cat.name }}
-          </option>
-        {% endfor %}
-      </select>
-      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{% trans "Hold Ctrl (or Cmd) to select multiple" %}</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">
+        {% if freelancers %}
+          {% trans "Found" %} <span class="font-semibold text-gray-900 dark:text-white">{{ page_obj.paginator.count }}</span> 
+          {% if user_type == 'freelancer' %}
+            {% trans "freelancers" %}
+          {% elif user_type == 'company' %}
+            {% trans "companies" %}
+          {% elif user_type == 'other' %}
+            {% trans "others" %}
+          {% else %}
+            {% trans "professionals" %}
+          {% endif %}
+          {% if q %}
+            {% trans "for" %} "<span class="font-medium">{{ q }}</span>"
+          {% endif %}
+          {% if cat_q %}
+            {% trans "in category" %} "<span class="font-medium">{{ cat_q }}</span>"
+          {% endif %}
+        {% else %}
+          {% trans "No results found" %}
+        {% endif %}
+      </p>
+      
+      <!-- Aktive Filter -->
+      <div class="flex flex-wrap gap-2 mt-2">
+        {% if q %}
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+            {% trans "Search" %}: {{ q|truncatechars:20 }}
+            <a href="?{% if cat_q %}cat_q={{ cat_q }}&{% endif %}{% if user_type %}type={{ user_type }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if location %}location={{ location }}&{% endif %}{% if sort %}sort={{ sort }}{% endif %}" class="ml-1">
+              <i class="fas fa-times"></i>
+            </a>
+          </span>
+        {% endif %}
+        {% if cat_q %}
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+            {% trans "Category" %}: {{ cat_q|truncatechars:20 }}
+            <a href="?{% if q %}q={{ q }}&{% endif %}{% if user_type %}type={{ user_type }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if location %}location={{ location }}&{% endif %}{% if sort %}sort={{ sort }}{% endif %}" class="ml-1">
+              <i class="fas fa-times"></i>
+            </a>
+          </span>
+        {% endif %}
+        {% if user_type %}
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+            {% trans "Type" %}: {{ user_type|title }}
+            <a href="?{% if q %}q={{ q }}&{% endif %}{% if cat_q %}cat_q={{ cat_q }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if location %}location={{ location }}&{% endif %}{% if sort %}sort={{ sort }}{% endif %}" class="ml-1">
+              <i class="fas fa-times"></i>
+            </a>
+          </span>
+        {% endif %}
+        {% if selected_category %}
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+            {% trans "Category" %}: {{ selected_category_name }}
+            <a href="?{% if q %}q={{ q }}&{% endif %}{% if cat_q %}cat_q={{ cat_q }}&{% endif %}{% if user_type %}type={{ user_type }}&{% endif %}{% if location %}location={{ location }}&{% endif %}{% if sort %}sort={{ sort }}{% endif %}" class="ml-1">
+              <i class="fas fa-times"></i>
+            </a>
+          </span>
+        {% endif %}
+        {% if location %}
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+            {% trans "Location" %}: {{ location }}
+            <a href="?{% if q %}q={{ q }}&{% endif %}{% if cat_q %}cat_q={{ cat_q }}&{% endif %}{% if user_type %}type={{ user_type }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if location %}location={{ location }}&{% endif %}{% if sort %}sort={{ sort }}{% endif %}" class="ml-1">
+              <i class="fas fa-times"></i>
+            </a>
+          </span>
+        {% endif %}
+      </div>
     </div>
+    
+    <!-- Sort dropdown -->
+    <select name="sort" form="filterForm" class="text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-primary cursor-pointer" onchange="document.getElementById('filterForm').submit()">
+      <option value="">{% trans "Sort: Relevance" %}</option>
+      <option value="applications" {% if sort == 'applications' %}selected{% endif %}>{% trans "Most projects" %}</option>
+      <option value="newest" {% if sort == 'newest' %}selected{% endif %}>{% trans "Newest" %}</option>
+      <option value="name" {% if sort == 'name' %}selected{% endif %}>{% trans "Name (A-Z)" %}</option>
+    </select>
+  </div>
 
-    <!-- Ort -->
-    <div>
-      <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">{% trans "Location" %}</label>
-      <input type="text" name="location" value="{{ request.GET.location }}"
-        placeholder="{% trans 'e.g. Berlin' %}"
-        class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
-    </div>
-
-    <!-- Suche -->
-    <div>
-      <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">{% trans "Search" %}</label>
-      <input type="text" name="q" value="{{ request.GET.q }}" placeholder="{% trans 'Name or email' %}"
-        class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
-    </div>
-
-    <div class="sm:col-span-3">
-      <button type="submit"
-        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition shadow-md">
-        🔍 {% trans "Search" %}
-      </button>
-    </div>
-  </form>
-
-  <!-- Ergebnisliste -->
-  <div class="mt-10">
-    {% if freelancers %}
-      <ul class="space-y-5">
-        {% for f in freelancers %}
-        <li>
-          <a href="{% url 'profile_detail' f.username %}"
-             class="block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-5 rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1">
-            <div class="flex justify-between items-center">
-              <div>
-                <p class="font-semibold text-lg text-gray-800 dark:text-gray-100">{{ f.username }}</p>
-                <p class="text-gray-500 text-sm">{{ f.email }}</p>
-                {% if f.freelancerprofile.city %}
-                  <p class="text-gray-400 text-sm mt-1">📍 {{ f.freelancerprofile.city }}</p>
+  <!-- Results Grid -->
+  {% if freelancers %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      {% for user in freelancers %}
+        <a href="{% url 'profile_detail' user.username %}" class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm hover:shadow-xl hover:border-primary/30 dark:hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 relative">
+          
+          <!-- Top Performer Badge (für Top 3) -->
+          {% if forloop.counter <= 3 and not sort %}
+          <div class="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold w-8 h-8 rounded-full flex items-center justify-center shadow-lg">
+            <i class="fas fa-trophy"></i>
+          </div>
+          {% endif %}
+          
+          <!-- Header -->
+          <div class="flex items-start gap-4 mb-4">
+            <!-- Avatar -->
+            <div class="relative">
+              <div class="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-xl flex-shrink-0 overflow-hidden">
+                {% if user.account_type == 'freelancer' %}
+                  {% if user.freelancerprofile.profile_image %}
+                    <img src="{{ user.freelancerprofile.profile_image.url }}" alt="{{ user.freelancerprofile.get_display_name|default:user.username }}" class="w-full h-full object-cover">
+                  {% else %}
+                    {{ user.username|first|upper }}
+                  {% endif %}
+                {% elif user.account_type == 'company' %}
+                  {% if user.companyprofile.profile_image %}
+                    <img src="{{ user.companyprofile.profile_image.url }}" alt="{{ user.companyprofile.company_name|default:user.username }}" class="w-full h-full object-cover">
+                  {% else %}
+                    {{ user.username|first|upper }}
+                  {% endif %}
+                {% else %}
+                  {% if user.sonstiges.profile_image %}
+                    <img src="{{ user.sonstiges.profile_image.url }}" alt="{{ user.sonstiges.get_display_name|default:user.username }}" class="w-full h-full object-cover">
+                  {% else %}
+                    {{ user.username|first|upper }}
+                  {% endif %}
                 {% endif %}
               </div>
-              <div class="text-sm text-gray-500 dark:text-gray-400">
-                {% trans "Applications" %}: {{ f.app_count }}
+              <!-- Type Badge -->
+              <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white dark:bg-gray-700 border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                {% if user.account_type == 'company' %}
+                  <i class="fas fa-building text-xs text-blue-500" title="{% trans 'Company' %}"></i>
+                {% elif user.account_type == 'freelancer' %}
+                  <i class="fas fa-user text-xs text-green-500" title="{% trans 'Freelancer' %}"></i>
+                {% else %}
+                  <i class="fas fa-user-circle text-xs text-purple-500" title="{% trans 'Other' %}"></i>
+                {% endif %}
               </div>
             </div>
+            
+            <div class="flex-1 min-w-0">
+              <h3 class="font-bold text-gray-900 dark:text-white text-lg truncate group-hover:text-primary transition-colors">
+                {% if user.account_type == 'freelancer' %}
+                  {{ user.freelancerprofile.get_display_name|default:user.get_full_name|default:user.username }}
+                {% elif user.account_type == 'company' %}
+                  {{ user.companyprofile.company_name|default:user.get_full_name|default:user.username }}
+                {% else %}
+                  {{ user.sonstiges.get_display_name|default:user.get_full_name|default:user.username }}
+                {% endif %}
+              </h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
+                @{{ user.username }}
+                {% if user.account_type == 'company' %}
+                  <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                    {% trans "Company" %}
+                  </span>
+                {% elif user.account_type == 'freelancer' %}
+                  <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                    {% trans "Freelancer" %}
+                  </span>
+                {% else %}
+                  <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                    {% trans "Other" %}
+                  </span>
+                {% endif %}
+              </p>
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="space-y-2 mb-4">
+            {% if user.account_type == 'freelancer' %}
+              {% if user.freelancerprofile.location %}
+              <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <i class="fas fa-map-marker-alt text-gray-400 w-4"></i>
+                <span>{{ user.freelancerprofile.location }}</span>
+              </div>
+              {% endif %}
+              {% if user.freelancerprofile.Categorys.all %}
+              <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <i class="fas fa-briefcase text-gray-400 w-4"></i>
+                <span class="truncate">{{ user.freelancerprofile.Categorys.all|join:", "|truncatewords:3 }}</span>
+              </div>
+              {% endif %}
+            {% elif user.account_type == 'company' %}
+              {% if user.companyprofile.location %}
+              <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <i class="fas fa-map-marker-alt text-gray-400 w-4"></i>
+                <span>{{ user.companyprofile.location }}</span>
+              </div>
+              {% endif %}
+              {% if user.companyprofile.Categorys.all %}
+              <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <i class="fas fa-briefcase text-gray-400 w-4"></i>
+                <span class="truncate">{{ user.companyprofile.Categorys.all|join:", "|truncatewords:3 }}</span>
+              </div>
+              {% endif %}
+              {% if user.companyprofile.company_size %}
+              <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <i class="fas fa-users text-gray-400 w-4"></i>
+                <span>{{ user.companyprofile.get_company_size_display }}</span>
+              </div>
+              {% endif %}
+            {% else %}
+              {% if user.sonstiges.location %}
+              <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <i class="fas fa-map-marker-alt text-gray-400 w-4"></i>
+                <span>{{ user.sonstiges.location }}</span>
+              </div>
+              {% endif %}
+              {% if user.sonstiges.Categorys.all %}
+              <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <i class="fas fa-briefcase text-gray-400 w-4"></i>
+                <span class="truncate">{{ user.sonstiges.Categorys.all|join:", "|truncatewords:3 }}</span>
+              </div>
+              {% endif %}
+            {% endif %}
+            
+            <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <i class="fas fa-envelope text-gray-400 w-4"></i>
+              <span class="truncate">{{ user.email }}</span>
+            </div>
+          </div>
+
+          <!-- Bio Preview -->
+          {% if user.account_type == 'freelancer' and user.freelancerprofile.bio %}
+          <div class="mb-4">
+            <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+              {{ user.freelancerprofile.bio|truncatewords:15 }}
+            </p>
+          </div>
+          {% elif user.account_type == 'company' and user.companyprofile.bio %}
+          <div class="mb-4">
+            <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+              {{ user.companyprofile.bio|truncatewords:15 }}
+            </p>
+          </div>
+          {% elif user.account_type == 'sonstiges' and user.sonstiges.bio %}
+          <div class="mb-4">
+            <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+              {{ user.sonstiges.bio|truncatewords:15 }}
+            </p>
+          </div>
+          {% endif %}
+
+          <!-- Stats -->
+          <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
+            <div class="flex items-center gap-3">
+              <div class="text-center">
+                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ user.app_count|default:"0" }}</p>
+                <p class="text-xs text-gray-500">{% trans "Projects" %}</p>
+              </div>
+              
+              {% if user.account_type == 'freelancer' and user.freelancerprofile.hourly_rate %}
+              <div class="text-center pl-3 border-l border-gray-200 dark:border-gray-600">
+                <p class="text-lg font-bold text-gray-900 dark:text-white">€{{ user.freelancerprofile.hourly_rate }}</p>
+                <p class="text-xs text-gray-500">{% trans "/hour" %}</p>
+              </div>
+              {% elif user.account_type == 'company' and user.companyprofile.hourly_rate %}
+              <div class="text-center pl-3 border-l border-gray-200 dark:border-gray-600">
+                <p class="text-lg font-bold text-gray-900 dark:text-white">€{{ user.companyprofile.hourly_rate }}</p>
+                <p class="text-xs text-gray-500">{% trans "/hour" %}</p>
+              </div>
+              {% elif user.account_type == 'sonstiges' and user.sonstiges.hourly_rate %}
+              <div class="text-center pl-3 border-l border-gray-200 dark:border-gray-600">
+                <p class="text-lg font-bold text-gray-900 dark:text-white">€{{ user.sonstiges.hourly_rate }}</p>
+                <p class="text-xs text-gray-500">{% trans "/hour" %}</p>
+              </div>
+              {% endif %}
+            </div>
+            
+            <!-- Ranking Position -->
+            {% if forloop.counter <= 3 and not sort %}
+            <div class="flex items-center gap-1 text-yellow-500">
+              <i class="fas fa-medal"></i>
+              <span class="text-xs font-bold">#{{ forloop.counter }}</span>
+            </div>
+            {% else %}
+            <span class="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+              <i class="fas fa-arrow-right"></i>
+            </span>
+            {% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="mt-8 flex justify-center">
+      <nav class="flex items-center gap-2">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if cat_q %}&cat_q={{ cat_q }}{% endif %}{% if user_type %}&type={{ user_type }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if location %}&location={{ location }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center justify-center">
+            <i class="fas fa-chevron-left"></i>
           </a>
-        </li>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <span class="w-10 h-10 rounded-lg bg-primary text-white font-medium flex items-center justify-center">{{ num }}</span>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if cat_q %}&cat_q={{ cat_q }}{% endif %}{% if user_type %}&type={{ user_type }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if location %}&location={{ location }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center justify-center">{{ num }}</a>
+          {% endif %}
         {% endfor %}
-      </ul>
-    {% else %}
-      <p class="text-center text-gray-400 mt-10">{% trans "No freelancers found." %}</p>
+        
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if cat_q %}&cat_q={{ cat_q }}{% endif %}{% if user_type %}&type={{ user_type }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if location %}&location={{ location }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center justify-center">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        {% endif %}
+      </nav>
+    </div>
     {% endif %}
-  </div>
+
+  {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-16">
+      <div class="w-24 h-24 mx-auto mb-6 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+        <i class="fas fa-search text-4xl text-gray-300 dark:text-gray-600"></i>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+        {% trans "No professionals found" %}
+      </h3>
+      <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
+        {% if q or cat_q %}
+          {% trans "Try different search terms or browse all categories." %}
+        {% else %}
+          {% trans "Try adjusting your filters or browse all available professionals." %}
+        {% endif %}
+      </p>
+      <a href="{% url 'freelancer_list' %}" class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-medium hover:bg-secondary transition">
+        <i class="fas fa-users"></i>
+        {% trans "View all" %}
+      </a>
+    </div>
+  {% endif %}
 </div>
+
+<style>
+  /* Mobile-spezifische Klasse mit höherer Spezifität */
+  @media (max-width: 767px) {
+    .filter-form-mobile-hidden {
+      display: none !important;
+    }
+    .filter-form-mobile-visible {
+      display: block !important;
+    }
+  }
+  
+  /* Desktop: immer sichtbar */
+  @media (min-width: 768px) {
+    .filter-form-mobile-hidden,
+    .filter-form-mobile-visible {
+      display: block !important;
+    }
+  }
+  
+  select::-webkit-scrollbar { width: 8px; }
+  select::-webkit-scrollbar-track { background: #f1f1f1; }
+  select::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .group { touch-action: manipulation; }
+  
+  input:focus, select:focus { outline: none; }
+  
+  #filterForm { transition: all 0.3s ease; }
+  
+  .rotate-180 {
+    transform: rotate(180deg);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterToggle = document.getElementById('filterToggle');
+    const filterForm = document.getElementById('filterForm');
+    const filterArrow = document.getElementById('filterArrow');
+    
+    if (filterToggle && filterForm) {
+      filterToggle.addEventListener('click', function() {
+        // Toggle zwischen den mobilen Klassen
+        if (filterForm.classList.contains('filter-form-mobile-hidden')) {
+          filterForm.classList.remove('filter-form-mobile-hidden');
+          filterForm.classList.add('filter-form-mobile-visible');
+        } else {
+          filterForm.classList.remove('filter-form-mobile-visible');
+          filterForm.classList.add('filter-form-mobile-hidden');
+        }
+        
+        // Pfeil drehen
+        if (filterArrow) {
+          filterArrow.classList.toggle('rotate-180');
+        }
+      });
+    }
+    
+    // Mobile Auto-Submit für Selects
+    const mobileAutoSubmit = document.querySelectorAll('select[name="category"], select[name="type"]');
+    if (window.innerWidth < 768) {
+      mobileAutoSubmit.forEach(function(select) {
+        select.addEventListener('change', function() {
+          document.getElementById('filterForm').submit();
+        });
+      });
+    }
+  });
+</script>
 {% endblock %}

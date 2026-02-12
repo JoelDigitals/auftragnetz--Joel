@@ -4,38 +4,227 @@
 {% block title %}{% trans "Edit Profile" %}{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 transition-colors duration-300">
-  <h1 class="text-3xl font-bold mb-8 text-gray-900 dark:text-white text-center">
-    {% trans "Edit your Profile" %}
-  </h1>
+<div class="max-w-3xl mx-auto px-4 py-6 md:py-10">
+  <!-- Header -->
+  <div class="text-center mb-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      {% trans "Edit your Profile" %}
+    </h1>
+    <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base">
+      {% trans "Update your information and showcase your skills" %}
+    </p>
+  </div>
 
-  <form method="post" enctype="multipart/form-data" class="space-y-6">
-    {% csrf_token %}
-
-    {% for field in form %}
-  {% if field.name != "visitor_count" %}
-    <div class="space-y-2">
-      <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-        {{ field.label }}
-      </label>
-      {{ field }}
-      {% if field.help_text %}
-        <p class="text-xs text-gray-500 dark:text-gray-400">{{ field.help_text }}</p>
-      {% endif %}
-      {% for error in field.errors %}
-        <p class="text-sm text-red-600 mt-1">{{ error }}</p>
-      {% endfor %}
+  <!-- Avatar Preview -->
+  {% if form.avatar or form.profile_image or form.image %}
+  <div class="flex justify-center mb-8">
+    <div class="relative">
+      <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-4xl md:text-5xl font-bold shadow-lg overflow-hidden border-4 border-white dark:border-gray-800">
+        {% if user.profile_image %}
+          <img src="{{ user.profile_image.url }}" alt="{% trans 'Current profile picture' %}" class="w-full h-full object-cover">
+        {% else %}
+          {{ user.username|first|upper }}
+        {% endif %}
+      </div>
+      <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs border-4 border-white dark:border-gray-800">
+        <i class="fas fa-camera"></i>
+      </div>
     </div>
+  </div>
   {% endif %}
-{% endfor %}
 
+  <!-- Form Card -->
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <form method="post" enctype="multipart/form-data" class="p-6 md:p-8 space-y-6">
+      {% csrf_token %}
 
-    <div class="pt-6">
-      <button type="submit"
-              class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-2xl font-semibold shadow-md hover:from-blue-600 hover:to-indigo-700 transition focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800">
-        {% trans "Save Profile" %}
-      </button>
-    </div>
-  </form>
+      {% for field in form %}
+        {% if field.name != "visitor_count" %}
+        <div class="space-y-2">
+          <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+            {% if field.name == "first_name" or field.name == "last_name" %}
+              <i class="fas fa-user text-gray-400"></i>
+            {% elif field.name == "email" %}
+              <i class="fas fa-envelope text-gray-400"></i>
+            {% elif field.name == "bio" or field.name == "description" or field.name == "about" %}
+              <i class="fas fa-align-left text-gray-400"></i>
+            {% elif field.name == "avatar" or field.name == "profile_image" or field.name == "image" %}
+              <i class="fas fa-camera text-gray-400"></i>
+            {% elif field.name == "skills" or field.name == "categories" %}
+              <i class="fas fa-tags text-gray-400"></i>
+            {% elif field.name == "location" or field.name == "city" or field.name == "country" %}
+              <i class="fas fa-map-marker-alt text-gray-400"></i>
+            {% elif field.name == "website" or field.name == "portfolio" %}
+              <i class="fas fa-globe text-gray-400"></i>
+            {% elif field.name == "phone" %}
+              <i class="fas fa-phone text-gray-400"></i>
+            {% else %}
+              <i class="fas fa-circle text-gray-400 text-xs"></i>
+            {% endif %}
+            {{ field.label }}
+            {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+          </label>
+          
+          <!-- Input Fields - Manuelle Styling -->
+          <div class="relative">
+            {% if field.field.widget.input_type == "file" %}
+              <!-- File Input -->
+              <input 
+                type="file" 
+                name="{{ field.name }}" 
+                id="{{ field.id_for_label }}"
+                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-secondary transition"
+                {% if field.field.required %}required{% endif %}
+              >
+            {% elif field.field.widget.input_type == "select" %}
+              <!-- Select Input -->
+              <div class="relative">
+                <select 
+                  name="{{ field.name }}" 
+                  id="{{ field.id_for_label }}"
+                  class="w-full pl-10 pr-10 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white appearance-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
+                >
+                  {% for choice in field.field.choices %}
+                    <option value="{{ choice.0 }}" {% if field.value == choice.0 %}selected{% endif %}>
+                      {{ choice.1 }}
+                    </option>
+                  {% endfor %}
+                </select>
+                <i class="fas fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+              </div>
+            {% elif field.field.widget.input_type == "checkbox" %}
+              <!-- Checkbox Input -->
+              <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-600">
+                <input 
+                  type="checkbox" 
+                  name="{{ field.name }}" 
+                  id="{{ field.id_for_label }}"
+                  class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary transition"
+                  {% if field.value %}checked{% endif %}
+                >
+                <span class="text-sm text-gray-600 dark:text-gray-300">{{ field.label }}</span>
+              </div>
+            {% elif field.field.widget.input_type == "textarea" %}
+              <!-- Textarea Input -->
+              <textarea 
+                name="{{ field.name }}" 
+                id="{{ field.id_for_label }}"
+                rows="4"
+                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition resize-none"
+                placeholder="{{ field.field.widget.attrs.placeholder|default:'' }}"
+              >{{ field.value|default:'' }}</textarea>
+            {% else %}
+              <!-- Default Text Input -->
+              <input 
+                type="{{ field.field.widget.input_type|default:'text' }}" 
+                name="{{ field.name }}" 
+                id="{{ field.id_for_label }}"
+                value="{{ field.value|default:'' }}"
+                class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
+                placeholder="{{ field.field.widget.attrs.placeholder|default:'' }}"
+                {% if field.field.required %}required{% endif %}
+              >
+            {% endif %}
+          </div>
+          
+          {% if field.help_text %}
+            <p class="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+              <i class="fas fa-info-circle"></i>
+              {{ field.help_text }}
+            </p>
+          {% endif %}
+          
+          {% for error in field.errors %}
+            <p class="text-sm text-red-600 dark:text-red-400 flex items-center gap-1 mt-1">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ error }}
+            </p>
+          {% endfor %}
+        </div>
+        {% endif %}
+      {% endfor %}
+
+      <!-- Submit Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-100 dark:border-gray-700">
+        <button type="submit" class="flex-1 bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2">
+          <i class="fas fa-save"></i>
+          {% trans "Save Profile" %}
+        </button>
+        <a href="{% url 'profile_detail' user.username %}" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 py-3 px-6 text-gray-600 dark:text-gray-300 font-medium rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+          <i class="fas fa-times"></i>
+          {% trans "Cancel" %}
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Danger Zone -->
+  <div class="mt-8 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-800 rounded-2xl p-6">
+    <h3 class="text-lg font-bold text-red-900 dark:text-red-400 mb-2 flex items-center gap-2">
+      <i class="fas fa-exclamation-triangle"></i>
+      {% trans "Danger Zone" %}
+    </h3>
+    <p class="text-sm text-red-800 dark:text-red-300 mb-4">
+      {% trans "Once you delete your account, there is no going back. Please be certain." %}
+    </p>
+    <button type="button" onclick="if(confirm('{% trans "Are you sure you want to delete your account? This action cannot be undone." %}')) window.location.href='{% url 'account_delete' %}'" class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-xl transition">
+      <i class="fas fa-trash-alt"></i>
+      {% trans "Delete Account" %}
+    </button>
+  </div>
 </div>
+
+<style>
+  /* Custom file input styling */
+  input[type="file"]::file-selector-button {
+    margin-right: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  input[type="file"]::file-selector-button:hover {
+    opacity: 0.9;
+  }
+  
+  /* Focus styles */
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+  }
+</style>
+
+<script>
+  // Preview uploaded image
+  const fileInput = document.querySelector('input[type="file"]');
+  if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.querySelector('.rounded-full img');
+          if (img) {
+            img.src = e.target.result;
+          } else {
+            // Create img if not exists
+            const container = document.querySelector('.rounded-full');
+            const newImg = document.createElement('img');
+            newImg.src = e.target.result;
+            newImg.className = 'w-full h-full object-cover';
+            newImg.alt = '{% trans "Preview" %}';
+            container.innerHTML = '';
+            container.appendChild(newImg);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+</script>
 {% endblock %}

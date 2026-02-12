@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Delete Account" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-6 md:py-10">
+  <!-- Warning Card -->
+  <div class="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-2xl p-6 mb-6">
+    <div class="flex items-center gap-3 mb-2">
+      <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
+        <i class="fas fa-exclamation-triangle text-lg"></i>
+      </div>
+      <h3 class="text-lg font-bold text-red-900 dark:text-red-400">{% trans "Warning" %}</h3>
+    </div>
+    <p class="text-sm text-red-800 dark:text-red-300">
+      {% trans "This action cannot be undone. All your data will be permanently deleted." %}
+    </p>
+  </div>
+
+  <!-- Main Form Card -->
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="p-6 md:p-8">
+      
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <div class="w-20 h-20 mx-auto mb-4 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+          <i class="fas fa-user-slash text-3xl text-red-600 dark:text-red-400"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          {% trans "Delete Account" %}
+        </h1>
+        <p class="text-gray-500 dark:text-gray-400 text-sm">
+          {% trans "We're sorry to see you go" %}
+        </p>
+      </div>
+
+      <!-- Consequences List -->
+      <div class="bg-gray-50 dark:bg-gray-700/30 rounded-xl p-4 mb-6">
+        <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+          <i class="fas fa-list-ul text-gray-400"></i>
+          {% trans "You will lose:" %}
+        </h4>
+        <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+          <li class="flex items-center gap-2">
+            <i class="fas fa-times text-red-500 text-xs"></i>
+            {% trans "Your profile and all data" %}
+          </li>
+          <li class="flex items-center gap-2">
+            <i class="fas fa-times text-red-500 text-xs"></i>
+            {% trans "All active orders and applications" %}
+          </li>
+          <li class="flex items-center gap-2">
+            <i class="fas fa-times text-red-500 text-xs"></i>
+            {% trans "Message history" %}
+          </li>
+          <li class="flex items-center gap-2">
+            <i class="fas fa-times text-red-500 text-xs"></i>
+            {% trans "Reviews and ratings" %}
+          </li>
+        </ul>
+      </div>
+
+      <!-- Form -->
+      <form method="post" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Password Field -->
+        <div>
+          <label for="id_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+            <i class="fas fa-lock text-gray-400"></i>
+            {% trans "Confirm Password" %}
+            <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input 
+              type="password" 
+              id="id_password"
+              name="password" 
+              required
+              class="w-full pl-10 pr-10 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition"
+              placeholder="{% trans 'Enter your password' %}"
+            >
+            <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <button 
+              type="button" 
+              onclick="togglePassword()"
+              class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
+            >
+              <i class="fas fa-eye" id="toggleIcon"></i>
+            </button>
+          </div>
+          <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+            {% trans "Please enter your password to confirm" %}
+          </p>
+        </div>
+
+        <!-- Confirmation Checkbox -->
+        <label class="flex items-start gap-3 cursor-pointer group">
+          <input 
+            type="checkbox" 
+            id="confirm-delete"
+            required
+            class="w-4 h-4 mt-0.5 rounded border-gray-300 text-red-600 focus:ring-red-500 transition"
+          >
+          <span class="text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200 transition">
+            {% trans "I understand that this action is permanent and cannot be undone." %}
+          </span>
+        </label>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+          <button 
+            type="submit" 
+            id="delete-btn"
+            disabled
+            class="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-red-600/30 hover:shadow-xl hover:shadow-red-600/40 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none"
+          >
+            <i class="fas fa-trash-alt"></i>
+            {% trans "Permanently Delete Account" %}
+          </button>
+          
+          <a 
+            href="{% url 'edit_profile' %}" 
+            class="w-full inline-flex items-center justify-center gap-2 py-3 px-6 text-gray-600 dark:text-gray-300 font-medium rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
+          >
+            <i class="fas fa-arrow-left"></i>
+            {% trans "Cancel and Go Back" %}
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Help Section -->
+  <div class="mt-6 text-center">
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+      {% trans "Having second thoughts?" %}
+    </p>
+    <a href="https://joel-digitals.de/contact/" class="text-sm text-primary hover:underline font-medium">
+      {% trans "Contact support for help" %}
+    </a>
+  </div>
+</div>
+
+<style>
+  /* Focus styles for red theme */
+  input:focus {
+    outline: none;
+  }
+  
+  /* Smooth transitions */
+  .group {
+    touch-action: manipulation;
+  }
+</style>
+
+<script>
+  // Toggle password visibility
+  function togglePassword() {
+    const input = document.getElementById('id_password');
+    const icon = document.getElementById('toggleIcon');
+    
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    } else {
+      input.type = 'password';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+    }
+  }
+  
+  // Enable delete button only when checkbox is checked
+  const checkbox = document.getElementById('confirm-delete');
+  const deleteBtn = document.getElementById('delete-btn');
+  
+  checkbox.addEventListener('change', function() {
+    deleteBtn.disabled = !this.checked;
+    if (this.checked) {
+      deleteBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    } else {
+      deleteBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+  });
+</script>
+{% endblock %}

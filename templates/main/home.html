@@ -5,120 +5,379 @@
 
 {% block content %}
 
-{% if user.is_authenticated %}
-<!-- ========================== -->
-<!-- Eingeloggter User Dashboard -->
-<!-- ========================== -->
-
-<section class="mb-12">
-    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
-        {% trans "Welcome back," %} {{ user.username }}!
-    </h1>
-    <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 max-w-3xl leading-relaxed">
-        {% trans "Here’s a quick overview of your profile, projects, leads, and activity." %}
-    </p>
+<!-- Hero Section -->
+<section class="relative mb-16 rounded-3xl overflow-hidden">
+    <div class="absolute inset-0 gradient-animate opacity-90"></div>
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <div class="relative z-10 py-20 px-6 md:px-12 text-center">
+        {% if user.is_authenticated %}
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-6 drop-shadow-lg">
+                {% trans "Welcome back," %} <span class="text-yellow-300">{{ user.username }}</span>!
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed mb-8">
+                {% trans "Ready to find your next project, discover products, or connect with new clients?" %}
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="{% url 'order_list' %}" class="bg-white text-primary px-8 py-4 rounded-xl font-bold text-lg shadow-2xl hover:scale-105 transition-all duration-300 flex items-center">
+                    <i class="fas fa-search mr-2"></i>{% trans "Browse Projects" %}
+                </a>
+                <a href="{% url 'company_dashboard' %}" class="bg-primary/20 backdrop-blur text-white border-2 border-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/20 transition-all duration-300 flex items-center">
+                    <i class="fas fa-th-large mr-2"></i>{% trans "Dashboard" %}
+                </a>
+            </div>
+        {% else %}
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-6 drop-shadow-lg">
+                {% trans "Find Your Next" %} <span class="text-yellow-300">{% trans "Opportunity" %}</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed mb-8">
+                {% trans "Join thousands of freelancers, companies, and buyers. Browse projects, discover products, and grow your business." %}
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="{% url 'register' %}" class="bg-white text-primary px-8 py-4 rounded-xl font-bold text-lg shadow-2xl hover:scale-105 transition-all duration-300 flex items-center">
+                    <i class="fas fa-rocket mr-2"></i>{% trans "Get Started Free" %}
+                </a>
+                <a href="{% url 'order_list' %}" class="bg-primary/20 backdrop-blur text-white border-2 border-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/20 transition-all duration-300 flex items-center">
+                    <i class="fas fa-search mr-2"></i>{% trans "Browse Projects" %}
+                </a>
+            </div>
+        {% endif %}
+    </div>
 </section>
 
-<!-- Quick Access / Cards -->
-<section class="mb-12 grid md:grid-cols-2 gap-6">
-    <!-- Projekte finden -->
-    <a href="/orders/" class="card hover:shadow-xl transition text-center">
-        <div class="text-6xl mb-4">📂</div>
-        <h3 class="text-2xl font-semibold mb-2">{% trans "Find Projects" %}</h3>
-        <p class="text-gray-500 dark:text-gray-400 text-sm">{% trans "Browse and manage available projects" %}</p>
-    </a>
+<!-- Quick Access -->
+<section class="mb-16">
+    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8 flex items-center">
+        <i class="fas fa-bolt text-yellow-500 mr-3"></i>{% trans "Quick Access" %}
+    </h2>
+    
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        
+        <!-- Projekte finden -->
+        <a href="{% url 'order_list' %}" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-5 text-white hover-lift">
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+            <i class="fas fa-briefcase text-3xl mb-3 opacity-80"></i>
+            <h3 class="text-lg font-bold mb-1">{% trans "Projects" %}</h3>
+            <p class="text-blue-100 text-xs">{% trans "Browse & post jobs" %}</p>
+            <i class="fas fa-arrow-right absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+        </a>
 
-    <!-- Companies, Freelancers & Products -->
-    <a href="/freelancers/" class="card hover:shadow-xl transition text-center">
-        <div class="text-6xl mb-4">🏢🧑‍💼🛒</div>
-        <h3 class="text-2xl font-semibold mb-2">{% trans "Companies, Freelancers & Products" %}</h3>
-        <p class="text-gray-500 dark:text-gray-400 text-sm">{% trans "Explore freelancers, companies, and products" %}</p>
-    </a>
+        <!-- Freelancer & Unternehmen (kombiniert) -->
+        <a href="{% url 'freelancer_list' %}" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 p-5 text-white hover-lift">
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+            <i class="fas fa-users text-3xl mb-3 opacity-80"></i>
+            <h3 class="text-lg font-bold mb-1">{% trans "Professionals" %}</h3>
+            <p class="text-purple-100 text-xs">{% trans "Freelancer & Companies" %}</p>
+            <i class="fas fa-arrow-right absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+        </a>
+
+        <!-- Produkte/Shop -->
+        <a href="{% url 'product_list' %}" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 p-5 text-white hover-lift">
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+            <i class="fas fa-shopping-bag text-3xl mb-3 opacity-80"></i>
+            <h3 class="text-lg font-bold mb-1">{% trans "Products" %}</h3>
+            <p class="text-pink-100 text-xs">{% trans "Browse marketplace" %}</p>
+            <i class="fas fa-arrow-right absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+        </a>
+
+        {% if user.is_authenticated %}
+            <!-- Dashboard -->
+            <a href="{% url 'company_dashboard' %}" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-500 to-green-600 p-5 text-white hover-lift">
+                <div class="absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+                <i class="fas fa-th-large text-3xl mb-3 opacity-80"></i>
+                <h3 class="text-lg font-bold mb-1">{% trans "Dashboard" %}</h3>
+                <p class="text-green-100 text-xs">{% trans "Manage everything" %}</p>
+                <i class="fas fa-arrow-right absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+            </a>
+
+            <!-- Messages -->
+            <a href="{% url 'chat_list' %}" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 p-5 text-white hover-lift">
+                <div class="absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+                <i class="fas fa-comments text-3xl mb-3 opacity-80"></i>
+                <h3 class="text-lg font-bold mb-1">{% trans "Messages" %}</h3>
+                <p class="text-orange-100 text-xs">{% trans "Your chats" %}</p>
+                <i class="fas fa-arrow-right absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+            </a>
+        {% else %}
+            <!-- Login -->
+            <a href="{% url 'login' %}" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-500 to-teal-600 p-5 text-white hover-lift">
+                <div class="absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+                <i class="fas fa-sign-in-alt text-3xl mb-3 opacity-80"></i>
+                <h3 class="text-lg font-bold mb-1">{% trans "Login" %}</h3>
+                <p class="text-teal-100 text-xs">{% trans "Access account" %}</p>
+                <i class="fas fa-arrow-right absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+            </a>
+
+            <!-- Register -->
+            <a href="{% url 'register' %}" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-500 to-cyan-600 p-5 text-white hover-lift">
+                <div class="absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+                <i class="fas fa-user-plus text-3xl mb-3 opacity-80"></i>
+                <h3 class="text-lg font-bold mb-1">{% trans "Register" %}</h3>
+                <p class="text-cyan-100 text-xs">{% trans "Join free" %}</p>
+                <i class="fas fa-arrow-right absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Latest Products -->
+<section class="mb-16">
+    <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
+            <i class="fas fa-shopping-bag text-pink-500 mr-3"></i>{% trans "Featured Products" %}
+        </h2>
+        <a href="{% url 'product_list' %}" class="text-primary hover:text-secondary font-medium flex items-center group">
+            {% trans "View All Products" %} <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+        </a>
+    </div>
+    
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+        {% for product in products|slice:":12" %}
+        <div class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 dark:border-gray-700 group">
+            <!-- Product Image -->
+            <div class="relative aspect-square bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                {% if product.main_image_url %}
+                    <img src="{{ product.main_image_thumb_url|default:product.main_image_url }}" 
+                         alt="{{ product.title }}" 
+                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                {% else %}
+                    <div class="w-full h-full flex items-center justify-center">
+                        <i class="fas fa-box text-4xl text-gray-300 dark:text-gray-600"></i>
+                    </div>
+                {% endif %}
+                
+                {% if product.is_boosted %}
+                    <div class="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
+                        <i class="fas fa-rocket"></i> {% trans "Boosted" %}
+                    </div>
+                {% endif %}
+                
+                {% if product.price %}
+                    <div class="absolute bottom-2 left-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur text-gray-900 dark:text-white text-sm font-bold px-2 py-1 rounded-lg">
+                        {{ product.price }}€
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="p-4">
+                <h3 class="font-bold text-gray-900 dark:text-white mb-1 line-clamp-1 text-sm" title="{{ product.title }}">
+                    {{ product.title }}
+                </h3>
+                
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 line-clamp-2 h-8">
+                    {{ product.description|truncatewords:8 }}
+                </p>
+                
+                <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
+                    <span class="flex items-center gap-1">
+                        <i class="fas fa-eye"></i> {{ product.views|default:"0" }}
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <i class="fas fa-store"></i> {{ product.owner.get_full_name|default:product.owner.username|truncatechars:10 }}
+                    </span>
+                </div>
+                
+                <a href="{% url 'product_detail' product.slug %}" 
+                   class="block w-full text-center bg-gray-100 dark:bg-gray-700 hover:bg-pink-500 hover:text-white dark:hover:bg-pink-600 text-gray-900 dark:text-white py-2 rounded-lg transition-colors duration-200 font-medium text-sm">
+                    {% trans "View" %}
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <i class="fas fa-box-open text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">{% trans "No products available yet." %}</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'product_create' %}" class="mt-4 inline-block text-pink-500 hover:underline">
+                    {% trans "Be the first to sell a product!" %}
+                </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
 </section>
 
 <!-- Latest Projects -->
-<section class="mb-12">
-    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">{% trans "Latest Projects" %}</h2>
+<section class="mb-16">
+    <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
+            <i class="fas fa-fire text-red-500 mr-3"></i>{% trans "Latest Projects" %}
+        </h2>
+        <a href="{% url 'order_list' %}" class="text-primary hover:text-secondary font-medium flex items-center group">
+            {% trans "View All" %} <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+        </a>
+    </div>
+    
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for project in projects|slice:":6" %}
-        <div class="card flex flex-col justify-between hover:shadow-xl transition">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ project.title }}</h3>
-            <p class="text-gray-600 dark:text-gray-300 mt-2 line-clamp-3">{{ project.description }}</p>
-            <p class="mt-2 text-sm text-gray-400">{% trans "Created on" %} {{ project.created_at|date:"d.m.Y" }}</p>
-            <a href="{% url 'project_detail' project.id %}" class="mt-4 text-blue-600 dark:text-blue-400 hover:underline font-medium text-sm">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 dark:border-gray-700">
+            <div class="flex justify-between items-start mb-4">
+                <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full">
+                    {{ project.category|default:_("General") }}
+                </span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ project.created_at|date:"d.m.Y" }}
+                </span>
+            </div>
+            
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-1">{{ project.title }}</h3>
+            <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">{{ project.description }}</p>
+            
+            <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
+                <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                    <i class="fas fa-euro-sign mr-1"></i>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ project.budget|default:"-" }}</span>
+                </div>
+                <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                    <i class="fas fa-map-marker-alt mr-1"></i>
+                    <span>{{ project.location|default:_("Remote") }}</span>
+                </div>
+            </div>
+            
+            <a href="{% url 'order_detail' project.id %}" class="mt-4 block w-full text-center bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white dark:hover:bg-primary text-gray-900 dark:text-white py-2 rounded-lg transition-colors duration-200 font-medium">
                 {% trans "View Details" %}
             </a>
         </div>
         {% empty %}
-        <p class="text-gray-500 dark:text-gray-400">{% trans "No projects available yet." %}</p>
+        <div class="col-span-full text-center py-12">
+            <i class="fas fa-folder-open text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">{% trans "No projects available yet." %}</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'create_order' %}" class="mt-4 inline-block text-primary hover:underline">
+                    {% trans "Be the first to post a project!" %}
+                </a>
+            {% endif %}
+        </div>
         {% endfor %}
     </div>
 </section>
 
-<!-- Leads Preview -->
-{% if active_plan %}
-<section class="mb-12">
-    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">{% trans "Lead Preview" %}</h2>
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {% for lead in leads_preview %}
-        <div class="card flex flex-col justify-between">
-            <h3 class="font-semibold text-lg">{{ lead.name }}</h3>
-            <p class="text-gray-600 dark:text-gray-300 line-clamp-2">{{ lead.message }}</p>
-            <p class="text-sm text-gray-400 mt-2">{{ lead.created_at|date:"d.m.Y" }}</p>
+<!-- Top Professionals (Freelancer & Companies & Sonstiges zusammen) -->
+<section class="mb-16">
+    <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
+            <i class="fas fa-award text-yellow-500 mr-3"></i>{% trans "Top Professionals" %}
+        </h2>
+        <a href="{% url 'freelancer_list' %}" class="text-primary hover:text-secondary font-medium flex items-center group">
+            {% trans "View All" %} <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+        </a>
+    </div>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {% for item in top_profiles %}
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 dark:border-gray-700">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-{{ item.type_color }}-100 to-purple-100 dark:from-{{ item.type_color }}-900/30 dark:to-purple-900/30 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    {% if item.profile.user.profile.avatar %}
+                        <img src="{{ item.profile.user.profile.avatar.url }}" alt="" class="w-full h-full object-cover">
+                    {% else %}
+                        <i class="fas fa-user text-2xl text-{{ item.type_color }}-600"></i>
+                    {% endif %}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-bold text-gray-900 dark:text-white truncate">
+                        {% if item.type == 'companyprofile' %}
+                            {{ item.profile.company_name|default:item.profile.user.username }}
+                        {% else %}
+                            {{ item.profile.user.get_full_name|default:item.profile.user.username }}
+                        {% endif %}
+                    </h4>
+                    
+                    <!-- Badge für Typ -->
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-{{ item.type_color }}-100 text-{{ item.type_color }}-800 dark:bg-{{ item.type_color }}-900/30 dark:text-{{ item.type_color }}-300">
+                        <i class="fas {{ item.type_icon }} mr-1"></i> {{ item.type_label }}
+                    </span>
+                </div>
+            </div>
+            
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2 h-10">
+                {{ item.description }}
+            </p>
+            
+            <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-4">
+                <span class="flex items-center gap-1">
+                    <i class="fas fa-eye"></i> {{ item.profile.visitor_count|default:"0" }} {% trans "views" %}
+                </span>
+                {% if item.profile.location %}
+                <span class="flex items-center gap-1">
+                    <i class="fas fa-map-marker-alt"></i> {{ item.profile.location|truncatechars:15 }}
+                </span>
+                {% endif %}
+            </div>
+            
+            <a href="{% url 'profile_detail' item.profile.user.username %}" 
+               class="block w-full text-center bg-gray-100 dark:bg-gray-700 hover:bg-{{ item.type_color }}-500 hover:text-white dark:hover:bg-{{ item.type_color }}-600 text-gray-900 dark:text-white py-2 rounded-lg transition-colors duration-200 font-medium text-sm">
+                {% trans "View Profile" %}
+            </a>
         </div>
         {% empty %}
-        <p class="text-gray-500 dark:text-gray-400">{% trans "No leads available at the moment." %}</p>
+        <div class="col-span-full text-center py-12">
+            <i class="fas fa-users text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">{% trans "No professionals yet." %}</p>
+        </div>
         {% endfor %}
     </div>
 </section>
-{% endif %}
 
-{% else %}
-<!-- ========================== -->
-<!-- Nicht eingeloggter User -->
-<!-- ========================== -->
-<section class="text-center mb-16 relative bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 rounded-2xl py-20 px-6 shadow-lg">
-    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
-        {% trans "Welcome to Auftragnetz" %}
-    </h1>
-    <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-        {% trans "Find and post projects easily. Connect with companies, clients, and freelancers in one place." %}
-    </p>
+<!-- Features -->
+<section class="mb-16">
+    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+        {% trans "Why Choose" %} <span class="text-primary">Auftragnetz</span>?
+    </h2>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="text-center p-6 rounded-2xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow">
+            <div class="w-16 h-16 mx-auto mb-4 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-bolt text-2xl text-blue-600"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">{% trans "Fast & Easy" %}</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">{% trans "Post projects and products in minutes." %}</p>
+        </div>
+        
+        <div class="text-center p-6 rounded-2xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow">
+            <div class="w-16 h-16 mx-auto mb-4 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-shield-alt text-2xl text-green-600"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">{% trans "Secure" %}</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">{% trans "Verified users and trusted marketplace." %}</p>
+        </div>
+        
+        <div class="text-center p-6 rounded-2xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow">
+            <div class="w-16 h-16 mx-auto mb-4 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-globe text-2xl text-purple-600"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">{% trans "Global Reach" %}</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">{% trans "Connect worldwide." %}</p>
+        </div>
+
+        <div class="text-center p-6 rounded-2xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow">
+            <div class="w-16 h-16 mx-auto mb-4 bg-pink-100 dark:bg-pink-900/30 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-shopping-bag text-2xl text-pink-600"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">{% trans "Marketplace" %}</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">{% trans "Buy & sell products." %}</p>
+        </div>
+    </div>
 </section>
 
-<!-- Features & Benefits -->
-<section class="grid md:grid-cols-3 gap-8 mb-16 px-4 md:px-0">
-    <div class="card text-center hover:shadow-xl transition">
-        <div class="text-5xl mb-4">📌</div>
-        <h3 class="text-2xl font-bold mb-2">{% trans "Post Projects" %}</h3>
-        <p class="text-gray-600 dark:text-gray-300">{% trans "Create projects and attract the right freelancers." %}</p>
-    </div>
-    <div class="card text-center hover:shadow-xl transition">
-        <div class="text-5xl mb-4">🔍</div>
-        <h3 class="text-2xl font-bold mb-2">{% trans "Discover Opportunities" %}</h3>
-        <p class="text-gray-600 dark:text-gray-300">{% trans "Find freelance gigs, jobs, and collaborations." %}</p>
-    </div>
-    <div class="card text-center hover:shadow-xl transition">
-        <div class="text-5xl mb-4">🤝</div>
-        <h3 class="text-2xl font-bold mb-2">{% trans "Connect & Grow" %}</h3>
-        <p class="text-gray-600 dark:text-gray-300">{% trans "Build lasting connections with clients and businesses." %}</p>
+<!-- CTA Section -->
+{% if not user.is_authenticated %}
+<section class="relative rounded-3xl overflow-hidden mb-8">
+    <div class="absolute inset-0 bg-gradient-to-r from-primary to-secondary"></div>
+    <div class="absolute inset-0 opacity-20" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+    
+    <div class="relative z-10 py-16 px-6 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            {% trans "Ready to Get Started?" %}
+        </h2>
+        <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+            {% trans "Join our community today. It's free!" %}
+        </p>
+        <a href="{% url 'register' %}" class="inline-block bg-white text-primary px-8 py-4 rounded-xl font-bold text-lg shadow-2xl hover:scale-105 transition-all duration-300">
+            {% trans "Create Free Account" %}
+        </a>
     </div>
 </section>
-
 {% endif %}
-
-<!-- Styles -->
-<style>
-.card {
-    backdrop-filter: blur(12px);
-    background: rgba(255,255,255,0.15);
-    border-radius: 1.5rem;
-    padding: 1.5rem;
-    border: 1px solid rgba(255,255,255,0.2);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    transition: all .2s;
-}
-.card:hover { transform: translateY(-2px); }
-</style>
 
 {% endblock %}

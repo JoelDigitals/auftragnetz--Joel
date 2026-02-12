@@ -4,49 +4,250 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-8 rounded-xl shadow-lg mt-10 border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+<div class="max-w-4xl mx-auto bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-8 rounded-xl shadow-lg mt-10 border border-gray-200 dark:border-gray-700 transition-colors duration-300">
     
-    <h2 class="text-3xl font-extrabold text-center text-blue-600 mb-6">
+    <h2 class="text-3xl font-extrabold text-center text-blue-600 mb-8">
         {{ title }}
     </h2>
 
-    <form method="post" class="space-y-4">
+    {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+                <div class="p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200{% elif message.tags == 'success' %}bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200{% else %}bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="space-y-8">
         {% csrf_token %}
 
-        {% for field in form %}
-            <div>
-                <label for="{{ field.id_for_label }}"
-                       class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    {{ field.label }}
+        <!-- Grundinformationen Section -->
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-600 pb-2">
+                {% trans "Basic Information" %}
+            </h3>
+
+            {% for field in form %}
+                {% if field.name == 'title' or field.name == 'description' or field.name == 'price' or field.name == 'is_active' %}
+                    <div>
+                        <label for="{{ field.id_for_label }}"
+                               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.help_text %}
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                {{ field.help_text }}
+                            </p>
+                        {% endif %}
+
+                        {% for error in field.errors %}
+                            <p class="text-red-500 dark:text-red-400 text-sm mt-1">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Bilder Section -->
+        <div class="space-y-6">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-600 pb-2">
+                {% trans "Product Images" %}
+            </h3>
+
+            <!-- Hauptbild -->
+            <div class="bg-gray-50/50 dark:bg-gray-700/30 p-6 rounded-lg border border-gray-200 dark:border-gray-600">
+                <label for="{{ form.main_image.id_for_label }}"
+                       class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                    {{ form.main_image.label }}
+                    <span class="text-blue-600 dark:text-blue-400">({% trans "recommended" %})</span>
                 </label>
 
-                {{ field.as_widget|safe }}
+                {{ form.main_image }}
 
-                {% if field.help_text %}
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {{ field.help_text }}
+                {% if form.main_image.help_text %}
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        {{ form.main_image.help_text }}
                     </p>
                 {% endif %}
 
-                {% for error in field.errors %}
-                    <p class="text-red-500 dark:text-red-400 text-sm mt-1">
+                <!-- Vorschau des neuen Bildes -->
+                <div id="main-image-preview" class="hidden mt-4">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{% trans "Preview" %}:</p>
+                    <img id="main-image-preview-img" src="" alt="Preview" class="rounded-lg max-h-64 object-contain border-2 border-blue-500">
+                </div>
+
+                <!-- Aktuelles Bild (beim Bearbeiten) -->
+                {% if product.main_image_url %}
+                    <div class="mt-4">
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{% trans "Current main image" %}:</p>
+                        <img src="{{ product.main_image_thumb_url }}" alt="Current main image" class="rounded-lg max-h-64 object-contain border-2 border-green-500">
+                    </div>
+                {% endif %}
+
+                {% for error in form.main_image.errors %}
+                    <p class="text-red-500 dark:text-red-400 text-sm mt-2">
                         {{ error }}
                     </p>
                 {% endfor %}
             </div>
-        {% endfor %}
 
-        <div class="flex items-center justify-between gap-4 pt-4">
+            <!-- Zusätzliche Bilder -->
+            <div class="bg-gray-50/50 dark:bg-gray-700/30 p-6 rounded-lg border border-gray-200 dark:border-gray-600">
+                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    {% trans "Additional Images" %} ({% trans "max. 5" %})
+                </h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% for i in "12345" %}
+                        <div>
+                            <label for="id_additional_image_{{ i }}"
+                                   class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                {% trans "Image" %} {{ i }}
+                            </label>
+                            
+                            {% with field_name="additional_image_"|add:i %}
+                                {% for field in form %}
+                                    {% if field.name == field_name %}
+                                        {{ field }}
+                                        
+                                        <div id="additional-image-{{ i }}-preview" class="hidden mt-2">
+                                            <img id="additional-image-{{ i }}-preview-img" src="" alt="Preview" class="rounded-lg max-h-32 object-contain border-2 border-blue-500">
+                                        </div>
+                                        
+                                        {% for error in field.errors %}
+                                            <p class="text-red-500 dark:text-red-400 text-sm mt-1">
+                                                {{ error }}
+                                            </p>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endwith %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Vorhandene zusätzliche Bilder (beim Bearbeiten) -->
+            {% if product and product.additional_images.all %}
+                <div class="bg-gray-50/50 dark:bg-gray-700/30 p-6 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                        {% trans "Existing Additional Images" %}
+                    </h4>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        {% for image in product.additional_images.all %}
+                            <div class="relative group">
+                                <img src="{{ image.thumb_url }}" 
+                                     alt="Additional image {{ forloop.counter }}" 
+                                     class="rounded-lg w-full h-32 object-cover border-2 border-gray-300 dark:border-gray-600 transition">
+                                <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                    <a href="{% url 'product_image_delete' image.pk %}" 
+                                       class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition">
+                                        {% trans "Delete" %}
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-3">
+                        {{ product.additional_images.count }} {% trans "of" %} 5 {% trans "images uploaded" %}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- SEO Section -->
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-600 pb-2">
+                {% trans "SEO Settings" %}
+            </h3>
+
+            {% for field in form %}
+                {% if field.name == 'meta_title' or field.name == 'meta_description' or field.name == 'meta_keywords' %}
+                    <div>
+                        <label for="{{ field.id_for_label }}"
+                               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.help_text %}
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                {{ field.help_text }}
+                            </p>
+                        {% endif %}
+
+                        {% for error in field.errors %}
+                            <p class="text-red-500 dark:text-red-400 text-sm mt-1">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-between gap-4 pt-6 border-t border-gray-300 dark:border-gray-600">
             <a href="{% url 'company_dashboard' %}"
-               class="w-1/2 text-center px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+               class="w-1/2 text-center px-6 py-3 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition font-semibold">
                 {% trans "Cancel" %}
             </a>
 
             <button type="submit"
-                    class="w-1/2 bg-blue-600 text-white py-2 rounded-lg font-semibold shadow hover:bg-blue-700 transition">
+                    class="w-1/2 bg-blue-600 text-white py-3 rounded-lg font-semibold shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all">
                 {% trans "Save Product" %}
             </button>
         </div>
     </form>
 </div>
+
+<script>
+// Bildvorschau-Funktionalität
+document.addEventListener('DOMContentLoaded', function() {
+    // Hauptbild Vorschau
+    const mainImageInput = document.getElementById('{{ form.main_image.id_for_label }}');
+    if (mainImageInput) {
+        mainImageInput.addEventListener('change', function(e) {
+            previewImage(e.target, 'main-image-preview', 'main-image-preview-img');
+        });
+    }
+    
+    // Zusätzliche Bilder Vorschau
+    for (let i = 1; i <= 5; i++) {
+        const input = document.getElementById(`id_additional_image_${i}`);
+        if (input) {
+            input.addEventListener('change', function(e) {
+                previewImage(e.target, `additional-image-${i}-preview`, `additional-image-${i}-preview-img`);
+            });
+        }
+    }
+    
+    function previewImage(input, previewDivId, previewImgId) {
+        const file = input.files[0];
+        const previewDiv = document.getElementById(previewDivId);
+        const previewImg = document.getElementById(previewImgId);
+        
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewDiv.classList.remove('hidden');
+            };
+            
+            reader.readAsDataURL(file);
+        } else {
+            previewDiv.classList.add('hidden');
+        }
+    }
+});
+</script>
 {% endblock %}

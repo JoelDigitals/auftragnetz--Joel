@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
 from orders.models import Category
 
 class CompanyProfile(models.Model):
@@ -63,3 +64,54 @@ class ProfileVisit(models.Model):
 
     def __str__(self):
         return f"{self.visitor} visited {self.profile} on {self.visited_at}"
+
+
+class Review(models.Model):
+    """Bewertungen für Profile (Company, Freelancer, Sonstiges)"""
+    RATING_CHOICES = [(i, i) for i in range(1, 6)]
+    
+    profile_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name="received_reviews"
+    )
+    reviewer = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name="given_reviews"
+    )
+    rating = models.PositiveSmallIntegerField(
+        choices=RATING_CHOICES,
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    title = models.CharField(max_length=200, blank=True)
+    comment = models.TextField()
+    # Optional: Verknüpfung mit einem Projekt/Auftrag
+    project = models.ForeignKey(
+        'orders.Order', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_approved = models.BooleanField(default=True)  # Für Moderation
+
+    class Meta:
+        unique_together = ['profile_user', 'reviewer']  # Ein Review pro User
+        ordering = ['-created_at']
+        verbose_name = "Bewertung"
+        verbose_name_plural = "Bewertungen"
+
+    def __str__(self):
+        return f"{self.reviewer.username} → {self.profile_user.username}: {self.rating}★"
+
+    @property
+    def rating_stars(self):
+        """Gibt Liste für Template-Loop zurück"""
+        return range(self.rating)
+    
+    @property
+    def empty_stars(self):
+        """Gibt leere Sterne für Template zurück"""
+        return range(5 - self.rating)

@@ -20,6 +20,12 @@ class Product(models.Model):
     is_boosted = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
+    # Main Image (ImgBB URLs)
+    main_image_url = models.URLField(max_length=500, blank=True, null=True)
+    main_image_thumb_url = models.URLField(max_length=500, blank=True, null=True)
+    main_image_medium_url = models.URLField(max_length=500, blank=True, null=True)
+    main_image_delete_url = models.URLField(max_length=500, blank=True, null=True)
+
     # SEO
     meta_title = models.CharField(max_length=255, blank=True)
     meta_description = models.CharField(max_length=300, blank=True)
@@ -58,3 +64,29 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class ProductImage(models.Model):
+    """Zusätzliche Produktbilder (max. 5)"""
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="additional_images"
+    )
+    
+    # ImgBB URLs
+    image_url = models.URLField(max_length=500)
+    thumb_url = models.URLField(max_length=500, blank=True, null=True)
+    medium_url = models.URLField(max_length=500, blank=True, null=True)
+    delete_url = models.URLField(max_length=500, blank=True, null=True)
+    
+    # Reihenfolge
+    order = models.PositiveSmallIntegerField(default=0)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "created_at"]
+        
+    def __str__(self):
+        return f"Image {self.order + 1} for {self.product.title}"

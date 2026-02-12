@@ -12,32 +12,45 @@
      crossorigin="anonymous"></script>
 
     <!-- SEO Meta Tags -->
-    <title>{% block title %}Auftragnetz – Freelancer, Unternehmen & Aufträge international finden{% endblock %}</title>
-    <meta name="description" content="{% trans 'Finde Freelancer, Unternehmen und Projekte weltweit auf Auftragnetz. Entdecke neue Aufträge, erstelle Angebote und vernetze dich mit Auftraggebern.' %}">
-    <meta name="keywords" content="Freelancer finden, Aufträge finden, Online Ausschreibungen, Neue Aufträge, Unternehmen, Auftragnetz, Projekte, Dienstleistungen">
+    <title>{% block title %}Auftragnetz – Experten, Produkte & Aufträge international finden{% endblock %}</title>
+    <meta name="description" content="{% trans 'Finde Experten, Produkte und Projekte weltweit auf Auftragnetz. Entdecke neue Aufträge, erstelle Angebote und vernetze dich mit Auftraggebern.' %}">
+    <meta name="keywords" content="Experten finden, Produkte kaufen, Aufträge finden, Online Ausschreibungen, Neue Aufträge, Unternehmen, Auftragnetz, Projekte, Dienstleistungen">
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph / Social Sharing -->
-    <meta property="og:title" content="Auftragnetz – Freelancer, Unternehmen & Aufträge international finden">
-    <meta property="og:description" content="Finde Freelancer, Unternehmen und Projekte weltweit auf Auftragnetz. Entdecke neue Aufträge, erstelle Angebote und vernetze dich mit Auftraggebern.">
+    <meta property="og:title" content="Auftragnetz – Experten, Produkte & Aufträge international finden">
+    <meta property="og:description" content="Finde Experten, Produkte und Projekte weltweit auf Auftragnetz. Entdecke neue Aufträge, erstelle Angebote und vernetze dich mit Auftraggebern.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:image" content="{% static 'images/logo.png' %}">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Auftragnetz – Freelancer, Unternehmen & Aufträge international finden">
-    <meta name="twitter:description" content="Finde Freelancer, Unternehmen und Projekte weltweit auf Auftragnetz. Entdecke neue Aufträge, erstelle Angebote und vernetze dich mit Auftraggebern.">
+    <meta name="twitter:title" content="Auftragnetz – Experten, Produkte & Aufträge international finden">
+    <meta name="twitter:description" content="Finde Experten, Produkte und Projekte weltweit auf Auftragnetz. Entdecke neue Aufträge, erstelle Angebote und vernetze dich mit Auftraggebern.">
     <meta name="twitter:image" content="{% static 'images/logo.png' %}">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = { darkMode: 'class' };
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0044cc',
+                        secondary: '#0066ff',
+                        accent: '#10b981',
+                    }
+                }
+            }
+        };
     </script>
     <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
     
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
         html {
             min-height: 100vh;
         }
@@ -45,150 +58,274 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            font-family: 'Inter', sans-serif;
         }
         main {
             flex: 1;
         }
         
-        /* Desktop Menu - immer sichtbar ab 768px */
+        /* Gradient Animation */
+        .gradient-animate {
+            background: linear-gradient(-45deg, #0044cc, #0066ff, #10b981, #0044cc);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .dark .glass {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Hover Effects */
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 68, 204, 0.15);
+        }
+        
+        /* Pulse Animation */
+        .pulse-ring {
+            position: relative;
+        }
+        .pulse-ring::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: inherit;
+            padding: 2px;
+            background: linear-gradient(135deg, #0044cc, #0066ff);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .pulse-ring:hover::before {
+            opacity: 1;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        /* Desktop Menu */
         @media (min-width: 768px) {
             #desktopMenu {
                 display: flex !important;
             }
         }
         
-        /* Mobile Menu - nur unter 768px */
+        /* Mobile Menu */
         @media (max-width: 767px) {
             #desktopMenu {
                 display: none !important;
             }
         }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0044cc;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0033a0;
+        }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
 
     <!-- Navigation -->
-    <nav class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 transition-colors duration-300">
+    <nav class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md shadow-lg sticky top-0 z-50 transition-all duration-300 border-b border-gray-200 dark:border-gray-700">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
 
                 <!-- Logo -->
-                <div class="flex items-center space-x-2">
-                    <img src="{% static 'images/logo.png' %}" alt="Auftragnetz" class="h-10 w-10 object-contain">
-                    <a href="{% url 'home' %}" class="text-2xl font-extrabold text-blue-600 dark:text-blue-400">{% trans "AuftragNetz" %}</a>
+                <div class="flex items-center space-x-3 group cursor-pointer" onclick="window.location.href='{% url 'home' %}'">
+                    <div class="relative">
+                        <img src="{% static 'images/logo.png' %}" alt="Auftragnetz" class="h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                    <span class="text-2xl font-extrabold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                        {% trans "AuftragNetz" %}
+                    </span>
                 </div>
 
                 <!-- Desktop Menu -->
-                <div id="desktopMenu" class="items-center space-x-4">
+                <div id="desktopMenu" class="items-center space-x-1">
+                    
+                    <!-- Öffentliche Links (immer sichtbar) -->
+                    <a href="{% url 'order_list' %}" class="px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 hover:text-primary dark:hover:text-primary transition-all duration-200 font-medium">
+                        <i class="fas fa-briefcase mr-1"></i>{% trans "Projects" %}
+                    </a>
+                    
+                    <a href="{% url 'product_list' %}" class="px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 hover:text-primary dark:hover:text-primary transition-all duration-200 font-medium">
+                        <i class="fas fa-shopping-bag mr-1"></i>{% trans "Products" %}
+                    </a>
+
+                    <a href="{% url 'freelancer_list' %}" class="px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 hover:text-primary dark:hover:text-primary transition-all duration-200 font-medium">
+                        <i class="fas fa-users mr-1"></i>{% trans "Experts" %}
+                    </a>
+
                     <!-- Dark Mode Toggle -->
                     <button onclick="toggleDarkMode()" type="button" title="{% trans 'Toggle Dark Mode' %}" 
-                            class="px-3 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition">
-                        <span id="darkModeIcon">🌙</span>
+                            class="ml-2 px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200">
+                        <span id="darkModeIcon" class="text-lg">🌙</span>
                     </button>
 
                     {% if user.is_authenticated %}
-                        <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                            {% trans "Hello" %}, <strong>{{ user.username }}</strong>
-                        </span>
+                        <div class="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-2"></div>
+                        
                         <a href="{% url 'company_dashboard' %}" 
-                           class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium whitespace-nowrap">
-                            {% trans "Dashboard" %}
+                           class="px-3 py-2 rounded-lg text-primary hover:bg-primary/10 transition-all duration-200 font-medium">
+                            <i class="fas fa-th-large mr-1"></i>{% trans "Dashboard" %}
                         </a>
+                        
                         <a href="{% url 'chat_list' %}" 
-                           class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium whitespace-nowrap">
-                            {% trans "Chats" %}
+                           class="px-3 py-2 rounded-lg text-primary hover:bg-primary/10 transition-all duration-200 font-medium relative">
+                            <i class="fas fa-comments mr-1"></i>{% trans "Chats" %}
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden" id="chatBadge">0</span>
                         </a>
+                        
                         {% if not user.profile.has_active_plan %}
                             <a href="{% url 'plans' %}" 
-                               class="bg-green-500 text-white px-3 py-2 rounded-lg shadow hover:bg-green-600 transition font-medium whitespace-nowrap">
-                                {% trans "Upgrade Plan NOW!" %}
+                               class="ml-2 bg-gradient-to-r from-accent to-green-600 text-white px-4 py-2 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 font-medium animate-pulse">
+                                <i class="fas fa-crown mr-1"></i>{% trans "Upgrade" %}
                             </a>
                         {% endif %}
+                        
                         <a href="{% url 'logout' %}" 
-                           class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition whitespace-nowrap">
-                            {% trans "Logout" %}
+                           class="ml-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 font-medium">
+                            <i class="fas fa-sign-out-alt mr-1"></i>{% trans "Logout" %}
                         </a>
                     {% else %}
-                        <a href="{% url 'register' %}" 
-                           class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium whitespace-nowrap">
-                            {% trans "Register" %}
-                        </a>
+                        <div class="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-2"></div>
+                        
                         <a href="{% url 'login' %}" 
-                           class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition whitespace-nowrap">
+                           class="px-4 py-2 rounded-lg text-primary hover:bg-primary/10 transition-all duration-200 font-medium">
                             {% trans "Login" %}
+                        </a>
+                        
+                        <a href="{% url 'register' %}" 
+                           class="bg-gradient-to-r from-primary to-secondary text-white px-5 py-2 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 font-medium">
+                            {% trans "Get Started" %}
                         </a>
                     {% endif %}
 
-                    <!-- Sprache Dropdown Desktop -->
-                    <form action="/i18n/setlang/" method="post" class="inline-block">
+                    <!-- Sprache Dropdown -->
+                    <form action="/i18n/setlang/" method="post" class="inline-block ml-2">
                         {% csrf_token %}
                         {% get_available_languages as LANGUAGES %}
-                        <select name="language" id="languageSelect" 
-                                class="bg-gray-100 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm cursor-pointer">
-                            {% for lang in LANGUAGES %}
-                                <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
-                                    {{ lang.1 }}
-                                </option>
-                            {% endfor %}
-                        </select>
+                        <div class="relative">
+                            <select name="language" id="languageSelect" 
+                                    class="appearance-none bg-gray-100 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-8 text-sm cursor-pointer hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                {% for lang in LANGUAGES %}
+                                    <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
+                                        {{ lang.1 }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
                     </form>
                 </div>
 
                 <!-- Mobile Hamburger -->
                 <div class="md:hidden flex items-center">
                     <button id="mobileMenuBtn" type="button"
-                            class="text-gray-700 dark:text-gray-300 focus:outline-none text-3xl px-2">
-                        ☰
+                            class="text-gray-700 dark:text-gray-300 focus:outline-none p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                        <i class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobileMenu" class="hidden bg-white dark:bg-gray-800 px-4 py-4 space-y-3 border-t border-gray-200 dark:border-gray-700 md:!hidden">
-            <button onclick="toggleDarkMode()" type="button" title="{% trans 'Toggle Dark Mode' %}" 
-                    class="w-full text-left px-3 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition">
-                <span id="darkModeIconMobile">🌙</span> {% trans "Dark Mode" %}
+        <div id="mobileMenu" class="hidden bg-white dark:bg-gray-800 px-4 py-4 space-y-2 border-t border-gray-200 dark:border-gray-700 md:!hidden shadow-xl">
+            
+            <!-- Öffentliche Links -->
+            <a href="{% url 'order_list' %}" class="block px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 hover:text-primary transition font-medium">
+                <i class="fas fa-briefcase w-6"></i>{% trans "Projects" %}
+            </a>
+            
+            <a href="{% url 'product_list' %}" class="block px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 hover:text-primary transition font-medium">
+                <i class="fas fa-shopping-bag w-6"></i>{% trans "Products" %}
+            </a>
+            
+            <a href="{% url 'freelancer_list' %}" class="block px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 hover:text-primary transition font-medium">
+                <i class="fas fa-users w-6"></i>{% trans "Experts" %}
+            </a>
+            
+            <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+            
+            <button onclick="toggleDarkMode()" type="button" 
+                    class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition font-medium">
+                <span id="darkModeIconMobile" class="mr-2">🌙</span> {% trans "Dark Mode" %}
             </button>
             
             {% if user.is_authenticated %}
-                <div class="px-3 py-2 text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
-                    {% trans "Hello" %}, <strong>{{ user.username }}</strong>
+                <div class="px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                    <i class="fas fa-user-circle mr-2 text-primary"></i>
+                    <strong>{{ user.username }}</strong>
                 </div>
+                
                 <a href="{% url 'company_dashboard' %}" 
-                   class="block px-3 py-2 text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded font-medium">
-                    {% trans "Dashboard" %}
+                   class="block px-4 py-3 rounded-lg text-primary hover:bg-primary/10 transition font-medium">
+                    <i class="fas fa-th-large w-6"></i>{% trans "Dashboard" %}
                 </a>
+                
                 <a href="{% url 'chat_list' %}" 
-                   class="block px-3 py-2 text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded font-medium">
-                    {% trans "Chats" %}
+                   class="block px-4 py-3 rounded-lg text-primary hover:bg-primary/10 transition font-medium">
+                    <i class="fas fa-comments w-6"></i>{% trans "Chats" %}
                 </a>
+                
                 {% if not user.profile.has_active_plan %}
                     <a href="{% url 'plans' %}" 
-                       class="block bg-green-500 text-white px-3 py-2 rounded-lg shadow hover:bg-green-600 transition font-medium text-center">
-                        {% trans "Upgrade Plan NOW!" %}
+                       class="block bg-gradient-to-r from-accent to-green-600 text-white px-4 py-3 rounded-lg shadow text-center font-medium">
+                        <i class="fas fa-crown mr-2"></i>{% trans "Upgrade Plan NOW!" %}
                     </a>
                 {% endif %}
+                
                 <a href="{% url 'logout' %}" 
-                   class="block bg-red-500 text-white px-3 py-2 rounded-lg shadow hover:bg-red-600 transition text-center">
-                    {% trans "Logout" %}
+                   class="block bg-red-500 text-white px-4 py-3 rounded-lg shadow text-center font-medium">
+                    <i class="fas fa-sign-out-alt w-6"></i>{% trans "Logout" %}
                 </a>
             {% else %}
-                <a href="{% url 'register' %}" 
-                   class="block px-3 py-2 text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded font-medium">
-                    {% trans "Register" %}
-                </a>
                 <a href="{% url 'login' %}" 
-                   class="block bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition text-center">
+                   class="block px-4 py-3 rounded-lg text-primary hover:bg-primary/10 transition font-medium text-center">
                     {% trans "Login" %}
+                </a>
+                
+                <a href="{% url 'register' %}" 
+                   class="block bg-gradient-to-r from-primary to-secondary text-white px-4 py-3 rounded-lg shadow text-center font-medium">
+                    {% trans "Get Started" %}
                 </a>
             {% endif %}
             
-            <!-- Sprache Dropdown Mobile -->
             <form action="/i18n/setlang/" method="post" class="pt-2">
                 {% csrf_token %}
                 <select name="language" id="languageSelectMobile" 
-                        class="w-full bg-gray-100 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-sm">
+                        class="w-full bg-gray-100 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-sm">
                     {% for lang in LANGUAGES %}
                         <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
                             {{ lang.1 }}
@@ -206,36 +343,63 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 dark:bg-gray-800 text-gray-300 py-10 transition-colors duration-300 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-                <h3 class="text-lg font-semibold text-white">{% trans "Auftragnetz" %}</h3>
-                <p class="mt-2 text-sm">{% trans "Finde Projekte, Freelancer und Unternehmen – alles an einem Ort." %}</p>
-            </div>
+    <footer class="bg-gray-900 dark:bg-gray-800 text-gray-300 py-12 transition-colors duration-300 mt-auto relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-4 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <img src="{% static 'images/logo.png' %}" alt="Auftragnetz" class="h-12 w-12 object-contain">
+                        <span class="text-2xl font-bold text-white">{% trans "Auftragnetz" %}</span>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-md">
+                        {% trans "The leading platform for experts, products and projects worldwide. Find new orders, create offers and network with clients." %}
+                    </p>
+                </div>
 
-            <div>
-                <h3 class="text-lg font-semibold text-white">{% trans "Quick Links" %}</h3>
-                <ul class="mt-2 space-y-1 text-sm">
-                    <li><a href="{% url 'home' %}" class="hover:underline">{% trans "Home" %}</a></li>
-                    <li><a href="{% url 'login' %}" class="hover:underline">{% trans "Login" %}</a></li>
-                    <li><a href="{% url 'register' %}" class="hover:underline">{% trans "Register" %}</a></li>
-                    <li><a href="{% url 'order_list' %}" class="hover:underline">{% trans "Aufträge Finden" %}</a></li>
-                    <li><a href="{% url 'freelancer_list' %}" class="hover:underline">{% trans "Freelancer und Unternehmen" %}</a></li>
-                </ul>
-            </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                        <i class="fas fa-link mr-2 text-primary"></i>{% trans "Quick Links" %}
+                    </h3>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="{% url 'home' %}" class="hover:text-primary transition flex items-center"><i class="fas fa-home w-5"></i>{% trans "Home" %}</a></li>
+                        <li><a href="{% url 'order_list' %}" class="hover:text-primary transition flex items-center"><i class="fas fa-briefcase w-5"></i>{% trans "Find Projects" %}</a></li>
+                        <li><a href="{% url 'product_list' %}" class="hover:text-primary transition flex items-center"><i class="fas fa-shopping-bag w-5"></i>{% trans "Products" %}</a></li>
+                        <li><a href="{% url 'freelancer_list' %}" class="hover:text-primary transition flex items-center"><i class="fas fa-users w-5"></i>{% trans "Experts" %}</a></li>
+                        <li><a href="{% url 'login' %}" class="hover:text-primary transition flex items-center"><i class="fas fa-sign-in-alt w-5"></i>{% trans "Login" %}</a></li>
+                        <li><a href="{% url 'register' %}" class="hover:text-primary transition flex items-center"><i class="fas fa-user-plus w-5"></i>{% trans "Register" %}</a></li>
+                    </ul>
+                </div>
 
-            <div>
-                <h3 class="text-lg font-semibold text-white">{% trans "Rechtliches" %}</h3>
-                <ul class="mt-2 space-y-1 text-sm">
-                    <li><a href="https://joel-digitals.de/imprint/" class="hover:underline">{% trans "Imprint" %}</a></li>
-                    <li><a href="https://joel-digitals.de/privacy/" class="hover:underline">{% trans "Datenschutz" %}</a></li>
-                </ul>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                        <i class="fas fa-balance-scale mr-2 text-primary"></i>{% trans "Legal" %}
+                    </h3>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="https://joel-digitals.de/imprint/" class="hover:text-primary transition flex items-center"><i class="fas fa-file-alt w-5"></i>{% trans "Imprint" %}</a></li>
+                        <li><a href="https://joel-digitals.de/privacy/" class="hover:text-primary transition flex items-center"><i class="fas fa-shield-alt w-5"></i>{% trans "Privacy Policy" %}</a></li>
+                        <li><a href="https://joel-digitals.de/terms/" class="hover:text-primary transition flex items-center"><i class="fas fa-gavel w-5"></i>{% trans "Terms of Service" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <div class="text-sm text-gray-500 mb-4 md:mb-0">
+                    &copy; 2025-2026 Joel Digitals. {% trans "All rights reserved." %}
+                </div>
+                <div class="flex space-x-4">
+                    <a href="https://www.instagram.com/joel_digitals_official/" class="text-gray-400 hover:text-primary transition"><i class="fab fa-instagram text-xl"></i></a>
+                </div>
             </div>
         </div>
-        <div class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">&copy; 2025-2026 Joel Digitals</div>
     </footer>
 
-    <!-- JavaScript am Ende für bessere Performance -->
+    <!-- JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script>
         function toggleDarkMode() {
             const htmlEl = document.documentElement;
@@ -255,15 +419,13 @@
             }
         }
 
-        // Initialisierung nach DOM-Load
         document.addEventListener('DOMContentLoaded', function() {
             const htmlEl = document.documentElement;
             const iconDesktop = document.getElementById('darkModeIcon');
             const iconMobile = document.getElementById('darkModeIconMobile');
             
-            // Theme laden
             const savedTheme = localStorage.getItem('theme');
-            if(savedTheme === 'dark') {
+            if(savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 htmlEl.classList.add('dark');
                 if(iconDesktop) iconDesktop.textContent = '☀️';
                 if(iconMobile) iconMobile.textContent = '☀️';
@@ -272,28 +434,19 @@
                 if(iconMobile) iconMobile.textContent = '🌙';
             }
 
-            // Sprachauswahl Desktop
-            const langSelect = document.getElementById('languageSelect');
-            if(langSelect) {
-                langSelect.addEventListener('change', function() {
-                    this.form.submit();
-                });
-            }
-            
-            // Sprachauswahl Mobile
-            const langSelectMobile = document.getElementById('languageSelectMobile');
-            if(langSelectMobile) {
-                langSelectMobile.addEventListener('change', function() {
-                    this.form.submit();
-                });
-            }
+            ['languageSelect', 'languageSelectMobile'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener('change', function() { this.form.submit(); });
+            });
 
-            // Mobile Menu Toggle
             const menuBtn = document.getElementById('mobileMenuBtn');
             const menu = document.getElementById('mobileMenu');
             if(menuBtn && menu) {
                 menuBtn.addEventListener('click', function() {
                     menu.classList.toggle('hidden');
+                    const icon = menuBtn.querySelector('i');
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times');
                 });
             }
         });

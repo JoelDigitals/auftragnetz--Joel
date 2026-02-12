@@ -4,229 +4,1097 @@
 {% block title %}{% trans "Company Dashboard" %}{% endblock %}
 
 {% block content %}
-<div class="w-full max-w-full mx-auto px-4 py-8 overflow-hidden">
-
-  <!-- Tab Navigation -->
-  <div class="flex w-full max-w-full overflow-x-auto space-x-4 mb-8 
-              bg-white/20 dark:bg-gray-800/30 backdrop-blur-lg rounded-3xl shadow-lg p-2">
-    <button data-tab="overview-section" 
-      class="tab-btn active flex-shrink-0 flex flex-col items-center space-y-1 px-4 py-2">
-      <span class="text-2xl md:text-3xl">🏠</span>
-      <span class="text-sm md:text-base">{% trans "Overview" %}</span>
-    </button>
-    <button data-tab="leads-section" 
-      class="tab-btn flex-shrink-0 flex flex-col items-center space-y-1 px-4 py-2 {% if not active_plan %}opacity-50 cursor-not-allowed{% endif %}"
-      {% if not active_plan %}disabled{% endif %}>
-      <span class="text-2xl md:text-3xl">📋</span>
-      <span class="text-sm md:text-base">{% trans "Leads" %}</span>
-    </button>
-    <button data-tab="products-section" 
-      class="tab-btn flex-shrink-0 flex flex-col items-center space-y-1 px-4 py-2">
-      <span class="text-2xl md:text-3xl">🛒</span>
-      <span class="text-sm md:text-base">{% trans "Products" %}</span>
-    </button>
-    <button data-tab="jobs-section" 
-      class="tab-btn flex-shrink-0 flex flex-col items-center space-y-1 px-4 py-2">
-      <span class="text-2xl md:text-3xl">💼</span>
-      <span class="text-sm md:text-base">{% trans "Jobs" %}</span>
-    </button>
-    <button data-tab="profile-section" 
-      class="tab-btn flex-shrink-0 flex flex-col items-center space-y-1 px-4 py-2">
-      <span class="text-2xl md:text-3xl">👤</span>
-      <span class="text-sm md:text-base">{% trans "Profile" %}</span>
-    </button>
+<!-- Fixed Tab Navigation - Reduziert auf 4 Tabs -->
+<div class="fixed top-[64px] left-0 right-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 shadow-sm">
+  <div class="max-w-7xl mx-auto px-2 sm:px-4">
+    <div class="flex h-14 sm:h-16 items-center justify-between gap-1 sm:gap-2 overflow-x-auto scrollbar-hide py-1">
+      
+      <button data-tab="overview-section" 
+        class="tab-btn active flex-1 min-w-[70px] max-w-[120px] flex flex-col items-center justify-center gap-0.5 px-1 py-1.5 rounded-lg transition-all">
+        <i class="fas fa-home text-base sm:text-lg text-primary"></i>
+        <span class="text-[9px] sm:text-[10px] font-medium truncate w-full text-center leading-tight">{% trans "Overview" %}</span>
+      </button>
+      
+      <button data-tab="besuche-section" 
+        class="tab-btn flex-1 min-w-[70px] max-w-[120px] flex flex-col items-center justify-center gap-0.5 px-1 py-1.5 rounded-lg transition-all relative">
+        <i class="fas fa-address-book text-base sm:text-lg text-red-500"></i>
+        <span class="text-[9px] sm:text-[10px] font-medium truncate w-full text-center leading-tight">{% trans "Besuche" %}</span>
+        {% if has_premium and new_leads_count > 0 %}
+          <span class="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[7px] px-1 py-0 rounded-full min-w-[14px] text-center">{{ new_leads_count }}</span>
+        {% endif %}
+      </button>
+      
+      <button data-tab="products-section" 
+        class="tab-btn flex-1 min-w-[70px] max-w-[120px] flex flex-col items-center justify-center gap-0.5 px-1 py-1.5 rounded-lg transition-all relative">
+        <i class="fas fa-box text-base sm:text-lg text-green-500"></i>
+        <span class="text-[9px] sm:text-[10px] font-medium truncate w-full text-center leading-tight">{% trans "Products" %}</span>
+        {% if products_count > 0 %}
+          <span class="absolute -top-0.5 -right-0.5 bg-green-500 text-white text-[7px] px-1 py-0 rounded-full min-w-[14px] text-center">{{ products_count }}</span>
+        {% endif %}
+      </button>
+      
+      <button data-tab="jobs-section" 
+        class="tab-btn flex-1 min-w-[70px] max-w-[120px] flex flex-col items-center justify-center gap-0.5 px-1 py-1.5 rounded-lg transition-all relative">
+        <i class="fas fa-briefcase text-base sm:text-lg text-orange-500"></i>
+        <span class="text-[9px] sm:text-[10px] font-medium truncate w-full text-center leading-tight">{% trans "Jobs" %}</span>
+        {% if jobs_count > 0 %}
+          <span class="absolute -top-0.5 -right-0.5 bg-orange-500 text-white text-[7px] px-1 py-0 rounded-full min-w-[14px] text-center">{{ jobs_count }}</span>
+        {% endif %}
+      </button>
+      
+      <button data-tab="profile-section" 
+        class="tab-btn flex-1 min-w-[70px] max-w-[120px] flex flex-col items-center justify-center gap-0.5 px-1 py-1.5 rounded-lg transition-all">
+        <i class="fas fa-user text-base sm:text-lg text-gray-500"></i>
+        <span class="text-[9px] sm:text-[10px] font-medium truncate w-full text-center leading-tight">{% trans "Profile" %}</span>
+      </button>
+    </div>
   </div>
+</div>
 
-  <!-- Tab Content -->
-  <div class="space-y-8 w-full max-w-full overflow-hidden">
-    <!-- Overview -->
+<!-- Spacer -->
+<div class="h-[120px] sm:h-[128px]"></div>
+
+<!-- Main Content -->
+<div class="w-full max-w-7xl mx-auto px-2 sm:px-4 py-4 pb-20 overflow-hidden">
+
+  <div class="space-y-4 sm:space-y-6 w-full">
+    
+    <!-- OVERVIEW: Basis-Info immer sichtbar -->
     <section id="overview-section" class="tab-content">
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        <div class="card">
-          <h4 class="text-lg font-semibold mb-2">{% trans "Profile Visits" %}</h4>
-          <p class="text-3xl font-bold">{{ profile_visits_count }}</p>
-          <p class="text-gray-500 dark:text-gray-400 text-sm">{% trans "Total visitors to your profile" %}</p>
-        </div>
-        <div class="card">
-          <h4 class="text-lg font-semibold mb-2">{% trans "Active Leads" %}</h4>
-          {% if active_plan %}
-            <p class="text-3xl font-bold">{{ leads_count }}</p>
-            <p class="text-gray-500 dark:text-gray-400 text-sm">{% trans "Leads collected from your offers" %}</p>
+      <h2 class="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-gray-900 dark:text-white">{% trans "Dashboard Overview" %}</h2>
+      
+      <!-- Basis Stats - Immer sichtbar -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        <!-- Profile Visits - Basis -->
+        <div class="card group hover:scale-[1.02] transition-transform cursor-pointer" onclick="switchTab('besuche-section')">
+          <div class="flex items-center justify-between mb-2">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+              <i class="fas fa-eye text-lg sm:text-xl text-blue-600"></i>
+            </div>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{% trans "Total" %}</span>
+          </div>
+          <h4 class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{% trans "Profilbesucher" %}</h4>
+          <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{{ total_visitors|default:"0" }}</p>
+          {% if has_premium %}
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ recent_visitors_count }} {% trans "this month" %}</p>
           {% else %}
-            <p class="text-gray-400 italic">{% trans "Available with an active plan" %}</p>
+            <p class="text-xs text-gray-400 mt-1"><i class="fas fa-lock mr-1"></i>{% trans "Upgrade for details" %}</p>
           {% endif %}
         </div>
-        <div class="card">
-          <h4 class="text-lg font-semibold mb-2">{% trans "Products" %}</h4>
-          <p class="text-gray-400 italic">{% trans "Coming Soon" %}</p>
+
+        <!-- Besuche (Leads) - Nur Anzahl ohne Plan -->
+        <div class="card group hover:scale-[1.02] transition-transform cursor-pointer {% if has_premium %}ring-2 ring-red-100 dark:ring-red-900/30{% else %}opacity-75{% endif %}" onclick="switchTab('besuche-section')">
+          <div class="flex items-center justify-between mb-2">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center">
+              <i class="fas fa-address-card text-lg sm:text-xl text-red-600"></i>
+            </div>
+            {% if has_premium and new_leads_count > 0 %}
+              <span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full animate-pulse">{{ new_leads_count }} {% trans "new" %}</span>
+            {% elif not has_premium %}
+              <i class="fas fa-lock text-gray-400 text-xs"></i>
+            {% endif %}
+          </div>
+          <h4 class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{% trans "Besuche" %}</h4>
+          <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            {% if has_premium %}{{ total_leads|default:"0" }}{% else %}?{% endif %}
+          </p>
+          {% if has_premium %}
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{% trans "Kontaktanfragen" %}</p>
+          {% else %}
+            <p class="text-xs text-gray-400 mt-1">{% trans "Nur mit Plan" %}</p>
+          {% endif %}
         </div>
+
+        <!-- Products -->
+        <div class="card group hover:scale-[1.02] transition-transform cursor-pointer" onclick="switchTab('products-section')">
+          <div class="flex items-center justify-between mb-2">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+              <i class="fas fa-box text-lg sm:text-xl text-green-600"></i>
+            </div>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ products_count|default:"0" }} {% trans "Items" %}</span>
+          </div>
+          <h4 class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{% trans "Products" %}</h4>
+          <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{{ products_count|default:"0" }}</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ boosted_products_count }} {% trans "boosted" %}</p>
+        </div>
+
+        <!-- Job Offers -->
+        <div class="card group hover:scale-[1.02] transition-transform cursor-pointer" onclick="switchTab('jobs-section')">
+          <div class="flex items-center justify-between mb-2">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
+              <i class="fas fa-briefcase text-lg sm:text-xl text-orange-600"></i>
+            </div>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ jobs_count|default:"0" }} {% trans "Active" %}</span>
+          </div>
+          <h4 class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{% trans "Job Offers" %}</h4>
+          <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{{ jobs_count|default:"0" }}</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{% trans "Published jobs" %}</p>
+        </div>
+      </div>
+
+      <!-- Premium Preview - Nur wenn kein Plan -->
+      {% if not has_premium %}
+      <div class="card bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-800 p-4 mb-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-800 rounded-xl flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-crown text-xl text-purple-600"></i>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{% trans "Unlock Insights & Besuche" %}</h3>
+              <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300">{% trans "See who contacted you and detailed analytics" %}</p>
+            </div>
+          </div>
+          <a href="{% url 'plans' %}" class="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition text-sm text-center">
+            {% trans "Upgrade Now" %}
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Quick Actions -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+        <a href="{% url 'create_order' %}" class="flex flex-col items-center p-3 bg-primary/10 hover:bg-primary/20 rounded-xl transition-colors">
+          <i class="fas fa-plus-circle text-xl text-primary mb-1"></i>
+          <span class="text-xs font-medium text-gray-700 dark:text-gray-300 text-center">{% trans "New Job" %}</span>
+        </a>
+        <a href="{% url 'product_create' %}" class="flex flex-col items-center p-3 bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/50 rounded-xl transition-colors">
+          <i class="fas fa-box-open text-xl text-green-600 mb-1"></i>
+          <span class="text-xs font-medium text-gray-700 dark:text-gray-300 text-center">{% trans "Add Product" %}</span>
+        </a>
+        <a href="{% url 'edit_profile' %}" class="flex flex-col items-center p-3 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/50 rounded-xl transition-colors">
+          <i class="fas fa-user-edit text-xl text-blue-600 mb-1"></i>
+          <span class="text-xs font-medium text-gray-700 dark:text-gray-300 text-center">{% trans "Edit Profile" %}</span>
+        </a>
+        <a href="{% url 'plans' %}" class="flex flex-col items-center p-3 bg-yellow-100 dark:bg-yellow-900/30 hover:bg-yellow-200 dark:hover:bg-yellow-800/50 rounded-xl transition-colors">
+          <i class="fas fa-crown text-xl text-yellow-600 mb-1"></i>
+          <span class="text-xs font-medium text-gray-700 dark:text-gray-300 text-center">{% trans "Upgrade" %}</span>
+        </a>
       </div>
     </section>
 
-    <!-- Leads -->
-<section id="leads-section" class="tab-content hidden">
-  {% if active_plan %}
-    <div class="card overflow-x-auto">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-xl font-bold">{% trans "Leads" %}</h3>
-        <a href="{% url 'lead_preferences' %}" 
-           class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-          ⚙️ {% trans "Lead Einstellungen" %}
+    <!-- BESUCHE: Kombinierte Seite für Visits & Leads -->
+    <section id="besuche-section" class="tab-content hidden">
+      
+      {% if has_premium %}
+        <!-- VOLLVERSION: Mit Plan -->
+        
+        <!-- Tabs für Unterkategorien -->
+        <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+          <button onclick="showBesucheTab('profil')" id="tab-profil" class="px-4 py-2 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium whitespace-nowrap">
+            <i class="fas fa-eye mr-1"></i> {% trans "Profilbesucher" %} ({{ total_visitors }})
+          </button>
+          <button onclick="showBesucheTab('anfragen')" id="tab-anfragen" class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium whitespace-nowrap">
+            <i class="fas fa-address-card mr-1"></i> {% trans "Kontaktanfragen" %} ({{ total_leads }})
+          </button>
+        </div>
+
+        <!-- PROFILBESUCHER -->
+        <div id="besuche-profil" class="besuche-subtab">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+            <div>
+              <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{% trans "Profilbesucher" %}</h2>
+              <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">{{ total_visitors }} {% trans "total visitors" %}</p>
+            </div>
+          </div>
+
+          {% if recent_visitors %}
+            <!-- Letzte 2 Monate -->
+            <div class="mb-6">
+              <h3 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                <i class="fas fa-calendar-day text-blue-500"></i>
+                {% trans "Last 2 Months" %}
+                <span class="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">{{ recent_visitors|length }}</span>
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {% for visitor in recent_visitors %}
+                <div class="card p-3 cursor-pointer hover:shadow-lg transition-all border-l-4 border-blue-500" onclick="openVisitorModal('{{ visitor.visitor.id }}', '{{ visitor.visitor.get_full_name|default:visitor.visitor.username|escapejs }}', '{{ visitor.visitor.email|default:""|escapejs }}', '{{ visitor.visitor.profile.phone|default:""|escapejs }}', '{{ visitor.visitor.profile.company_name|default:""|escapejs }}', '{{ visitor.visitor.profile.location|default:""|escapejs }}', '{{ visitor.visited_at|date:"d.m.Y H:i"|escapejs }}', '{{ visitor.source|default:"Direct"|escapejs }}')">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                      <i class="fas fa-user text-blue-600"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="font-semibold text-gray-900 dark:text-white text-sm truncate">
+                        {{ visitor.visitor.get_full_name|default:visitor.visitor.username }}
+                      </p>
+                      <p class="text-xs text-gray-500">{{ visitor.visited_at|date:"d.m.Y" }}</p>
+                    </div>
+                    <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 text-xs px-2 py-1 rounded-full">{% trans "Visit" %}</span>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            {% if medium_visitors %}
+            <!-- 2-6 Monate -->
+            <div class="mb-6">
+              <h3 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                <i class="fas fa-calendar-week text-gray-500"></i>
+                {% trans "2-6 Months" %}
+                <span class="bg-gray-500 text-white text-xs px-2 py-0.5 rounded-full">{{ medium_visitors|length }}</span>
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {% for visitor in medium_visitors %}
+                <div class="card p-3 opacity-75 cursor-pointer hover:opacity-100 hover:shadow-lg transition-all" onclick="openVisitorModal('{{ visitor.visitor.id }}', '{{ visitor.visitor.get_full_name|default:visitor.visitor.username|escapejs }}', '{{ visitor.visitor.email|default:""|escapejs }}', '{{ visitor.visitor.profile.phone|default:""|escapejs }}', '{{ visitor.visitor.profile.company_name|default:""|escapejs }}', '{{ visitor.visitor.profile.location|default:""|escapejs }}', '{{ visitor.visited_at|date:"d.m.Y H:i"|escapejs }}', '{{ visitor.source|default:"Direct"|escapejs }}')">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
+                      <i class="fas fa-user text-gray-400"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="font-semibold text-gray-900 dark:text-white text-sm truncate">
+                        {{ visitor.visitor.get_full_name|default:visitor.visitor.username }}
+                      </p>
+                      <p class="text-xs text-gray-500">{{ visitor.visited_at|date:"d.m.Y" }}</p>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+          {% else %}
+            <div class="card text-center py-12">
+              <i class="fas fa-eye-slash text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{% trans "No visitors yet" %}</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{% trans "Complete your profile to attract more visitors." %}</p>
+              <a href="{% url 'edit_profile' %}" class="inline-block bg-primary text-white px-6 py-2 rounded-lg hover:bg-secondary transition">
+                {% trans "Complete Profile" %}
+              </a>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- KONTAKTANFRAGEN (Leads) -->
+        <div id="besuche-anfragen" class="besuche-subtab hidden">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+            <div>
+              <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{% trans "Kontaktanfragen" %}</h2>
+              <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">{{ total_leads }} {% trans "total inquiries" %}</p>
+            </div>
+            <button onclick="exportLeads()" class="text-xs sm:text-sm bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/50 text-green-700 px-3 py-2 rounded-lg transition flex items-center gap-2">
+              <i class="fas fa-download"></i> {% trans "Export" %}
+            </button>
+          </div>
+
+          <!-- Status Filter -->
+          <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+            <button onclick="filterLeads('all')" class="lead-filter active px-3 py-1.5 rounded-full bg-red-500 text-white text-xs font-medium" data-filter="all">
+              {% trans "All" %} ({{ total_leads }})
+            </button>
+            <button onclick="filterLeads('new')" class="lead-filter px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-medium" data-filter="new">
+              {% trans "New" %} ({{ leads_by_status.new|length }})
+            </button>
+            <button onclick="filterLeads('contacted')" class="lead-filter px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-medium" data-filter="contacted">
+              {% trans "Contacted" %} ({{ leads_by_status.contacted|length }})
+            </button>
+            <button onclick="filterLeads('qualified')" class="lead-filter px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-medium" data-filter="qualified">
+              {% trans "Qualified" %} ({{ leads_by_status.qualified|length }})
+            </button>
+            <button onclick="filterLeads('converted')" class="lead-filter px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-medium" data-filter="converted">
+              {% trans "Converted" %} ({{ leads_by_status.converted|length }})
+            </button>
+          </div>
+
+          {% if total_leads > 0 %}
+            <div class="space-y-3" id="leads-container">
+              {% for status, leads in leads_by_status.items %}
+                {% for lead in leads %}
+                <div class="lead-item card p-4 border-l-4 cursor-pointer hover:shadow-lg transition-all" 
+                     data-status="{{ status }}"
+                     data-lead-id="{{ lead.id }}"
+                     onclick="openLeadModal('{{ lead.id }}', '{{ lead.name|escapejs }}', '{{ lead.email|escapejs }}', '{{ lead.phone|default:""|escapejs }}', '{{ lead.message|default:""|escapejs }}', '{{ lead.source|default:"Direct"|escapejs }}', '{{ lead.created_at|date:"d.m.Y H:i"|escapejs }}', '{{ lead.status }}')">
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="flex items-center gap-3">
+                      <div class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0
+                        {% if status == 'new' %}bg-red-100 dark:bg-red-900/30 text-red-600{% endif %}
+                        {% if status == 'contacted' %}bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600{% endif %}
+                        {% if status == 'qualified' %}bg-blue-100 dark:bg-blue-900/30 text-blue-600{% endif %}
+                        {% if status == 'converted' %}bg-green-100 dark:bg-green-900/30 text-green-600{% endif %}">
+                        <i class="fas fa-user text-lg"></i>
+                      </div>
+                      <div>
+                        <p class="font-semibold text-gray-900 dark:text-white">{{ lead.name }}</p>
+                        <p class="text-xs text-gray-500">{{ lead.email }}</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs px-2 py-1 rounded-full
+                        {% if status == 'new' %}bg-red-100 dark:bg-red-900/30 text-red-600{% endif %}
+                        {% if status == 'contacted' %}bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600{% endif %}
+                        {% if status == 'qualified' %}bg-blue-100 dark:bg-blue-900/30 text-blue-600{% endif %}
+                        {% if status == 'converted' %}bg-green-100 dark:bg-green-900/30 text-green-600{% endif %}">
+                        {{ status|title }}
+                      </span>
+                      <span class="text-xs text-gray-400">{{ lead.created_at|date:"d.m.Y" }}</span>
+                    </div>
+                  </div>
+                  {% if lead.message %}
+                  <div class="mt-3 p-2 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
+                    <p class="text-xs text-gray-600 dark:text-gray-300 line-clamp-2">{{ lead.message }}</p>
+                  </div>
+                  {% endif %}
+                </div>
+                {% endfor %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="card text-center py-12">
+              <i class="fas fa-inbox text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{% trans "No inquiries yet" %}</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "When users contact you, it appears here." %}</p>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Insights Box (nur mit Plan) -->
+        <div class="mt-6 card bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border-purple-200 dark:border-purple-800 p-4">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+            <i class="fas fa-chart-line text-purple-500"></i> {% trans "Insights" %}
+          </h3>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="text-center">
+              <p class="text-xl font-bold text-gray-900 dark:text-white">{{ profile_views_this_month }}</p>
+              <p class="text-xs text-gray-500">{% trans "Views this month" %}</p>
+            </div>
+            <div class="text-center">
+              <p class="text-xl font-bold text-gray-900 dark:text-white">{{ click_through_rate }}%</p>
+              <p class="text-xs text-gray-500">{% trans "Click Rate" %}</p>
+            </div>
+            <div class="text-center">
+              <p class="text-xl font-bold text-gray-900 dark:text-white">{{ product_views_total }}</p>
+              <p class="text-xs text-gray-500">{% trans "Product Views" %}</p>
+            </div>
+            <div class="text-center">
+              <p class="text-xl font-bold text-gray-900 dark:text-white">{{ search_appearances }}</p>
+              <p class="text-xs text-gray-500">{% trans "Search Appearances" %}</p>
+            </div>
+          </div>
+        </div>
+
+      {% else %}
+        <!-- EINGESCHRÄNKTE VERSION: Ohne Plan -->
+        
+        <div class="card p-6 text-center mb-6">
+          <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-lock text-2xl text-gray-400"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{% trans "Premium Feature" %}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            {% trans "See detailed visitor information and manage contact inquiries with a premium plan." %}
+          </p>
+          <a href="{% url 'plans' %}" class="inline-block bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition">
+            {% trans "View Plans" %}
+          </a>
+        </div>
+
+        <!-- Nur Basis-Info: Letzte 5 Besucher ohne Details -->
+        {% if recent_visitors %}
+        <div class="mb-6">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+            {% trans "Last Visitors" %} <span class="text-xs font-normal text-gray-500">({% trans "limited preview" %})</span>
+          </h3>
+          <div class="space-y-2 opacity-75">
+            {% for visitor in recent_visitors %}
+            <div class="card p-3 flex items-center gap-3">
+              <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-gray-400"></i>
+              </div>
+              <div class="flex-1">
+                <p class="font-medium text-gray-900 dark:text-white text-sm">
+                  {{ visitor.visitor.get_full_name|default:visitor.visitor.username }}
+                </p>
+                <p class="text-xs text-gray-500">{{ visitor.visited_at|date:"d.m.Y" }}</p>
+              </div>
+              <i class="fas fa-lock text-gray-300 text-xs"></i>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Teaser: Was man mit Plan bekommt -->
+        <div class="grid sm:grid-cols-2 gap-4 opacity-50">
+          <div class="card p-4">
+            <div class="flex items-center gap-3 mb-2">
+              <i class="fas fa-address-card text-red-500"></i>
+              <h4 class="font-medium text-sm">{% trans "Contact Inquiries" %}</h4>
+            </div>
+            <p class="text-xs text-gray-500">{% trans "Manage leads and track conversions" %}</p>
+          </div>
+          <div class="card p-4">
+            <div class="flex items-center gap-3 mb-2">
+              <i class="fas fa-chart-line text-purple-500"></i>
+              <h4 class="font-medium text-sm">{% trans "Analytics" %}</h4>
+            </div>
+            <p class="text-xs text-gray-500">{% trans "Detailed insights and statistics" %}</p>
+          </div>
+        </div>
+      {% endif %}
+    </section>
+
+    <!-- Products Section (unverändert) -->
+    <section id="products-section" class="tab-content hidden">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{% trans "Your Products" %}</h2>
+          <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">{{ products_count }} {% trans "products listed" %}</p>
+        </div>
+        <a href="{% url 'product_create' %}"
+           class="w-full sm:w-auto bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2 text-sm">
+          <i class="fas fa-plus"></i> {% trans "Add Product" %}
         </a>
       </div>
 
-      {% if leads %}
-        <div class="overflow-x-auto w-full">
-          <table class="min-w-full text-left border-collapse">
-            <thead>
-              <tr class="border-b border-gray-300 dark:border-gray-600">
-                <th class="px-4 py-2 whitespace-nowrap">{% trans "Name" %}</th>
-                <th class="px-4 py-2 whitespace-nowrap">{% trans "Email" %}</th>
-                <th class="px-4 py-2 whitespace-nowrap">{% trans "Number" %}</th>
-                <th class="px-4 py-2 whitespace-nowrap">{% trans "Message" %}</th>
-                <th class="px-4 py-2 whitespace-nowrap">{% trans "Date" %}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for lead in leads %}
-              <tr class="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                <td class="px-4 py-2">{{ lead.name }}</td>
-                <td class="px-4 py-2">{{ lead.email }}</td>
-                <td class="px-4 py-2">{{ lead.phone }}</td>
-                <td class="px-4 py-2">{{ lead.message }}</td>
-                <td class="px-4 py-2">{{ lead.created_at|date:"d.m.Y H:i" }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+      {% if products %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+          {% for product in products %}
+          <div class="card group hover:shadow-xl transition-all duration-300 {% if product.is_boosted %}ring-2 ring-yellow-400{% endif %} p-3 sm:p-4">
+            <div class="flex items-start justify-between mb-3">
+              <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0">
+                {% if product.main_image_url %}
+                  <img src="{{ product.main_image_thumb_url|default:product.main_image_url }}" alt="{{ product.title }}" class="w-full h-full object-cover">
+                {% else %}
+                  <i class="fas fa-box text-xl sm:text-2xl text-gray-400"></i>
+                {% endif %}
+              </div>
+              <div class="flex gap-0.5">
+                {% if product.is_boosted %}
+                <form method="post" action="{% url 'unboost_product' product.id %}" class="inline">
+                  {% csrf_token %}
+                  <button type="submit" class="p-1.5 sm:p-2 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 rounded-lg transition" title="{% trans 'Remove Boost' %}">
+                    <i class="fas fa-rocket"></i>
+                  </button>
+                </form>
+                {% elif can_boost %}
+                <form method="post" action="{% url 'boost_product' product.id %}" class="inline">
+                  {% csrf_token %}
+                  <button type="submit" class="p-1.5 sm:p-2 text-gray-400 hover:text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 rounded-lg transition" title="{% trans 'Boost Product' %}">
+                    <i class="fas fa-rocket"></i>
+                  </button>
+                </form>
+                {% endif %}
+                <a href="{% url 'product_edit' product.id %}" class="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition" title="{% trans 'Edit' %}">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'product_delete' product.id %}" class="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition" title="{% trans 'Delete' %}" onclick="return confirm('{% trans "Are you sure?" %}')">
+                  <i class="fas fa-trash"></i>
+                </a>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-2 mb-1">
+              <h3 class="font-semibold text-sm sm:text-base text-gray-900 dark:text-white line-clamp-1 flex-1">{{ product.title }}</h3>
+              {% if product.is_boosted %}
+              <span class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 text-xs px-2 py-0.5 rounded-full flex items-center gap-1 flex-shrink-0">
+                <i class="fas fa-rocket"></i>
+              </span>
+              {% endif %}
+            </div>
+            
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 line-clamp-2">{{ product.description|truncatewords:10 }}</p>
+            
+            <div class="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
+              <div class="flex items-center gap-3 text-xs text-gray-500">
+                <span class="flex items-center gap-1" title="{% trans 'Views' %}">
+                  <i class="fas fa-eye"></i> {{ product.views|default:"0" }}
+                </span>
+                {% if product.price %}
+                <span class="flex items-center gap-1 font-semibold text-gray-900 dark:text-white">
+                  <i class="fas fa-tag"></i> {{ product.price }}€
+                </span>
+                {% endif %}
+              </div>
+              <a href="{% url 'product_detail' product.slug %}" class="text-primary hover:text-secondary text-xs font-medium">
+                {% trans "View" %} <i class="fas fa-arrow-right ml-1"></i>
+              </a>
+            </div>
+          </div>
+          {% endfor %}
         </div>
       {% else %}
-        <p class="text-gray-500 dark:text-gray-400">{% trans "No leads yet." %}</p>
-      {% endif %}
-    </div>
-  {% else %}
-    <p class="text-gray-400 italic">{% trans "Leads are only available with an active plan." %}</p>
-  {% endif %}
-</section>
-
-
-    <!-- Products -->
-    <section id="products-section" class="tab-content hidden">
-  <div class="flex justify-between items-center mb-4">
-    <h3 class="text-xl font-bold">{% trans "Products" %}</h3>
-    <a href="{% url 'product_create' %}"
-       class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
-       ➕ {% trans "Add Product" %}
-    </a>
-  </div>
-
-  {% if products %}
-    <div class="grid md:grid-cols-2 gap-4">
-    {% for product in products %}
-      <div class="card">
-        <h4 class="font-semibold text-lg">{{ product.title }}</h4>
-        <p class="text-sm text-gray-500">{{ product.description|truncatewords:15 }}</p>
-      
-        <div class="flex justify-between items-center mt-3 text-sm">
-            <span>{{ product.views }} views</span>
-            {% if product.price %}<span>{{ product.price }} €</span>{% endif %}
-        </div>
-      
-        <div class="flex gap-2 mt-4">
-            <a href="{% url 'product_detail' product.slug %}" class="btn-secondary">View</a>
-            <a href="{% url 'product_edit' product.id %}" class="btn-primary">Edit</a>
-            <a href="{% url 'product_delete' product.id %}" class="btn-danger">Delete</a>
-        </div>
-      </div>
-    {% endfor %}
-    </div>
-    {% endif %}
-
-    <!-- Jobs Section -->
-    <section id="jobs-section" class="tab-content hidden">
-      <div class="mt-10">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold">{% trans "Your Job Offers" %}</h2>
-          <a href="{% url 'create_order' %}" 
-             class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
-             {% trans "Create Job" %}
+        <div class="card text-center py-12">
+          <i class="fas fa-box-open text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{% trans "No products yet" %}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{% trans "Start selling by adding your first product." %}</p>
+          <a href="{% url 'product_create' %}" class="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
+            {% trans "Add Product" %}
           </a>
         </div>
-      
-        {% if jobs %}
-          <div class="grid gap-4 md:grid-cols-2">
-            {% for job in jobs %}
-              <a href="{% url 'order_detail' job.id %}" 
-                 class="block bg-white dark:bg-gray-800 p-4 rounded-lg shadow hover:shadow-lg transition">
-                <h3 class="text-lg font-semibold mb-2">{{ job.title }}</h3>
-                <p class="text-gray-600 dark:text-gray-400 mb-2">
-                  {{ job.description|truncatewords:20 }}
-                </p>
-                <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400">
-                  <span>{% trans "Budget" %}: {{ job.budget }} €</span>
-                  <span>{% trans "Created" %}: {{ job.created_at|date:"d.m.Y" }}</span>
-                </div>
-              </a>
-            {% endfor %}
-          </div>
-        {% else %}
-          <p class="text-gray-600 dark:text-gray-400">{% trans "You have no job offers yet." %}</p>
-        {% endif %}
-      </div>
+      {% endif %}
     </section>
 
-    <!-- Profile -->
+    <!-- Jobs Section (unverändert) -->
+    <section id="jobs-section" class="tab-content hidden">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{% trans "Your Job Offers" %}</h2>
+          <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">{{ jobs_count }} {% trans "active jobs" %}</p>
+        </div>
+        <a href="{% url 'create_order' %}" 
+           class="w-full sm:w-auto bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2 text-sm">
+          <i class="fas fa-plus"></i> {% trans "Create Job" %}
+        </a>
+      </div>
+
+      {% if jobs %}
+        <div class="space-y-3">
+          {% for job in jobs %}
+          <a href="{% url 'order_detail' job.id %}" 
+             class="card block hover:shadow-xl transition-all duration-300 group p-3 sm:p-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1 flex-wrap">
+                  <h3 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white group-hover:text-primary transition line-clamp-1">{{ job.title }}</h3>
+                  {% if job.is_active %}
+                    <span class="bg-green-100 dark:bg-green-900/30 text-green-600 text-xs px-2 py-0.5 rounded-full">{% trans "Active" %}</span>
+                  {% else %}
+                    <span class="bg-gray-100 dark:bg-gray-700 text-gray-500 text-xs px-2 py-0.5 rounded-full">{% trans "Inactive" %}</span>
+                  {% endif %}
+                </div>
+                <p class="text-gray-600 dark:text-gray-300 text-xs line-clamp-2 mb-2">
+                  {{ job.description|truncatewords:12 }}
+                </p>
+                <div class="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                  <span class="flex items-center gap-1">
+                    <i class="fas fa-euro-sign"></i> {{ job.budget|default:"-" }}
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <i class="fas fa-map-marker-alt"></i> {{ job.location|default:_("Remote") }}
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <i class="fas fa-calendar"></i> {{ job.created_at|date:"d.m.Y" }}
+                  </span>
+                  {% if job.applications_count %}
+                  <span class="flex items-center gap-1 text-primary">
+                    <i class="fas fa-users"></i> {{ job.applications_count }}
+                  </span>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="flex items-center justify-end">
+                <span class="text-primary group-hover:translate-x-1 transition-transform">
+                  <i class="fas fa-chevron-right"></i>
+                </span>
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="card text-center py-12">
+          <i class="fas fa-briefcase text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{% trans "No jobs yet" %}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{% trans "Create your first job offer to find talent." %}</p>
+          <a href="{% url 'create_order' %}" class="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
+            {% trans "Create Job" %}
+          </a>
+        </div>
+      {% endif %}
+    </section>
+
+    <!-- Profile Section (unverändert) -->
     <section id="profile-section" class="tab-content hidden">
-      <div class="card">
-        <h3 class="text-xl font-bold mb-4">{% trans "Profile Settings" %}</h3>
-        <p class="text-gray-500 dark:text-gray-400">{% trans "Your profile details and company information." %}</p>
-        <div class="mt-4">
-          <a href="{% url 'edit_profile' %}" 
-            class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow transition">{% trans "Edit Profile" %}
-          </a>
-          <a href="{% url 'plans' %}" 
-            class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow transition">{% trans "Pläne" %}
-          </a>
+      <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">{% trans "Profile Settings" %}</h2>
+      
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="card p-4">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
+              {% if user.profile.avatar %}
+                <img src="{{ user.profile.avatar.url }}" alt="Avatar" class="w-full h-full object-cover">
+              {% else %}
+                <i class="fas fa-user text-2xl text-gray-400"></i>
+              {% endif %}
+            </div>
+            <div class="min-w-0 flex-1">
+              <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">{{ user.get_full_name|default:user.username }}</h3>
+              <p class="text-xs text-gray-500 truncate">{{ user.email }}</p>
+              <span class="inline-block mt-1 px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full">
+                {% if has_premium %}{{ active_plan.plan.name }}{% else %}{% trans "Free" %}{% endif %}
+              </span>
+            </div>
+          </div>
+          
+          <div class="space-y-2">
+            <a href="{% url 'edit_profile' %}" 
+               class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition group">
+              <div class="flex items-center gap-2">
+                <i class="fas fa-user-edit text-primary"></i>
+                <span class="font-medium text-gray-900 dark:text-white text-sm">{% trans "Edit Profile" %}</span>
+              </div>
+              <i class="fas fa-chevron-right text-gray-400 group-hover:text-primary transition text-xs"></i>
+            </a>
+            
+            <a href="{% url 'plans' %}" 
+               class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition group">
+              <div class="flex items-center gap-2">
+                <i class="fas fa-crown {% if has_premium %}text-yellow-500{% else %}text-gray-400{% endif %}"></i>
+                <span class="font-medium text-gray-900 dark:text-white text-sm">
+                  {% if has_premium %}{% trans "Manage Plan" %}{% else %}{% trans "Upgrade Plan" %}{% endif %}
+                </span>
+              </div>
+              <i class="fas fa-chevron-right text-gray-400 group-hover:text-primary transition text-xs"></i>
+            </a>
+            
+            <a href="{% url 'change_password' %}" 
+               class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition group">
+              <div class="flex items-center gap-2">
+                <i class="fas fa-lock text-green-500"></i>
+                <span class="font-medium text-gray-900 dark:text-white text-sm">{% trans "Change Password" %}</span>
+              </div>
+              <i class="fas fa-chevron-right text-gray-400 group-hover:text-primary transition text-xs"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div class="card p-4">
+          <h3 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white mb-3">{% trans "Account Statistics" %}</h3>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <span class="text-xs text-gray-600 dark:text-gray-300">{% trans "Member since" %}</span>
+              <span class="font-medium text-gray-900 dark:text-white text-xs">{{ user.date_joined|date:"d.m.Y" }}</span>
+            </div>
+            <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <span class="text-xs text-gray-600 dark:text-gray-300">{% trans "Last login" %}</span>
+              <span class="font-medium text-gray-900 dark:text-white text-xs">{{ user.last_login|date:"d.m.Y H:i"|default:"-" }}</span>
+            </div>
+            <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <span class="text-xs text-gray-600 dark:text-gray-300">{% trans "Current Plan" %}</span>
+              <span class="font-medium {% if has_premium %}text-green-600{% else %}text-gray-500{% endif %} text-xs">
+                {% if has_premium %}{{ active_plan.plan.name }}{% else %}{% trans "Free" %}{% endif %}
+              </span>
+            </div>
+            {% if has_premium %}
+            <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <span class="text-xs text-gray-600 dark:text-gray-300">{% trans "Expires" %}</span>
+              <span class="font-medium text-gray-900 dark:text-white text-xs">{{ active_plan.expires_at|date:"d.m.Y" }}</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
       </div>
     </section>
   </div>
 </div>
 
+<!-- Visitor Modal -->
+<div id="visitorModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-95 opacity-0" id="visitorModalContent">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gradient-to-r from-blue-500/10 to-transparent">
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <i class="fas fa-user-circle text-blue-500"></i>
+        <span id="modalVisitorName">{% trans "Visitor Details" %}</span>
+      </h3>
+      <button onclick="closeVisitorModal()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+        <i class="fas fa-times text-gray-500"></i>
+      </button>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+          <i class="fas fa-user text-2xl text-blue-600"></i>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">{% trans "Visited on" %}</p>
+          <p class="font-semibold text-gray-900 dark:text-white" id="modalVisitDate">-</p>
+        </div>
+      </div>
+      
+      <div class="space-y-3">
+        <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+          <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-envelope text-blue-600"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="text-xs text-gray-500">{% trans "Email" %}</p>
+            <a id="modalVisitorEmail" href="#" class="text-sm font-medium text-primary hover:underline truncate block">-</a>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+          <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-phone text-green-600"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="text-xs text-gray-500">{% trans "Phone" %}</p>
+            <a id="modalVisitorPhone" href="#" class="text-sm font-medium text-gray-900 dark:text-white hover:underline truncate block">-</a>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+          <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-building text-purple-600"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="text-xs text-gray-500">{% trans "Company" %}</p>
+            <p id="modalVisitorCompany" class="text-sm font-medium text-gray-900 dark:text-white truncate">-</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+          <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-map-marker-alt text-orange-600"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="text-xs text-gray-500">{% trans "Location" %}</p>
+            <p id="modalVisitorLocation" class="text-sm font-medium text-gray-900 dark:text-white truncate">-</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+          <div class="w-10 h-10 bg-gray-100 dark:bg-gray-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-link text-gray-600"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="text-xs text-gray-500">{% trans "Source" %}</p>
+            <p id="modalVisitorSource" class="text-sm font-medium text-gray-900 dark:text-white truncate">-</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex gap-2">
+      <a id="modalEmailLink" href="#" class="flex-1 bg-primary text-white py-2 rounded-lg text-center text-sm font-medium hover:bg-secondary transition">
+        <i class="fas fa-envelope mr-2"></i>{% trans "Send Email" %}
+      </a>
+      <a id="modalPhoneLink" href="#" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-center text-sm font-medium hover:bg-green-700 transition">
+        <i class="fas fa-phone mr-2"></i>{% trans "Call" %}
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Lead Modal -->
+<div id="leadModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all scale-95 opacity-0" id="leadModalContent">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gradient-to-r from-red-500/10 to-transparent">
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <i class="fas fa-address-card text-red-500"></i>
+        <span id="modalLeadName">{% trans "Lead Details" %}</span>
+      </h3>
+      <button onclick="closeLeadModal()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+        <i class="fas fa-times text-gray-500"></i>
+      </button>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+          <i class="fas fa-user text-2xl text-red-600"></i>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">{% trans "Received on" %}</p>
+          <p class="font-semibold text-gray-900 dark:text-white" id="modalLeadDate">-</p>
+          <span id="modalLeadStatus" class="inline-block mt-1 px-2 py-0.5 text-xs rounded-full">-</span>
+        </div>
+      </div>
+      
+      <div class="space-y-3">
+        <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+          <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-envelope text-blue-600"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="text-xs text-gray-500">{% trans "Email" %}</p>
+            <a id="modalLeadEmail" href="#" class="text-sm font-medium text-primary hover:underline truncate block">-</a>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+          <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-phone text-green-600"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="text-xs text-gray-500">{% trans "Phone" %}</p>
+            <a id="modalLeadPhone" href="#" class="text-sm font-medium text-gray-900 dark:text-white hover:underline truncate block">-</a>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+          <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-link text-purple-600"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="text-xs text-gray-500">{% trans "Source" %}</p>
+            <p id="modalLeadSource" class="text-sm font-medium text-gray-900 dark:text-white truncate">-</p>
+          </div>
+        </div>
+        
+        <div id="modalLeadMessageContainer" class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl hidden">
+          <p class="text-xs text-gray-500 mb-1">{% trans "Message" %}</p>
+          <p id="modalLeadMessage" class="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">-</p>
+        </div>
+      </div>
+    </div>
+    <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 space-y-2">
+      <div class="flex gap-2">
+        <a id="modalLeadEmailLink" href="#" class="flex-1 bg-primary text-white py-2 rounded-lg text-center text-sm font-medium hover:bg-secondary transition">
+          <i class="fas fa-envelope mr-2"></i>{% trans "Send Email" %}
+        </a>
+        <a id="modalLeadPhoneLink" href="#" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-center text-sm font-medium hover:bg-green-700 transition">
+          <i class="fas fa-phone mr-2"></i>{% trans "Call" %}
+        </a>
+      </div>
+      <form method="post" action="#" id="leadStatusForm" class="flex gap-2">
+        {% csrf_token %}
+        <select name="status" id="leadStatusSelect" class="flex-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm">
+          <option value="new">{% trans "New" %}</option>
+          <option value="contacted">{% trans "Contacted" %}</option>
+          <option value="qualified">{% trans "Qualified" %}</option>
+          <option value="converted">{% trans "Converted" %}</option>
+          <option value="archived">{% trans "Archived" %}</option>
+        </select>
+        <button type="submit" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm transition">
+          {% trans "Update" %}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <style>
-  .tab-btn { 
-    padding: .5rem 1rem; 
-    border-radius: 1rem; 
-    transition: all .2s; 
-    flex-shrink: 0;
-  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  
+  .tab-btn { position: relative; border-radius: 0.5rem; transition: all 0.2s ease; }
   .tab-btn.active { 
-    background-color: rgba(59,130,246,0.2); 
-    font-weight: bold;
+    background: linear-gradient(135deg, rgba(0, 68, 204, 0.2), rgba(0, 102, 255, 0.1));
+    box-shadow: 0 2px 8px rgba(0, 68, 204, 0.15);
+    font-weight: 600;
   }
-  .tab-content { animation: fadeIn .3s ease-in-out; }
+  .tab-btn:not(.active):hover { background: rgba(0, 68, 204, 0.05); }
+  
+  .tab-content { animation: fadeIn 0.3s ease-out; }
   @keyframes fadeIn {
-    from {opacity: 0; transform: translateY(10px);}
-    to {opacity: 1; transform: translateY(0);}
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
+  
   .card {
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
-    background: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 1.5rem;
-    padding: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0, 68, 204, 0.1);
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  .dark .card {
+    background: rgba(31, 41, 55, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  
+  #visitorModal:not(.hidden) #visitorModalContent,
+  #leadModal:not(.hidden) #leadModalContent {
+    transform: scale(1);
+    opacity: 1;
   }
 </style>
 
 <script>
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      if(btn.disabled) return;
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
-      btn.classList.add("active");
-      document.getElementById(btn.dataset.tab).classList.remove("hidden");
+  // Tab Switching
+  function switchTab(tabId) {
+    const tabBtn = document.querySelector(`[data-tab="${tabId}"]`);
+    if (tabBtn && !tabBtn.disabled) {
+      tabBtn.click();
+    }
+  }
+  
+  // Besuche Sub-Tabs (Profil vs Anfragen)
+  function showBesucheTab(tab) {
+    // Buttons
+    document.getElementById('tab-profil').className = tab === 'profil' 
+      ? 'px-4 py-2 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium whitespace-nowrap'
+      : 'px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium whitespace-nowrap';
+      
+    document.getElementById('tab-anfragen').className = tab === 'anfragen'
+      ? 'px-4 py-2 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-sm font-medium whitespace-nowrap'
+      : 'px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium whitespace-nowrap';
+    
+    // Content
+    document.getElementById('besuche-profil').classList.toggle('hidden', tab !== 'profil');
+    document.getElementById('besuche-anfragen').classList.toggle('hidden', tab !== 'anfragen');
+  }
+  
+  // Lead Filter
+  function filterLeads(status) {
+    // Update buttons
+    document.querySelectorAll('.lead-filter').forEach(btn => {
+      const isActive = btn.dataset.filter === status;
+      btn.className = isActive
+        ? 'lead-filter active px-3 py-1.5 rounded-full bg-red-500 text-white text-xs font-medium'
+        : 'lead-filter px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-medium';
     });
+    
+    // Filter items
+    document.querySelectorAll('.lead-item').forEach(item => {
+      const itemStatus = item.dataset.status;
+      if (status === 'all' || itemStatus === status) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+  
+  // Visitor Modal
+  function openVisitorModal(id, name, email, phone, company, location, date, source) {
+    const modal = document.getElementById('visitorModal');
+    const content = document.getElementById('visitorModalContent');
+    
+    document.getElementById('modalVisitorName').textContent = name || '{% trans "Guest" %}';
+    document.getElementById('modalVisitDate').textContent = date;
+    document.getElementById('modalVisitorEmail').textContent = email || '-';
+    document.getElementById('modalVisitorEmail').href = email ? 'mailto:' + email : '#';
+    document.getElementById('modalVisitorPhone').textContent = phone || '-';
+    document.getElementById('modalVisitorPhone').href = phone ? 'tel:' + phone : '#';
+    document.getElementById('modalVisitorCompany').textContent = company || '-';
+    document.getElementById('modalVisitorLocation').textContent = location || '-';
+    document.getElementById('modalVisitorSource').textContent = source || 'Direct';
+    document.getElementById('modalEmailLink').href = email ? 'mailto:' + email : '#';
+    document.getElementById('modalEmailLink').style.opacity = email ? '1' : '0.5';
+    document.getElementById('modalEmailLink').style.pointerEvents = email ? 'auto' : 'none';
+    document.getElementById('modalPhoneLink').href = phone ? 'tel:' + phone : '#';
+    document.getElementById('modalPhoneLink').style.opacity = phone ? '1' : '0.5';
+    document.getElementById('modalPhoneLink').style.pointerEvents = phone ? 'auto' : 'none';
+    
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      content.style.transform = 'scale(1)';
+      content.style.opacity = '1';
+    }, 10);
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function closeVisitorModal() {
+    const modal = document.getElementById('visitorModal');
+    const content = document.getElementById('visitorModalContent');
+    
+    content.style.transform = 'scale(0.95)';
+    content.style.opacity = '0';
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 200);
+    document.body.style.overflow = '';
+  }
+  
+  // Lead Modal
+  function openLeadModal(id, name, email, phone, message, source, date, status) {
+    const modal = document.getElementById('leadModal');
+    const content = document.getElementById('leadModalContent');
+    
+    document.getElementById('modalLeadName').textContent = name || '-';
+    document.getElementById('modalLeadDate').textContent = date;
+    document.getElementById('modalLeadEmail').textContent = email || '-';
+    document.getElementById('modalLeadEmail').href = email ? 'mailto:' + email : '#';
+    document.getElementById('modalLeadPhone').textContent = phone || '-';
+    document.getElementById('modalLeadPhone').href = phone ? 'tel:' + phone : '#';
+    document.getElementById('modalLeadSource').textContent = source || 'Direct';
+    document.getElementById('modalLeadEmailLink').href = email ? 'mailto:' + email : '#';
+    document.getElementById('modalLeadPhoneLink').href = phone ? 'tel:' + phone : '#';
+    
+    // Status
+    const statusEl = document.getElementById('modalLeadStatus');
+    statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+    const statusColors = {
+      'new': 'bg-red-100 dark:bg-red-900/30 text-red-600',
+      'contacted': 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600',
+      'qualified': 'bg-blue-100 dark:bg-blue-900/30 text-blue-600',
+      'converted': 'bg-green-100 dark:bg-green-900/30 text-green-600',
+      'archived': 'bg-gray-100 dark:bg-gray-700 text-gray-600'
+    };
+    statusEl.className = 'inline-block mt-1 px-2 py-0.5 text-xs rounded-full ' + (statusColors[status] || statusColors['new']);
+    
+    // Select
+    document.getElementById('leadStatusSelect').value = status;
+    
+    // Message
+    const msgContainer = document.getElementById('modalLeadMessageContainer');
+    const msgEl = document.getElementById('modalLeadMessage');
+    if (message && message.trim()) {
+      msgContainer.classList.remove('hidden');
+      msgEl.textContent = message;
+    } else {
+      msgContainer.classList.add('hidden');
+    }
+    
+    // Form Action - anpassen!
+    document.getElementById('leadStatusForm').action = `/leads/${id}/update-status/`;
+    
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      content.style.transform = 'scale(1)';
+      content.style.opacity = '1';
+    }, 10);
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function closeLeadModal() {
+    const modal = document.getElementById('leadModal');
+    const content = document.getElementById('leadModalContent');
+    
+    content.style.transform = 'scale(0.95)';
+    content.style.opacity = '0';
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 200);
+    document.body.style.overflow = '';
+  }
+  
+  // Export
+  function exportLeads() {
+    window.location.href = '/leads/export/';
+  }
+  
+  // Close modals
+  document.getElementById('visitorModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeVisitorModal();
+  });
+  document.getElementById('leadModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeLeadModal();
+  });
+  
+  // ESC
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeVisitorModal();
+      closeLeadModal();
+    }
+  });
+  
+  // Tab initialization
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabBtns = document.querySelectorAll(".tab-btn");
+    const tabContents = document.querySelectorAll(".tab-content");
+    
+    tabBtns.forEach(btn => {
+      btn.addEventListener("click", function() {
+        if(this.disabled) return;
+        
+        tabBtns.forEach(b => b.classList.remove("active"));
+        tabContents.forEach(c => c.classList.add("hidden"));
+        
+        this.classList.add("active");
+        const targetId = this.dataset.tab;
+        const targetContent = document.getElementById(targetId);
+        if(targetContent) {
+          targetContent.classList.remove("hidden");
+        }
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+    
+    // URL hash
+    const hash = window.location.hash;
+    if(hash) {
+      const tabId = hash.substring(1) + '-section';
+      const tabBtn = document.querySelector(`[data-tab="${tabId}"]`);
+      if(tabBtn && !tabBtn.disabled) {
+        tabBtn.click();
+      }
+    }
   });
 </script>
 {% endblock %}

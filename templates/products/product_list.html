@@ -1,0 +1,443 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Products" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+  
+  <!-- Header -->
+  <div class="text-center mb-6 md:mb-8">
+    <h1 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+      {% trans "Products" %}
+    </h1>
+    <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base">
+      {% trans "Discover amazing collection of quality products" %}
+    </p>
+  </div>
+
+  <!-- Search & Filter -->
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-6 md:mb-8">
+    <!-- Mobile Filter Toggle -->
+    <button type="button" id="filterToggle" class="w-full md:hidden flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+      <span class="font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+        <i class="fas fa-filter"></i>
+        {% trans "Filters & Search" %}
+      </span>
+      <i class="fas fa-chevron-down transition-transform duration-300" id="filterArrow"></i>
+    </button>
+    
+    <form method="get" id="filterForm" class="filter-form-mobile-hidden md:block p-4 md:p-6">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+        
+        <!-- Search -->
+        <div class="md:col-span-5">
+          <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <i class="fas fa-search mr-1"></i>{% trans "Search" %}
+          </label>
+          <div class="relative">
+            <input 
+              type="text" 
+              name="q" 
+              value="{{ q|default:'' }}" 
+              placeholder="{% trans 'Product name or keyword...' %}"
+              class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
+            >
+            <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            {% if q %}
+            <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}{% if sort %}sort={{ sort }}{% endif %}" 
+               class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              <i class="fas fa-times-circle"></i>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Category -->
+        <div class="md:col-span-3">
+          <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <i class="fas fa-tags mr-1"></i>{% trans "Category" %}
+          </label>
+          <div class="relative">
+            <select 
+              name="category" 
+              class="w-full pl-10 pr-10 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white appearance-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
+            >
+              <option value="">{% trans "All Categories" %}</option>
+              {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>
+                  {{ cat.name }}
+                </option>
+              {% endfor %}
+            </select>
+            <i class="fas fa-folder absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <i class="fas fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+          </div>
+        </div>
+
+        <!-- Price Range -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <i class="fas fa-euro-sign mr-1"></i>{% trans "Min Price" %}
+          </label>
+          <div class="relative">
+            <input 
+              type="number" 
+              name="min_price" 
+              value="{{ min_price|default:'' }}" 
+              placeholder="0"
+              min="0"
+              step="0.01"
+              class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
+            >
+            <i class="fas fa-tag absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          </div>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <i class="fas fa-euro-sign mr-1"></i>{% trans "Max Price" %}
+          </label>
+          <div class="relative">
+            <input 
+              type="number" 
+              name="max_price" 
+              value="{{ max_price|default:'' }}" 
+              placeholder="Max"
+              min="0"
+              step="0.01"
+              class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
+            >
+            <i class="fas fa-tag absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          </div>
+        </div>
+
+        <!-- Sort (Hidden field für Form-Integration) -->
+        <input type="hidden" name="sort" id="sortInput" value="{{ sort|default:'' }}">
+
+        <!-- Submit -->
+        <div class="md:col-span-12 flex flex-wrap gap-2 items-center justify-between">
+          <div class="flex gap-2">
+            <button type="submit" class="bg-gradient-to-r from-primary to-secondary text-white font-semibold py-2.5 px-6 rounded-xl shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2">
+              <i class="fas fa-search"></i>
+              <span>{% trans "Search Products" %}</span>
+            </button>
+            
+            {% if q or selected_category or min_price or max_price or sort %}
+              <a href="{% url 'product_list' %}" class="inline-flex items-center justify-center gap-2 py-2.5 px-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition border border-gray-300 dark:border-gray-600 rounded-xl">
+                <i class="fas fa-times"></i>
+                {% trans "Clear all" %}
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Results Info & Sort -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
+    <div class="flex items-center gap-2">
+      <p class="text-sm text-gray-500 dark:text-gray-400">
+        {% if products %}
+          {% trans "Found" %} <span class="font-semibold text-gray-900 dark:text-white">{{ page_obj.paginator.count }}</span> {% trans "products" %}
+          {% if q %}{% trans "for" %} "<span class="font-medium">{{ q }}</span>"{% endif %}
+        {% else %}
+          {% trans "No results found" %}
+        {% endif %}
+      </p>
+      <!-- Boosted Info Badge -->
+      <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+        <i class="fas fa-rocket mr-1"></i>{% trans "Boosted first" %}
+      </span>
+    </div>
+    
+    <!-- Sort dropdown - OHNE "Boosted first" Option -->
+    <div class="relative">
+      <select id="sortSelect" class="text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-primary cursor-pointer pr-8">
+        <option value="" {% if not sort %}selected{% endif %}>{% trans "Sort by: Relevance" %}</option>
+        <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>{% trans "Price: Low to High" %}</option>
+        <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>{% trans "Price: High to Low" %}</option>
+        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>{% trans "Newest" %}</option>
+        <option value="name" {% if sort == 'name' %}selected{% endif %}>{% trans "Name (A-Z)" %}</option>
+      </select>
+      <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+    </div>
+  </div>
+
+  <!-- Active Filters -->
+  {% if q or selected_category or min_price or max_price or sort %}
+  <div class="flex flex-wrap gap-2 mb-4">
+    {% if q %}
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+        {% trans "Search" %}: {{ q|truncatechars:20 }}
+        <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}{% if sort %}sort={{ sort }}{% endif %}" class="ml-1 hover:text-primary-dark">
+          <i class="fas fa-times"></i>
+        </a>
+      </span>
+    {% endif %}
+    {% if selected_category %}
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+        {% trans "Category" %}: {{ selected_category_name|default:selected_category }}
+        <a href="?{% if q %}q={{ q }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}{% if sort %}sort={{ sort }}{% endif %}" class="ml-1">
+          <i class="fas fa-times"></i>
+        </a>
+      </span>
+    {% endif %}
+    {% if min_price %}
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+        {% trans "Min" %}: {{ min_price }}€
+        <a href="?{% if q %}q={{ q }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}{% if sort %}sort={{ sort }}{% endif %}" class="ml-1">
+          <i class="fas fa-times"></i>
+        </a>
+      </span>
+    {% endif %}
+    {% if max_price %}
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+        {% trans "Max" %}: {{ max_price }}€
+        <a href="?{% if q %}q={{ q }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if sort %}sort={{ sort }}{% endif %}" class="ml-1">
+          <i class="fas fa-times"></i>
+        </a>
+      </span>
+    {% endif %}
+    {% if sort %}
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+        {% trans "Sort" %}: 
+        {% if sort == 'price_asc' %}{% trans "Price: Low to High" %}
+        {% elif sort == 'price_desc' %}{% trans "Price: High to Low" %}
+        {% elif sort == 'newest' %}{% trans "Newest" %}
+        {% elif sort == 'name' %}{% trans "Name (A-Z)" %}
+        {% else %}{{ sort }}{% endif %}
+        <a href="?{% if q %}q={{ q }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}{% endif %}" class="ml-1">
+          <i class="fas fa-times"></i>
+        </a>
+      </span>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Results Grid -->
+  {% if products %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+      {% for product in products %}
+      <div class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-xl hover:border-primary/30 dark:hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 flex flex-col {% if product.is_boosted %}ring-2 ring-yellow-400/50{% endif %}">
+        
+        <!-- Product Image -->
+        <a href="{% url 'product_detail' product.slug %}" class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
+          {% if product.main_image_url %}
+            <img src="{{ product.main_image_medium_url|default:product.main_image_url }}" 
+                 alt="{{ product.title }}" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                 loading="lazy">
+          {% else %}
+            <div class="w-full h-full flex items-center justify-center text-gray-400">
+              <i class="fas fa-image text-4xl"></i>
+            </div>
+          {% endif %}
+          
+          <!-- Badges -->
+          <div class="absolute top-3 left-3 flex flex-col gap-2">
+            {% if product.is_boosted %}
+              <span class="px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold rounded-lg shadow-lg animate-pulse">
+                <i class="fas fa-rocket mr-1"></i>{% trans "BOOSTED" %}
+              </span>
+            {% endif %}
+          </div>
+          
+          <!-- Price Badge -->
+          {% if product.price %}
+          <div class="absolute bottom-3 right-3">
+            <span class="px-3 py-1.5 bg-white/90 dark:bg-gray-900/90 backdrop-blur text-gray-900 dark:text-white font-bold rounded-lg shadow-md">
+              {{ product.price }} €
+            </span>
+          </div>
+          {% endif %}
+        </a>
+
+        <!-- Content -->
+        <div class="p-5 flex-1 flex flex-col">
+          
+          <!-- Title -->
+          <a href="{% url 'product_detail' product.slug %}" class="block mb-2">
+            <h3 class="font-bold text-gray-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors line-clamp-2">
+              {{ product.title }}
+            </h3>
+          </a>
+          
+          <!-- Description -->
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2 flex-1">
+            {{ product.description|truncatewords:15|default:_("No description available") }}
+          </p>
+
+          <!-- Meta Info -->
+          <div class="flex items-center gap-3 text-xs text-gray-400 mb-4">
+            <span><i class="fas fa-eye mr-1"></i>{{ product.views }}</span>
+            <span><i class="fas fa-clock mr-1"></i>{{ product.created_at|timesince }}</span>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+            <a href="{% url 'product_detail' product.slug %}" 
+               class="flex-1 bg-gradient-to-r from-primary to-secondary text-white font-semibold py-2.5 px-4 rounded-xl hover:shadow-lg transition flex items-center justify-center gap-2">
+              <i class="fas fa-eye"></i>
+              <span>{% trans "View" %}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="mt-8 flex justify-center">
+      <nav class="flex items-center gap-2">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" 
+             class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center justify-center">
+            <i class="fas fa-chevron-left"></i>
+          </a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <span class="w-10 h-10 rounded-lg bg-primary text-white font-medium flex items-center justify-center">{{ num }}</span>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" 
+               class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center justify-center">{{ num }}</a>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" 
+             class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center justify-center">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        {% endif %}
+      </nav>
+    </div>
+    {% endif %}
+
+  {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-16">
+      <div class="w-24 h-24 mx-auto mb-6 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+        <i class="fas fa-box-open text-4xl text-gray-300 dark:text-gray-600"></i>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+        {% trans "No products found" %}
+      </h3>
+      <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
+        {% if q %}
+          {% trans "Try different search terms or clear your filters." %}
+        {% else %}
+          {% trans "Try adjusting your search criteria or browse all available products." %}
+        {% endif %}
+      </p>
+      <a href="{% url 'product_list' %}" class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-medium hover:bg-secondary transition">
+        <i class="fas fa-th-large"></i>
+        {% trans "View all products" %}
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+  /* Mobile-spezifische Klasse mit höherer Spezifität */
+  @media (max-width: 767px) {
+    .filter-form-mobile-hidden {
+      display: none !important;
+    }
+    .filter-form-mobile-visible {
+      display: block !important;
+    }
+  }
+  
+  /* Desktop: immer sichtbar */
+  @media (min-width: 768px) {
+    .filter-form-mobile-hidden,
+    .filter-form-mobile-visible {
+      display: block !important;
+    }
+  }
+  
+  /* Line clamp utilities */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Custom scrollbar */
+  select::-webkit-scrollbar {
+    width: 8px;
+  }
+  select::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  select::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+  
+  /* Smooth transitions */
+  .group {
+    touch-action: manipulation;
+  }
+  
+  input:focus, select:focus {
+    outline: none;
+  }
+  
+  .rotate-180 {
+    transform: rotate(180deg);
+  }
+  
+  /* Animation für Boosted-Badge */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Mobile filter toggle
+    const filterToggle = document.getElementById('filterToggle');
+    const filterForm = document.getElementById('filterForm');
+    const filterArrow = document.getElementById('filterArrow');
+    
+    if (filterToggle && filterForm) {
+      filterToggle.addEventListener('click', function() {
+        if (filterForm.classList.contains('filter-form-mobile-hidden')) {
+          filterForm.classList.remove('filter-form-mobile-hidden');
+          filterForm.classList.add('filter-form-mobile-visible');
+        } else {
+          filterForm.classList.remove('filter-form-mobile-visible');
+          filterForm.classList.add('filter-form-mobile-hidden');
+        }
+        
+        if (filterArrow) {
+          filterArrow.classList.toggle('rotate-180');
+        }
+      });
+    }
+    
+    // Sort dropdown außerhalb des Forms - verknüpfen mit hidden input
+    const sortSelect = document.getElementById('sortSelect');
+    const sortInput = document.getElementById('sortInput');
+    const filterFormElement = document.getElementById('filterForm');
+    
+    if (sortSelect && sortInput && filterFormElement) {
+      sortSelect.addEventListener('change', function() {
+        sortInput.value = this.value;
+        filterFormElement.submit();
+      });
+    }
+  });
+</script>
+{% endblock %}

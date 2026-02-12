@@ -1,80 +1,772 @@
 {% extends "base.html" %}
 {% load i18n %}
 
+{% block title %}{{ profile_user.get_full_name|default:profile_user.username }} | {% trans "Profile" %}{% endblock %}
+
 {% block content %}
-<div class="max-w-4xl mx-auto bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-8 transition">
-  
-  <!-- Profilkopf -->
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
-      {% trans "Profile of" %} {{ profile_user.username }}
-    </h1>
-    <span class="px-3 py-1 text-xs rounded-full 
-      {% if profile_type == 'company' %} bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-100
-      {% elif profile_type == 'freelancer' %} bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-100
-      {% elif profile_type == 'sonstiges' %} bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-100
-      {% endif %}">
-      {{ profile_type|title }}
-    </span>
-  </div>
-
-  <!-- Profilinformationen -->
-  <div class="space-y-6">
-    {% if profile_type == "company" %}
-      <div>
-        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">{% trans "Company Details" %}</h2>
-        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
-          <p><span class="font-medium">{% trans "Company" %}:</span> {{ profile.company_name }}</p>
-          <p><span class="font-medium">{% trans "Employees" %}:</span> {{ profile.employee_count }}</p>
-          <p><span class="font-medium">{% trans "Type" %}:</span> {{ profile.company_type }}</p>
-          <p><span class="font-medium">{% trans "Phone" %}:</span> {{ profile.phone }}</p>
-          <p><span class="font-medium">{% trans "Website" %}:</span> <a href="{{ profile.website }}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ profile.website }}</a></p>
-          <p><span class="font-medium">{% trans "Address" %}:</span> {{ profile.address }}</p>
-          <p><span class="font-medium">{% trans "Location" %}:</span> {{ profile.location }}</p>
+<div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+  <!-- Profile Header Card -->
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+    <div class="p-6 md:p-8">
+      <div class="flex flex-col md:flex-row md:items-start gap-6">
+        
+        <!-- Avatar -->
+        <div class="flex-shrink-0 mx-auto md:mx-0">
+          <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-4xl md:text-5xl font-bold shadow-lg">
+            {% if profile_user.profile_image %}
+              <img src="{{ profile_user.profile_image.url }}" alt="" class="w-full h-full object-cover rounded-full">
+            {% else %}
+              {{ profile_user.username|first|upper }}
+            {% endif %}
+          </div>
         </div>
-        {% if profile.description %}
-          <p class="mt-4 text-gray-700 dark:text-gray-300">{{ profile.description|linebreaks }}</p>
-        {% endif %}
-      </div>
 
-    {% elif profile_type == "freelancer" %}
-      <div>
-        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">{% trans "Freelancer Details" %}</h2>
-        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
-          <p><span class="font-medium">{% trans "Skills" %}:</span> {{ profile.skills }}</p>
-          <p><span class="font-medium">{% trans "Hourly Rate" %}:</span> {{ profile.hourly_rate }} €</p>
-          <p><span class="font-medium">{% trans "Phone" %}:</span> {{ profile.phone }}</p>
-          <p><span class="font-medium">{% trans "Website" %}:</span> <a href="{{ profile.website }}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ profile.website }}</a></p>
-          <p><span class="font-medium">{% trans "Availability" %}:</span> {{ profile.availability }}</p>
-          <p><span class="font-medium">{% trans "Location" %}:</span> {{ profile.location }}</p>
-          <p><span class="font-medium">{% trans "Languages" %}:</span> {{ profile.languages }}</p>
-          <p><span class="font-medium">{% trans "Certifications" %}:</span> {{ profile.certifications }}</p>
-          <p><span class="font-medium">{% trans "Portfolio" %}:</span> <a href="{{ profile.portfolio_link }}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ profile.portfolio_link }}</a></p>
+        <!-- Info -->
+        <div class="flex-1 text-center md:text-left">
+          <div class="flex flex-col md:flex-row md:items-center gap-3 mb-2">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+              {% if profile.company_name %}
+                {{ profile.company_name }}
+              {% else %}
+                {{ profile_user.username|first|upper }}
+              {% endif %}
+            </h1>
+            <span class="px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wide mx-auto md:mx-0 w-fit
+              {% if profile_type == 'company' %}bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800
+              {% elif profile_type == 'freelancer' %}bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800
+              {% else %}bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200 dark:border-purple-800{% endif %}">
+              <i class="fas {% if profile_type == 'company' %}fa-building{% elif profile_type == 'freelancer' %}fa-user-tie{% else %}fa-user{% endif %} mr-1"></i>
+              {{ profile_type|title }}
+            </span>
+          </div>
+          
+          <p class="text-gray-500 dark:text-gray-400 mb-4">@{{ profile_user.username }}</p>
+          
+          <!-- Rating Summary -->
+          <div class="flex items-center justify-center md:justify-start gap-2 mb-4">
+            <div class="flex items-center gap-1">
+              {% for i in "12345" %}
+                {% if forloop.counter <= average_rating|default:0 %}
+                  <i class="fas fa-star text-yellow-400"></i>
+                {% elif forloop.counter <= average_rating|add:0.5|default:0 %}
+                  <i class="fas fa-star-half-alt text-yellow-400"></i>
+                {% else %}
+                  <i class="far fa-star text-gray-300 dark:text-gray-600"></i>
+                {% endif %}
+              {% endfor %}
+            </div>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ average_rating|default:"0.0" }}</span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">({{ reviews_count|default:0 }} {% trans "reviews" %})</span>
+          </div>
+          
+          <!-- Quick Stats -->
+          <div class="flex flex-wrap justify-center md:justify-start gap-4 text-sm">
+            <span class="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
+              <i class="fas fa-eye text-gray-400"></i>
+              {{ profile.visitor_count|default:0 }} {% trans "visits" %}
+            </span>
+            {% if profile.location %}
+            <span class="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
+              <i class="fas fa-map-marker-alt text-gray-400"></i>
+              {{ profile.location }}
+            </span>
+            {% endif %}
+            {% if profile_user.date_joined %}
+            <span class="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
+              <i class="fas fa-calendar text-gray-400"></i>
+              {% trans "Member since" %} {{ profile_user.date_joined|date:"Y" }}
+            </span>
+            {% endif %}
+          </div>
         </div>
-      </div>
 
-    {% elif profile_type == "sonstiges" %}
-      <div>
-        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">{% trans "Other Profile" %}</h2>
-        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
-          <p><span class="font-medium">{% trans "Additional Info" %}:</span> {{ profile.additional_info }}</p>
-          <p><span class="font-medium">{% trans "Portfolio" %}:</span> <a href="{{ profile.portfolio_link }}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ profile.portfolio_link }}</a></p>
-          <p><span class="font-medium">{% trans "Availability" %}:</span> {{ profile.availability }}</p>
-          <p><span class="font-medium">{% trans "Location" %}:</span> {{ profile.location }}</p>
-          <p><span class="font-medium">{% trans "Languages" %}:</span> {{ profile.languages }}</p>
-          <p><span class="font-medium">{% trans "Certifications" %}:</span> {{ profile.certifications }}</p>
-          {% if profile.resume %}
-            <p><span class="font-medium">{% trans "Resume" %}:</span> <a href="{{ profile.resume.url }}" class="text-blue-600 dark:text-blue-400 hover:underline">{% trans "Download" %}</a></p>
+        <!-- Actions -->
+        <div class="flex-shrink-0 flex flex-col gap-2">
+          {% if user.is_authenticated and user != profile_user %}
+          <button onclick="openReviewModal()" 
+                  class="bg-white dark:bg-gray-700 border-2 border-primary text-primary dark:text-primary font-semibold py-2.5 px-6 rounded-xl hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white transition flex items-center justify-center gap-2">
+            <i class="fas fa-star"></i>
+            {% trans "Write Review" %}
+          </button>
+          {% endif %}
+          
+          {% if user == profile_user %}
+          <a href="{% url 'edit_profile' %}" 
+             class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium py-2.5 px-6 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center justify-center gap-2">
+            <i class="fas fa-edit"></i>
+            {% trans "Edit Profile" %}
+          </a>
           {% endif %}
         </div>
       </div>
-    {% endif %}
+    </div>
   </div>
 
-  <!-- Footer -->
-  <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-4 flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
-    <span>{% trans "Visitors" %}: {{ profile.visitor_count }}</span>
-    <a href="javascript:history.back()" class="hover:underline">{% trans "Back" %}</a>
+  <!-- Tabs Navigation -->
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 mb-6 overflow-hidden">
+    <div class="flex overflow-x-auto scrollbar-hide">
+      <button onclick="switchTab('about')" id="tab-about" 
+              class="tab-btn flex-1 py-4 px-6 text-center font-medium text-primary border-b-2 border-primary bg-primary/5 dark:bg-primary/10 transition whitespace-nowrap">
+        <i class="fas fa-user mr-2"></i>{% trans "About" %}
+      </button>
+      <button onclick="switchTab('products')" id="tab-products" 
+              class="tab-btn flex-1 py-4 px-6 text-center font-medium text-gray-500 dark:text-gray-400 border-b-2 border-transparent hover:text-gray-700 dark:hover:text-gray-200 transition whitespace-nowrap">
+        <i class="fas fa-box mr-2"></i>{% trans "Products" %} <span class="ml-1 text-xs bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full">{{ products|length }}</span>
+      </button>
+      <button onclick="switchTab('reviews')" id="tab-reviews" 
+              class="tab-btn flex-1 py-4 px-6 text-center font-medium text-gray-500 dark:text-gray-400 border-b-2 border-transparent hover:text-gray-700 dark:hover:text-gray-200 transition whitespace-nowrap">
+        <i class="fas fa-comments mr-2"></i>{% trans "Reviews" %} <span class="ml-1 text-xs bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full">{{ reviews_count|default:0 }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    
+    <!-- Main Content Area -->
+    <div class="lg:col-span-2 space-y-6">
+      
+      <!-- TAB: About -->
+      <div id="content-about" class="tab-content space-y-6">
+        <!-- About / Description -->
+        {% if profile.description %}
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 md:p-8">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <i class="fas fa-user-circle text-primary"></i>
+            {% trans "About" %}
+          </h2>
+          <div class="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed">
+            {{ profile.description|linebreaks }}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Type Specific Details -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 md:p-8">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+            {% if profile_type == 'company' %}
+              <i class="fas fa-building text-primary"></i>{% trans "Company Details" %}
+            {% elif profile_type == 'freelancer' %}
+              <i class="fas fa-briefcase text-primary"></i>{% trans "Professional Details" %}
+            {% else %}
+              <i class="fas fa-info-circle text-primary"></i>{% trans "Profile Details" %}
+            {% endif %}
+          </h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+            
+            {% if profile_type == 'company' %}
+              <!-- Company Fields -->
+              {% if profile.company_name %}
+              <div class="flex items-start gap-3">
+                <i class="fas fa-building text-gray-400 mt-1"></i>
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Company" %}</p>
+                  <p class="font-medium text-gray-900 dark:text-white">{{ profile.company_name }}</p>
+                </div>
+              </div>
+              {% endif %}
+              
+              {% if profile.employee_count %}
+              <div class="flex items-start gap-3">
+                <i class="fas fa-users text-gray-400 mt-1"></i>
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Employees" %}</p>
+                  <p class="font-medium text-gray-900 dark:text-white">{{ profile.employee_count }}</p>
+                </div>
+              </div>
+              {% endif %}
+              
+              {% if profile.company_type %}
+              <div class="flex items-start gap-3">
+                <i class="fas fa-industry text-gray-400 mt-1"></i>
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Type" %}</p>
+                  <p class="font-medium text-gray-900 dark:text-white">{{ profile.company_type }}</p>
+                </div>
+              </div>
+              {% endif %}
+
+            {% elif profile_type == 'freelancer' %}
+              <!-- Freelancer Fields -->
+              {% if profile.skills %}
+              <div class="flex items-start gap-3 md:col-span-2">
+                <i class="fas fa-tags text-gray-400 mt-1"></i>
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{% trans "Skills" %}</p>
+                  <div class="flex flex-wrap gap-2">
+                    {% for skill in profile.skills.split %}
+                    <span class="px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary text-sm font-medium rounded-full border border-primary/20">
+                      {{ skill }}
+                    </span>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              
+              {% if profile.hourly_rate %}
+              <div class="flex items-start gap-3">
+                <i class="fas fa-euro-sign text-gray-400 mt-1"></i>
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Hourly Rate" %}</p>
+                  <p class="font-medium text-gray-900 dark:text-white">{{ profile.hourly_rate }} €</p>
+                </div>
+              </div>
+              {% endif %}
+              
+              {% if profile.availability %}
+              <div class="flex items-start gap-3">
+                <i class="fas fa-clock text-gray-400 mt-1"></i>
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Availability" %}</p>
+                  <p class="font-medium text-gray-900 dark:text-white">{{ profile.availability }}</p>
+                </div>
+              </div>
+              {% endif %}
+              
+              {% if profile.certifications %}
+              <div class="flex items-start gap-3 md:col-span-2">
+                <i class="fas fa-certificate text-gray-400 mt-1"></i>
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Certifications" %}</p>
+                  <p class="font-medium text-gray-900 dark:text-white">{{ profile.certifications }}</p>
+                </div>
+              </div>
+              {% endif %}
+
+            {% else %}
+              <!-- Other Fields -->
+              {% if profile.additional_info %}
+              <div class="flex items-start gap-3 md:col-span-2">
+                <i class="fas fa-info-circle text-gray-400 mt-1"></i>
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Additional Info" %}</p>
+                  <p class="font-medium text-gray-900 dark:text-white">{{ profile.additional_info }}</p>
+                </div>
+              </div>
+              {% endif %}
+            {% endif %}
+
+            <!-- Common Fields -->
+            {% if profile.phone %}
+            <div class="flex items-start gap-3">
+              <i class="fas fa-phone text-gray-400 mt-1"></i>
+              <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Phone" %}</p>
+                <p class="font-medium text-gray-900 dark:text-white">{{ profile.phone }}</p>
+              </div>
+            </div>
+            {% endif %}
+            
+            {% if profile.website %}
+            <div class="flex items-start gap-3">
+              <i class="fas fa-globe text-gray-400 mt-1"></i>
+              <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Website" %}</p>
+                <a href="{{ profile.website }}" target="_blank" rel="noopener" class="font-medium text-primary hover:underline break-all">
+                  {{ profile.website|truncatechars:30 }}
+                </a>
+              </div>
+            </div>
+            {% endif %}
+            
+            {% if profile.languages %}
+            <div class="flex items-start gap-3">
+              <i class="fas fa-language text-gray-400 mt-1"></i>
+              <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Languages" %}</p>
+                <p class="font-medium text-gray-900 dark:text-white">{{ profile.languages }}</p>
+              </div>
+            </div>
+            {% endif %}
+            
+            {% if profile.address %}
+            <div class="flex items-start gap-3 md:col-span-2">
+              <i class="fas fa-map-marker-alt text-gray-400 mt-1"></i>
+              <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Address" %}</p>
+                <p class="font-medium text-gray-900 dark:text-white">{{ profile.address }}</p>
+              </div>
+            </div>
+            {% endif %}
+            
+            {% if profile.portfolio_link %}
+            <div class="flex items-start gap-3 md:col-span-2">
+              <i class="fas fa-briefcase text-gray-400 mt-1"></i>
+              <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Portfolio" %}</p>
+                <a href="{{ profile.portfolio_link }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 font-medium text-primary hover:underline">
+                  {{ profile.portfolio_link|truncatechars:40 }}
+                  <i class="fas fa-external-link-alt text-xs"></i>
+                </a>
+              </div>
+            </div>
+            {% endif %}
+            
+            {% if profile.resume %}
+            <div class="flex items-start gap-3 md:col-span-2">
+              <i class="fas fa-file-pdf text-gray-400 mt-1"></i>
+              <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Resume" %}</p>
+                <a href="{{ profile.resume.url }}" class="inline-flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg font-medium hover:bg-red-100 transition">
+                  <i class="fas fa-download"></i>
+                  {% trans "Download CV" %}
+                </a>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Products -->
+      <div id="content-products" class="tab-content hidden space-y-6">
+        {% if products %}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for product in products %}
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden group hover:shadow-xl transition-all duration-300">
+              <!-- Product Image -->
+              <div class="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
+                {% if product.main_image_url %}
+                  <img src="{{ product.main_image_url }}" alt="{{ product.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                {% else %}
+                  <div class="w-full h-full flex items-center justify-center text-gray-400">
+                    <i class="fas fa-image text-4xl"></i>
+                  </div>
+                {% endif %}
+                {% if product.is_boosted %}
+                <div class="absolute top-3 right-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                  <i class="fas fa-bolt mr-1"></i>{% trans "Boosted" %}
+                </div>
+                {% endif %}
+                {% if not product.is_active %}
+                <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
+                  <span class="bg-gray-900 text-white px-4 py-2 rounded-lg font-medium">{% trans "Not Available" %}</span>
+                </div>
+                {% endif %}
+              </div>
+              
+              <!-- Product Info -->
+              <div class="p-5">
+                <div class="flex justify-between items-start mb-2">
+                  <h3 class="text-lg font-bold text-gray-900 dark:text-white line-clamp-1" title="{{ product.title }}">
+                    {{ product.title }}
+                  </h3>
+                  {% if product.price %}
+                  <span class="text-lg font-bold text-primary">{{ product.price }} €</span>
+                  {% else %}
+                  <span class="text-sm font-medium text-gray-500 dark:text-gray-400">{% trans "Price on request" %}</span>
+                  {% endif %}
+                </div>
+                
+                <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 mb-4">
+                  {{ product.description|default:"No description available"|truncatewords:20 }}
+                </p>
+                
+                <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-4">
+                  <span class="flex items-center gap-1">
+                    <i class="fas fa-eye"></i> {{ product.views|default:0 }} {% trans "views" %}
+                  </span>
+                  <span>{{ product.created_at|date:"M Y" }}</span>
+                </div>
+                
+                <a href="{% url 'product_detail' slug=product.slug %}" 
+                   class="block w-full text-center bg-primary/10 dark:bg-primary/20 text-primary font-semibold py-2 rounded-xl hover:bg-primary hover:text-white transition">
+                  {% trans "View Details" %}
+                </a>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
+            <div class="w-20 h-20 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+              <i class="fas fa-box-open text-3xl text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{% trans "No Products Yet" %}</h3>
+            <p class="text-gray-500 dark:text-gray-400">{% trans "This user hasn't listed any products yet." %}</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- TAB: Reviews -->
+      <div id="content-reviews" class="tab-content hidden space-y-6">
+        <!-- Reviews Summary -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+          <div class="flex flex-col md:flex-row items-center gap-6">
+            <div class="text-center">
+              <div class="text-5xl font-bold text-gray-900 dark:text-white mb-2">{{ average_rating|default:"0.0" }}</div>
+              <div class="flex justify-center gap-1 mb-2">
+                {% for i in "12345" %}
+                  {% if forloop.counter <= average_rating|default:0 %}
+                    <i class="fas fa-star text-yellow-400 text-lg"></i>
+                  {% elif forloop.counter <= average_rating|add:0.5|default:0 %}
+                    <i class="fas fa-star-half-alt text-yellow-400 text-lg"></i>
+                  {% else %}
+                    <i class="far fa-star text-gray-300 dark:text-gray-600 text-lg"></i>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Based on" %} {{ reviews_count|default:0 }} {% trans "reviews" %}</p>
+            </div>
+            
+            <!-- Rating Bars - Ohne Custom Filter -->
+            <div class="flex-1 w-full md:w-auto space-y-2">
+              <!-- 5 Stars -->
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400 w-8">5 {% trans "stars" %}</span>
+                <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div class="h-full bg-yellow-400 rounded-full" style="width: {{ rating_percentages.5|default:0 }}%"></div>
+                </div>
+                <span class="text-sm text-gray-500 dark:text-gray-400 w-10 text-right">{{ rating_counts.5|default:0 }}</span>
+              </div>
+              <!-- 4 Stars -->
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400 w-8">4 {% trans "stars" %}</span>
+                <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div class="h-full bg-yellow-400 rounded-full" style="width: {{ rating_percentages.4|default:0 }}%"></div>
+                </div>
+                <span class="text-sm text-gray-500 dark:text-gray-400 w-10 text-right">{{ rating_counts.4|default:0 }}</span>
+              </div>
+              <!-- 3 Stars -->
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400 w-8">3 {% trans "stars" %}</span>
+                <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div class="h-full bg-yellow-400 rounded-full" style="width: {{ rating_percentages.3|default:0 }}%"></div>
+                </div>
+                <span class="text-sm text-gray-500 dark:text-gray-400 w-10 text-right">{{ rating_counts.3|default:0 }}</span>
+              </div>
+              <!-- 2 Stars -->
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400 w-8">2 {% trans "stars" %}</span>
+                <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div class="h-full bg-yellow-400 rounded-full" style="width: {{ rating_percentages.2|default:0 }}%"></div>
+                </div>
+                <span class="text-sm text-gray-500 dark:text-gray-400 w-10 text-right">{{ rating_counts.2|default:0 }}</span>
+              </div>
+              <!-- 1 Star -->
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400 w-8">1 {% trans "star" %}</span>
+                <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div class="h-full bg-yellow-400 rounded-full" style="width: {{ rating_percentages.1|default:0 }}%"></div>
+                </div>
+                <span class="text-sm text-gray-500 dark:text-gray-400 w-10 text-right">{{ rating_counts.1|default:0 }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews List -->
+        {% if reviews %}
+          <div class="space-y-4">
+            {% for review in reviews %}
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold">
+                    {{ review.reviewer.username|first|upper }}
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-gray-900 dark:text-white">{{ review.reviewer.username }}</h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ review.created_at|date:"F Y" }}</p>
+                  </div>
+                </div>
+                <div class="flex gap-1">
+                  {% for i in "12345" %}
+                    {% if forloop.counter <= review.rating %}
+                      <i class="fas fa-star text-yellow-400"></i>
+                    {% else %}
+                      <i class="far fa-star text-gray-300 dark:text-gray-600"></i>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+              
+              {% if review.title %}
+              <h5 class="font-semibold text-gray-900 dark:text-white mb-2">{{ review.title }}</h5>
+              {% endif %}
+              <p class="text-gray-600 dark:text-gray-300 leading-relaxed">{{ review.comment }}</p>
+              
+              {% if review.project %}
+              <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <span class="text-xs text-gray-500 dark:text-gray-400">
+                  <i class="fas fa-briefcase mr-1"></i>{% trans "Project:" %} {{ review.project.title|default:review.project }}
+                </span>
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+          
+          <!-- Pagination -->
+          {% if reviews.has_other_pages %}
+          <div class="flex justify-center gap-2 mt-6">
+            {% if reviews.has_previous %}
+            <a href="?tab=reviews&page={{ reviews.previous_page_number }}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+              <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+            
+            {% for num in reviews.paginator.page_range %}
+              {% if reviews.number == num %}
+              <span class="px-4 py-2 bg-primary text-white rounded-lg">{{ num }}</span>
+              {% else %}
+              <a href="?tab=reviews&page={{ num }}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">{{ num }}</a>
+              {% endif %}
+            {% endfor %}
+            
+            {% if reviews.has_next %}
+            <a href="?tab=reviews&page={{ reviews.next_page_number }}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+              <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+          </div>
+          {% endif %}
+        {% else %}
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
+            <div class="w-20 h-20 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+              <i class="fas fa-comment-slash text-3xl text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{% trans "No Reviews Yet" %}</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-6">{% trans "Be the first to review this profile!" %}</p>
+            {% if user.is_authenticated and user != profile_user %}
+            <button onclick="openReviewModal()" class="bg-primary text-white px-6 py-2 rounded-xl hover:bg-primary/90 transition">
+              {% trans "Write a Review" %}
+            </button>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+
+    <!-- Sidebar -->
+    <div class="space-y-6">
+      
+      <!-- Contact Card -->
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          <i class="fas fa-address-card text-primary"></i>
+          {% trans "Contact" %}
+        </h3>
+        
+        <div class="space-y-3">
+          {% if profile_user.email %}
+          <a href="mailto:{{ profile_user.email }}" class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition group">
+            <div class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-gray-500 dark:text-gray-400">{% trans "Email" %}</p>
+              <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ profile_user.email }}</p>
+            </div>
+          </a>
+          {% endif %}
+          
+          {% if profile.phone %}
+          <a href="tel:{{ profile.phone }}" class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition group">
+            <div class="w-10 h-10 rounded-lg bg-green-500/10 text-green-600 flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition">
+              <i class="fas fa-phone"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-gray-500 dark:text-gray-400">{% trans "Phone" %}</p>
+              <p class="text-sm font-medium text-gray-900 dark:text-white">{{ profile.phone }}</p>
+            </div>
+          </a>
+          {% endif %}
+          
+          {% if profile.website %}
+          <a href="{{ profile.website }}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition group">
+            <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition">
+              <i class="fas fa-globe"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-gray-500 dark:text-gray-400">{% trans "Website" %}</p>
+              <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ profile.website|truncatechars:25 }}</p>
+            </div>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Stats Card -->
+      <div class="bg-gradient-to-br from-primary to-secondary rounded-2xl shadow-lg p-6 text-white">
+        <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+          <i class="fas fa-chart-bar"></i>
+          {% trans "Statistics" %}
+        </h3>
+        
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-white/80">{% trans "Profile Views" %}</span>
+            <span class="text-2xl font-bold">{{ profile.visitor_count|default:0 }}</span>
+          </div>
+          <div class="h-px bg-white/20"></div>
+          <div class="flex items-center justify-between">
+            <span class="text-white/80">{% trans "Member Since" %}</span>
+            <span class="font-medium">{{ profile_user.date_joined|date:"M Y" }}</span>
+          </div>
+          {% if profile_type == 'freelancer' and profile.completed_projects %}
+          <div class="h-px bg-white/20"></div>
+          <div class="flex items-center justify-between">
+            <span class="text-white/80">{% trans "Completed Projects" %}</span>
+            <span class="text-2xl font-bold">{{ profile.completed_projects }}</span>
+          </div>
+          {% endif %}
+          <div class="h-px bg-white/20"></div>
+          <div class="flex items-center justify-between">
+            <span class="text-white/80">{% trans "Products" %}</span>
+            <span class="text-2xl font-bold">{{ products|length }}</span>
+          </div>
+          <div class="h-px bg-white/20"></div>
+          <div class="flex items-center justify-between">
+            <span class="text-white/80">{% trans "Reviews" %}</span>
+            <span class="text-2xl font-bold">{{ reviews_count|default:0 }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Share -->
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white mb-3">{% trans "Share Profile" %}</h3>
+        <div class="flex gap-2">
+          <button onclick="navigator.clipboard.writeText(window.location.href); alert('{% trans "Link copied!" %}')" 
+                  class="flex-1 py-2 px-3 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition text-sm">
+            <i class="fas fa-link mr-1"></i>{% trans "Copy Link" %}
+          </button>
+          <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text=Check out {{ profile_user.username }} on our platform!" 
+             target="_blank" rel="noopener"
+             class="py-2 px-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri|urlencode }}" 
+             target="_blank" rel="noopener"
+             class="py-2 px-3 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition text-sm">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back Button -->
+  <div class="mt-8 text-center">
+    <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-primary transition">
+      <i class="fas fa-arrow-left"></i>
+      {% trans "Back to previous page" %}
+    </a>
   </div>
 </div>
+
+<!-- Review Modal -->
+{% if user.is_authenticated and user != profile_user %}
+<div id="reviewModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+      <h3 class="text-xl font-bold text-gray-900 dark:text-white">{% trans "Write a Review" %}</h3>
+      <button onclick="closeReviewModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+        <i class="fas fa-times text-xl"></i>
+      </button>
+    </div>
+    
+    <form method="post" action="{% url 'add_review' username=profile_user.username %}" class="p-6 space-y-4">
+      {% csrf_token %}
+      
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% trans "Rating" %}</label>
+        <div class="flex gap-2 justify-center" id="starRating">
+          {% for i in "12345" %}
+          <button type="button" onclick="setRating({{ forloop.counter }})" 
+                  class="star-btn text-3xl text-gray-300 dark:text-gray-600 hover:text-yellow-400 transition"
+                  data-rating="{{ forloop.counter }}">
+            <i class="fas fa-star"></i>
+          </button>
+          {% endfor %}
+        </div>
+        <input type="hidden" name="rating" id="ratingInput" required>
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{% trans "Title" %}</label>
+        <input type="text" name="title" class="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="{% trans 'Summarize your experience' %}">
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{% trans "Review" %}</label>
+        <textarea name="comment" rows="4" required class="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="{% trans 'Share your experience with this user...' %}"></textarea>
+      </div>
+      
+      <div class="pt-4">
+        <button type="submit" class="w-full bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 rounded-xl hover:shadow-lg transition">
+          {% trans "Submit Review" %}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+<script>
+  // Tab Switching
+  function switchTab(tabName) {
+    // Hide all contents
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    document.getElementById('content-' + tabName).classList.remove('hidden');
+    
+    // Reset all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('text-primary', 'border-primary', 'bg-primary/5', 'dark:bg-primary/10');
+      btn.classList.add('text-gray-500', 'dark:text-gray-400', 'border-transparent');
+    });
+    
+    // Activate current button
+    const activeBtn = document.getElementById('tab-' + tabName);
+    activeBtn.classList.remove('text-gray-500', 'dark:text-gray-400', 'border-transparent');
+    activeBtn.classList.add('text-primary', 'border-primary', 'bg-primary/5', 'dark:bg-primary/10');
+    
+    // Update URL without reload
+    const url = new URL(window.location);
+    url.searchParams.set('tab', tabName);
+    window.history.pushState({}, '', url);
+  }
+  
+  // Check URL params on load
+  document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    if (tab && ['about', 'products', 'reviews'].includes(tab)) {
+      switchTab(tab);
+    }
+  });
+  
+  // Review Modal
+  function openReviewModal() {
+    document.getElementById('reviewModal').classList.remove('hidden');
+    document.getElementById('reviewModal').classList.add('flex');
+  }
+  
+  function closeReviewModal() {
+    document.getElementById('reviewModal').classList.add('hidden');
+    document.getElementById('reviewModal').classList.remove('flex');
+  }
+  
+  // Star Rating
+  function setRating(rating) {
+    document.getElementById('ratingInput').value = rating;
+    document.querySelectorAll('.star-btn').forEach((btn, index) => {
+      if (index < rating) {
+        btn.classList.remove('text-gray-300', 'dark:text-gray-600');
+        btn.classList.add('text-yellow-400');
+      } else {
+        btn.classList.add('text-gray-300', 'dark:text-gray-600');
+        btn.classList.remove('text-yellow-400');
+      }
+    });
+  }
+  
+  // Close modal on outside click
+  document.getElementById('reviewModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeReviewModal();
+  });
+</script>
 {% endblock %}

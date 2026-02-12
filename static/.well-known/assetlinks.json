@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "co.median.android.eeneopp",
+      "sha256_cert_fingerprints": [
+        "79:AF:6B:93:9C:A2:54:FA:40:58:D4:0C:CC:BB:8E:85:C6:28:D8:A2:15:99:A7:3F:B6:53:AC:D1:29:9C:A6:46"
+      ]
+    }
+  }
+]

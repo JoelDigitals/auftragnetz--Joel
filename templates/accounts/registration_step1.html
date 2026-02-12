@@ -1,15 +1,255 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Registration Step 1" %}{% endblock %}
+{% block title %}{% trans "Choose Your Role" %}{% endblock %}
 
 {% block content %}
-<h2>{% trans "Choose your role" %}</h2>
-<form method="post">
-    {% csrf_token %}
-    <label><input type="radio" name="role" value="freelancer"> {% trans "Freelancer" %}</label><br>
-    <label><input type="radio" name="role" value="company"> {% trans "Company" %}</label><br>
-    <label><input type="radio" name="role" value="self_employed"> {% trans "Self-employed" %}</label><br>
-    <button type="submit">{% trans "Next" %}</button>
-</form>
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-8 md:py-12">
+  <div class="w-full max-w-lg">
+    
+    <!-- Progress Steps -->
+    <div class="flex items-center justify-center mb-8">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">1</div>
+        <div class="w-16 h-1 bg-gray-200 dark:bg-gray-700 rounded-full">
+          <div class="w-0 h-full bg-primary rounded-full transition-all duration-500"></div>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 flex items-center justify-center text-sm font-bold">2</div>
+        <div class="w-16 h-1 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+        <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 flex items-center justify-center text-sm font-bold">3</div>
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden">
+      <!-- Header -->
+      <div class="bg-gradient-to-br from-primary to-secondary p-6 md:p-8 text-center relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+          <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+        </div>
+        <div class="relative z-10">
+          <div class="w-16 h-16 mx-auto mb-4 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+            <i class="fas fa-user-tag text-3xl text-white"></i>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
+            {% trans "Choose Your Role" %}
+          </h1>
+          <p class="text-white/80 text-sm md:text-base">
+            {% trans "Select how you want to use Auftragnetz" %}
+          </p>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="p-6 md:p-8">
+        <form method="post" id="roleForm" class="space-y-4">
+          {% csrf_token %}
+
+          <!-- Role Options -->
+          <div class="space-y-3">
+            <!-- Freelancer -->
+            <label class="role-option group relative flex items-center p-4 md:p-5 bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-2xl cursor-pointer transition-all duration-200 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10">
+              <input type="radio" name="role" value="freelancer" class="sr-only" required>
+              <div class="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <i class="fas fa-laptop-code text-2xl md:text-3xl text-white"></i>
+              </div>
+              <div class="ml-4 flex-1">
+                <h3 class="font-bold text-gray-900 dark:text-white text-lg md:text-xl mb-1">
+                  {% trans "Freelancer" %}
+                </h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  {% trans "Offer your skills and find projects" %}
+                </p>
+              </div>
+              <div class="check-indicator w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-500 flex items-center justify-center transition-all duration-200 ml-3">
+                <i class="fas fa-check text-white text-xs opacity-0 transform scale-0 transition-all duration-200"></i>
+              </div>
+            </label>
+
+            <!-- Company -->
+            <label class="role-option group relative flex items-center p-4 md:p-5 bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-2xl cursor-pointer transition-all duration-200 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10">
+              <input type="radio" name="role" value="company" class="sr-only">
+              <div class="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <i class="fas fa-building text-2xl md:text-3xl text-white"></i>
+              </div>
+              <div class="ml-4 flex-1">
+                <h3 class="font-bold text-gray-900 dark:text-white text-lg md:text-xl mb-1">
+                  {% trans "Company" %}
+                </h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  {% trans "Post jobs and find talent" %}
+                </p>
+              </div>
+              <div class="check-indicator w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-500 flex items-center justify-center transition-all duration-200 ml-3">
+                <i class="fas fa-check text-white text-xs opacity-0 transform scale-0 transition-all duration-200"></i>
+              </div>
+            </label>
+
+            <!-- Self-employed -->
+            <label class="role-option group relative flex items-center p-4 md:p-5 bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-2xl cursor-pointer transition-all duration-200 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10">
+              <input type="radio" name="role" value="self_employed" class="sr-only">
+              <div class="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <i class="fas fa-briefcase text-2xl md:text-3xl text-white"></i>
+              </div>
+              <div class="ml-4 flex-1">
+                <h3 class="font-bold text-gray-900 dark:text-white text-lg md:text-xl mb-1">
+                  {% trans "Self-employed" %}
+                </h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  {% trans "Manage your own business" %}
+                </p>
+              </div>
+              <div class="check-indicator w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-500 flex items-center justify-center transition-all duration-200 ml-3">
+                <i class="fas fa-check text-white text-xs opacity-0 transform scale-0 transition-all duration-200"></i>
+              </div>
+            </label>
+          </div>
+
+          <!-- Error Message -->
+          {% if form.role.errors %}
+          <div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3 text-red-600 dark:text-red-400">
+            <i class="fas fa-exclamation-circle text-xl"></i>
+            <span class="text-sm font-medium">{{ form.role.errors.0 }}</span>
+          </div>
+          {% endif %}
+
+          <!-- Submit Button -->
+          <button type="submit" id="submitBtn" class="w-full mt-6 py-4 px-6 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-bold text-lg shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            <span>{% trans "Continue" %}</span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </form>
+
+        <!-- Back Link -->
+        <div class="mt-6 text-center">
+          <a href="{% url 'register' %}" class="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition text-sm font-medium">
+            <i class="fas fa-arrow-left text-xs"></i>
+            {% trans "Back to registration" %}
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Box -->
+    <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl flex items-start gap-3">
+      <i class="fas fa-lightbulb text-blue-500 mt-0.5"></i>
+      <div class="text-sm text-blue-800 dark:text-blue-200">
+        <p class="font-medium mb-1">{% trans "Tip:" %}</p>
+        <p>{% trans "You can change your role later in your profile settings." %}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Selected state styling */
+  .role-option:has(input:checked) {
+    border-color: #0044cc;
+    background: rgba(0, 68, 204, 0.05);
+  }
+  
+  .role-option:has(input:checked) .check-indicator {
+    background: #0044cc;
+    border-color: #0044cc;
+  }
+  
+  .role-option:has(input:checked) .check-indicator i {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  /* Hover effects for non-selected */
+  .role-option:hover:not(:has(input:checked)) {
+    transform: translateX(4px);
+  }
+  
+  /* Focus visible for accessibility */
+  .role-option:focus-within {
+    outline: 2px solid #0044cc;
+    outline-offset: 2px;
+  }
+  
+  /* Smooth transitions */
+  .role-option {
+    touch-action: manipulation;
+  }
+  
+  /* Animation for selection */
+  @keyframes selectPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+  
+  .role-option:has(input:checked) {
+    animation: selectPulse 0.3s ease;
+  }
+  
+  /* Mobile optimizations */
+  @media (max-width: 640px) {
+    .role-option {
+      padding: 1rem;
+    }
+    
+    .role-option > div:first-child {
+      width: 3.5rem;
+      height: 3.5rem;
+    }
+  }
+  
+  /* Prevent zoom on iOS */
+  @media screen and (max-width: 768px) {
+    input, select, textarea {
+      font-size: 16px;
+    }
+  }
+</style>
+
+<script>
+  const form = document.getElementById('roleForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const roleOptions = document.querySelectorAll('.role-option');
+  
+  // Enable/disable submit based on selection
+  roleOptions.forEach(option => {
+    const radio = option.querySelector('input[type="radio"]');
+    
+    radio.addEventListener('change', function() {
+      // Enable submit button
+      submitBtn.disabled = false;
+      
+      // Visual feedback
+      roleOptions.forEach(opt => {
+        opt.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
+      });
+      option.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
+    });
+    
+    // Click on entire card
+    option.addEventListener('click', function(e) {
+      if (e.target !== radio) {
+        radio.checked = true;
+        radio.dispatchEvent(new Event('change'));
+      }
+    });
+  });
+  
+  // Form submission
+  form.addEventListener('submit', function() {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> <span>{% trans "Loading..." %}</span>';
+  });
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key >= '1' && e.key <= '3') {
+      const index = parseInt(e.key) - 1;
+      const radios = document.querySelectorAll('input[name="role"]');
+      if (radios[index]) {
+        radios[index].checked = true;
+        radios[index].dispatchEvent(new Event('change'));
+      }
+    }
+  });
+</script>
 {% endblock %}

@@ -4,26 +4,222 @@
 {% block title %}{% trans "Redeem Code" %}{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto px-6 py-10">
-  <h1 class="text-2xl font-bold mb-6 text-center">{% trans "Redeem a Plan Code" %}</h1>
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-8 md:py-12">
+  <div class="w-full max-w-md">
+    
+    <!-- Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden">
+      <!-- Header Image/Gradient -->
+      <div class="h-32 bg-gradient-to-br from-primary via-secondary to-purple-600 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+          <div class="absolute top-0 left-0 w-full h-full" style="background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0); background-size: 20px 20px;"></div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white dark:from-gray-800 to-transparent"></div>
+        
+        <!-- Icon -->
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
+          <div class="w-20 h-20 bg-white dark:bg-gray-800 rounded-2xl shadow-xl flex items-center justify-center border-4 border-white dark:border-gray-800">
+            <i class="fas fa-gift text-4xl text-transparent bg-clip-text bg-gradient-to-br from-primary to-secondary"></i>
+          </div>
+        </div>
+      </div>
 
-  {% if msg %}
-    <div class="mb-4 p-3 rounded-lg 
-                {% if "✅" in msg %} bg-green-100 text-green-800 
-                {% elif "⚠️" in msg %} bg-yellow-100 text-yellow-800 
-                {% else %} bg-red-100 text-red-800 {% endif %}">
-      {{ msg }}
+      <!-- Content -->
+      <div class="pt-12 pb-8 px-6 md:px-8">
+        <div class="text-center mb-8">
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            {% trans "Redeem Code" %}
+          </h1>
+          <p class="text-gray-500 dark:text-gray-400 text-sm">
+            {% trans "Enter your promo code to unlock premium features" %}
+          </p>
+        </div>
+
+        <!-- Messages -->
+        {% if msg %}
+          <div class="mb-6 p-4 rounded-xl flex items-start gap-3 animate-fade-in
+                      {% if "✅" in msg %} bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200
+                      {% elif "⚠️" in msg %} bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200
+                      {% else %} bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 {% endif %}">
+            <div class="flex-shrink-0 mt-0.5">
+              {% if "✅" in msg %}
+                <i class="fas fa-check-circle text-xl"></i>
+              {% elif "⚠️" in msg %}
+                <i class="fas fa-exclamation-triangle text-xl"></i>
+              {% else %}
+                <i class="fas fa-times-circle text-xl"></i>
+              {% endif %}
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-sm">{{ msg|cut:"✅"|cut:"⚠️"|cut:"❌" }}</p>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Form -->
+        <form method="post" class="space-y-5" id="redeemForm">
+          {% csrf_token %}
+          
+          <!-- Code Input -->
+          <div class="relative group">
+            <label for="codeInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {% trans "Promo Code" %}
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <i class="fas fa-ticket-alt text-gray-400 group-focus-within:text-primary transition-colors"></i>
+              </div>
+              <input 
+                type="text" 
+                id="codeInput"
+                name="code" 
+                placeholder="{% trans 'e.g. PREMIUM2024' %}"
+                class="w-full pl-11 pr-4 py-4 bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all uppercase text-lg tracking-wider font-mono"
+                autocomplete="off"
+                autocapitalize="characters"
+                maxlength="20"
+              >
+              <!-- Clear Button -->
+              <button 
+                type="button" 
+                id="clearBtn"
+                class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hidden"
+                onclick="document.getElementById('codeInput').value = ''; this.classList.add('hidden'); document.getElementById('codeInput').focus();"
+              >
+                <i class="fas fa-times-circle"></i>
+              </button>
+            </div>
+            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              <i class="fas fa-info-circle mr-1"></i>
+              {% trans "Codes are case-insensitive" %}
+            </p>
+          </div>
+
+          <!-- Submit Button -->
+          <button 
+            type="submit" 
+            id="submitBtn"
+            class="w-full py-4 px-6 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-bold text-lg shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          >
+            <span>{% trans "Redeem Now" %}</span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </form>
+
+        <!-- Back Link -->
+        <div class="mt-6 text-center">
+          <a href="{% url 'plans' %}" class="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition text-sm font-medium">
+            <i class="fas fa-arrow-left text-xs"></i>
+            {% trans "Back to Plans" %}
+          </a>
+        </div>
+
+        <!-- Help Text -->
+        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <p class="text-xs text-center text-gray-400 dark:text-gray-500">
+            {% trans "Don't have a code?" %} 
+            <a href="{% url 'plans' %}" class="text-primary hover:underline font-medium">{% trans "View our plans" %}</a>
+          </p>
+        </div>
+      </div>
     </div>
-  {% endif %}
 
-  <form method="post" class="space-y-4">
-    {% csrf_token %}
-    <input type="text" name="code" placeholder="{% trans 'Enter your code' %}"
-           class="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300">
-    <button type="submit" 
-            class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold">
-      {% trans "Redeem" %}
-    </button>
-  </form>
+    <!-- Security Badge -->
+    <div class="mt-6 flex items-center justify-center gap-2 text-gray-400 dark:text-gray-500 text-xs">
+      <i class="fas fa-lock"></i>
+      <span>{% trans "Secure SSL Encryption" %}</span>
+    </div>
+  </div>
 </div>
+
+<style>
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+  
+  /* Input autofill styling for dark mode */
+  .dark input:-webkit-autofill,
+  .dark input:-webkit-autofill:hover,
+  .dark input:-webkit-autofill:focus {
+    -webkit-text-fill-color: white;
+    -webkit-box-shadow: 0 0 0px 1000px #374151 inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+  
+  /* Focus visible for accessibility */
+  input:focus-visible {
+    outline: none;
+  }
+  
+  /* Prevent zoom on iOS input focus */
+  @media screen and (max-width: 768px) {
+    input, select, textarea {
+      font-size: 16px;
+    }
+  }
+</style>
+
+<script>
+  const codeInput = document.getElementById('codeInput');
+  const clearBtn = document.getElementById('clearBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  const form = document.getElementById('redeemForm');
+  
+  // Show/hide clear button
+  codeInput.addEventListener('input', function() {
+    // Auto-uppercase
+    this.value = this.value.toUpperCase();
+    
+    // Show clear button if has content
+    if (this.value.length > 0) {
+      clearBtn.classList.remove('hidden');
+      submitBtn.disabled = false;
+    } else {
+      clearBtn.classList.add('hidden');
+      submitBtn.disabled = true;
+    }
+    
+    // Format: Add dash every 4 characters (optional formatting)
+    // let value = this.value.replace(/-/g, '');
+    // if (value.length > 4) {
+    //   value = value.match(/.{1,4}/g).join('-');
+    // }
+    // this.value = value;
+  });
+  
+  // Disable submit initially if empty
+  submitBtn.disabled = !codeInput.value;
+  
+  // Loading state on submit
+  form.addEventListener('submit', function() {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> <span>{% trans "Redeeming..." %}</span>';
+  });
+  
+  // Focus input on load
+  codeInput.focus();
+  
+  // Handle paste
+  codeInput.addEventListener('paste', function(e) {
+    setTimeout(() => {
+      this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    }, 0);
+  });
+  
+  // Shake animation on error (if error message exists)
+  {% if msg and "❌" in msg %}
+    document.querySelector('.bg-red-50, .bg-red-900\\/20')?.classList.add('animate-shake');
+  {% endif %}
+</script>
 {% endblock %}

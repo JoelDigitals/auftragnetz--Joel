@@ -1,59 +1,360 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Chat{% endblock %}
+{% block title %}{% trans "Chat" %} – {{ other_user.username }}{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto mt-6 bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden flex flex-col h-[80vh]">
+<div class="fixed inset-0 md:relative md:max-w-3xl md:mx-auto md:mt-6 md:mb-8 md:h-[calc(100vh-6rem)] bg-white dark:bg-gray-900 md:rounded-3xl shadow-2xl overflow-hidden flex flex-col">
   
   <!-- Chat Header -->
-  <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-100 dark:bg-gray-800">
-    <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-      {% trans "Chat with" %} {{ other_user.username }}
-    </h2>
+  <div class="px-4 py-3 md:px-6 md:py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-white/90 dark:bg-gray-800/90 backdrop-blur-md sticky top-0 z-10">
+    <div class="flex items-center gap-3">
+      <!-- Back Button (Mobile) -->
+      <a href="{% url 'chat_list' %}" class="md:hidden w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+        <i class="fas fa-arrow-left text-gray-600 dark:text-gray-300"></i>
+      </a>
+      
+      <!-- User Avatar -->
+      <div class="relative">
+        <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg">
+          {{ other_user.username|first|upper }}
+        </div>
+        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
+      </div>
+      
+      <!-- User Info -->
+      <div>
+        <h2 class="font-semibold text-gray-900 dark:text-white text-base md:text-lg">
+          {{ other_user.get_full_name|default:other_user.username }}
+        </h2>
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+          @{{ other_user.username }}
+        </p>
+      </div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="flex items-center gap-2">
+      <button onclick="scrollToBottom()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-600 dark:text-gray-300" title="{% trans 'Scroll to bottom' %}">
+        <i class="fas fa-chevron-down"></i>
+      </button>
+      <a href="{% url 'company_dashboard' %}" class="hidden md:flex w-10 h-10 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-600 dark:text-gray-300">
+        <i class="fas fa-times"></i>
+      </a>
+    </div>
   </div>
 
   <!-- Messages -->
-  <div id="chat-box" class="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50 dark:bg-gray-800">
+  <div id="chat-box" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-gray-50 dark:bg-gray-900 scroll-smooth">
+    <!-- Date Divider -->
+    <div class="flex items-center justify-center gap-4 my-4">
+      <div class="h-px bg-gray-300 dark:bg-gray-700 flex-1"></div>
+      <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">{% trans "Today" %}</span>
+      <div class="h-px bg-gray-300 dark:bg-gray-700 flex-1"></div>
+    </div>
+    
     {% for message in messages %}
-      <div class="{% if message.sender == request.user %}text-right{% endif %}">
-        <div class="inline-block max-w-xs md:max-w-md px-4 py-2 rounded-2xl shadow-sm
-                    {% if message.sender == request.user %}
-                      bg-blue-600 text-white rounded-br-none
-                    {% else %}
-                      bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-bl-none
-                    {% endif %}">
-          <p class="whitespace-pre-line break-words">{{ message.text }}</p>
-          <div class="text-[10px] mt-1 opacity-70">
-            {{ message.created_at|date:"H:i" }}
+      {% ifchanged message.created_at|date:"Y-m-d" %}
+        {% if not forloop.first %}
+        <div class="flex items-center justify-center gap-4 my-4">
+          <div class="h-px bg-gray-300 dark:bg-gray-700 flex-1"></div>
+          <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">{{ message.created_at|date:"d.m.Y" }}</span>
+          <div class="h-px bg-gray-300 dark:bg-gray-700 flex-1"></div>
+        </div>
+        {% endif %}
+      {% endifchanged %}
+      
+      <div class="flex {% if message.sender == request.user %}justify-end{% else %}justify-start{% endif %} group message-item" data-message-id="{{ message.id }}">
+        <!-- Avatar (nur bei Empfänger) -->
+        {% if message.sender != request.user %}
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-400 to-gray-600 flex items-center justify-center text-white text-xs font-bold mr-2 flex-shrink-0 self-end mb-1">
+          {{ message.sender.username|first|upper }}
+        </div>
+        {% endif %}
+        
+        <!-- Message Bubble -->
+        <div class="max-w-[75%] md:max-w-[60%] relative">
+          <div class="px-4 py-2.5 md:px-5 md:py-3 rounded-2xl shadow-sm relative
+                      {% if message.sender == request.user %}
+                        bg-gradient-to-br from-primary to-secondary text-white rounded-br-md
+                      {% else %}
+                        bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-bl-md border border-gray-200 dark:border-gray-700
+                      {% endif %}">
+            <!-- Reply Reference -->
+            {% if message.reply_to %}
+            <div class="mb-2 pb-2 border-b {% if message.sender == request.user %}border-white/20{% else %}border-gray-200 dark:border-gray-600{% endif %}">
+              <p class="text-xs {% if message.sender == request.user %}text-white/70{% else %}text-gray-500{% endif %}">
+                <i class="fas fa-reply mr-1"></i> {{ message.reply_to.text|truncatewords:5 }}
+              </p>
+            </div>
+            {% endif %}
+            
+            <p class="text-[15px] leading-relaxed whitespace-pre-wrap break-words">{{ message.text }}</p>
+            
+            <!-- Attachments -->
+            {% if message.attachment %}
+            <div class="mt-2">
+              {% if message.attachment.url|lower|slice:"-4:" == ".jpg" or message.attachment.url|lower|slice:"-4:" == ".png" or message.attachment.url|lower|slice:"-5:" == ".jpeg" %}
+                <img src="{{ message.attachment.url }}" alt="{% trans 'Attachment' %}" class="max-w-full rounded-lg cursor-pointer hover:opacity-90 transition" onclick="window.open(this.src)">
+              {% else %}
+                <a href="{{ message.attachment.url }}" target="_blank" class="flex items-center gap-2 {% if message.sender == request.user %}text-white/90{% else %}text-primary{% endif %} hover:underline text-sm">
+                  <i class="fas fa-paperclip"></i>
+                  <span class="truncate">{{ message.attachment.name|cut:"attachments/" }}</span>
+                </a>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+          
+          <!-- Meta Info -->
+          <div class="flex items-center gap-2 mt-1 px-1 {% if message.sender == request.user %}justify-end{% endif %}">
+            <span class="text-[11px] text-gray-400 dark:text-gray-500">
+              {{ message.created_at|date:"H:i" }}
+            </span>
+            {% if message.sender == request.user %}
+              <span class="text-[11px] {% if message.is_read %}text-blue-500{% else %}text-gray-400{% endif %}" title="{% if message.is_read %}{% trans 'Read' %}{% else %}{% trans 'Sent' %}{% endif %}">
+                <i class="fas fa-{% if message.is_read %}check-double{% else %}check{% endif %}"></i>
+              </span>
+            {% endif %}
           </div>
         </div>
       </div>
     {% empty %}
-      <p class="text-gray-500 dark:text-gray-400 text-center mt-10 italic">
-        {% trans "No messages yet." %}
-      </p>
+      <div class="flex flex-col items-center justify-center h-full text-center py-12">
+        <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+          <i class="fas fa-comments text-3xl text-gray-400"></i>
+        </div>
+        <p class="text-gray-500 dark:text-gray-400 text-lg font-medium">{% trans "No messages yet" %}</p>
+        <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">{% trans "Start the conversation!" %}</p>
+      </div>
     {% endfor %}
+    
+    <!-- Typing Indicator -->
+    <div id="typing-indicator" class="hidden flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm px-4">
+      <div class="flex gap-1">
+        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
+        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+      </div>
+      <span class="text-xs">{% trans "typing..." %}</span>
+    </div>
   </div>
 
-  <!-- Message Form -->
-  <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
-    <form method="post" class="flex items-center space-x-2">
+  <!-- Message Input -->
+  <div class="p-3 md:p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 safe-area-pb">
+    <form method="post" enctype="multipart/form-data" class="flex items-end gap-2 md:gap-3" id="messageForm">
       {% csrf_token %}
-      {{ form.text }}
+      
+      <!-- Attachment Button -->
+      <label class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition cursor-pointer flex-shrink-0">
+        <i class="fas fa-paperclip"></i>
+        <input type="file" name="attachment" class="hidden" accept="image/*,.pdf,.doc,.docx" onchange="handleFileSelect(this)">
+      </label>
+      
+      <!-- Text Input -->
+      <div class="flex-1 relative">
+        <textarea 
+          name="text" 
+          id="messageInput"
+          rows="1"
+          placeholder="{% trans 'Type a message...' %}"
+          class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-0 rounded-2xl resize-none focus:ring-2 focus:ring-primary/50 focus:bg-white dark:focus:bg-gray-600 transition-all text-gray-900 dark:text-white placeholder-gray-500 max-h-32"
+          oninput="autoResize(this); handleTyping();"
+          onkeydown="handleKeyDown(event)"
+        ></textarea>
+        <!-- File Preview -->
+        <div id="filePreview" class="hidden absolute bottom-full left-0 right-0 mb-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center gap-2">
+          <i class="fas fa-file text-primary"></i>
+          <span class="text-sm text-gray-600 dark:text-gray-300 truncate flex-1" id="fileName"></span>
+          <button type="button" onclick="clearFile()" class="text-red-500 hover:text-red-600">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Send Button -->
       <button type="submit" 
-              class="bg-blue-600 text-white px-5 py-2 rounded-full font-medium shadow-sm hover:bg-blue-700 transition">
-        {% trans "Send" %}
+              id="sendButton"
+              class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0">
+        <i class="fas fa-paper-plane text-sm md:text-base"></i>
       </button>
     </form>
   </div>
 </div>
 
-<!-- Optional: Auto-scroll to latest message -->
+<style>
+  /* Safe area for iOS */
+  .safe-area-pb {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+  
+  /* Custom scrollbar */
+  #chat-box::-webkit-scrollbar {
+    width: 6px;
+  }
+  #chat-box::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  #chat-box::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+  .dark #chat-box::-webkit-scrollbar-thumb {
+    background: #4b5563;
+  }
+  
+  /* Message animations */
+  .message-item {
+    animation: messageSlide 0.3s ease-out;
+  }
+  @keyframes messageSlide {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Typing animation */
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  
+  /* Mobile optimizations */
+  @media (max-width: 768px) {
+    .message-item {
+      max-width: 85%;
+    }
+  }
+  
+  /* Focus styles */
+  textarea:focus {
+    outline: none;
+  }
+</style>
+
 <script>
   const chatBox = document.getElementById("chat-box");
+  const messageInput = document.getElementById("messageInput");
+  const messageForm = document.getElementById("messageForm");
+  const sendButton = document.getElementById("sendButton");
+  
+  // Auto-scroll to bottom on load
   if (chatBox) {
     chatBox.scrollTop = chatBox.scrollHeight;
   }
+  
+  // Auto-resize textarea
+  function autoResize(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 128) + 'px';
+    
+    // Enable/disable send button
+    sendButton.disabled = !textarea.value.trim() && !document.querySelector('input[name="attachment"]').files.length;
+  }
+  
+  // Scroll to bottom
+  function scrollToBottom() {
+    chatBox.scrollTo({
+      top: chatBox.scrollHeight,
+      behavior: 'smooth'
+    });
+  }
+  
+  // Handle file selection
+  function handleFileSelect(input) {
+    const file = input.files[0];
+    if (file) {
+      document.getElementById('fileName').textContent = file.name;
+      document.getElementById('filePreview').classList.remove('hidden');
+      sendButton.disabled = false;
+    }
+  }
+  
+  // Clear file
+  function clearFile() {
+    document.querySelector('input[name="attachment"]').value = '';
+    document.getElementById('filePreview').classList.add('hidden');
+    sendButton.disabled = !messageInput.value.trim();
+  }
+  
+  // Handle typing indicator (optional - would need WebSocket for real implementation)
+  let typingTimer;
+  function handleTyping() {
+    // Clear existing timer
+    clearTimeout(typingTimer);
+    
+    // Here you would emit typing event via WebSocket
+    
+    // Stop typing indicator after 3 seconds
+    typingTimer = setTimeout(() => {
+      // Emit stop typing
+    }, 3000);
+  }
+  
+  // Handle Enter key (send on Enter, new line on Shift+Enter)
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (!sendButton.disabled) {
+        messageForm.submit();
+      }
+    }
+  }
+  
+  // Check for new messages periodically (polling fallback)
+  let lastMessageId = document.querySelector('.message-item:last-child')?.dataset.messageId || 0;
+  
+  function checkNewMessages() {
+    fetch(`/api/chat/{{ chat.id }}/messages/?after=${lastMessageId}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.messages && data.messages.length > 0) {
+          // Append new messages
+          data.messages.forEach(msg => {
+            // Add message to DOM
+            appendMessage(msg);
+            lastMessageId = msg.id;
+          });
+          scrollToBottom();
+        }
+      })
+      .catch(console.error);
+  }
+  
+  // Poll every 5 seconds (replace with WebSocket for production)
+  // setInterval(checkNewMessages, 5000);
+  
+  // Mark messages as read when scrolled into view
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const messageId = entry.target.dataset.messageId;
+        // Mark as read via API
+        markAsRead(messageId);
+      }
+    });
+  }, { root: chatBox, threshold: 0.5 });
+  
+  document.querySelectorAll('.message-item:not([data-sender="{{ request.user.id }}"])').forEach(msg => {
+    observer.observe(msg);
+  });
+  
+  function markAsRead(messageId) {
+    // API call to mark message as read
+    fetch(`/api/messages/${messageId}/read/`, { method: 'POST' })
+      .then(() => {
+        // Update UI to show read status
+      });
+  }
+  
+  // Prevent zoom on iOS input focus
+  document.addEventListener('gesturestart', function(e) {
+    e.preventDefault();
+  });
 </script>
 {% endblock %}

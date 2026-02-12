@@ -9,10 +9,82 @@ from orders.models import Order, Category
 from .models import LeadPreference
 from plans.models import UserPlan
 from django.contrib.auth.decorators import login_required
-
+from django.shortcuts import render
+from products.models import Product
+from orders.models import Order
+from profiles.models import FreelancerProfile, CompanyProfile, Sonstiges
+from itertools import chain
+from operator import attrgetter
 
 def home(request):
-    return render(request, "main/home.html")
+    # Projekte - korrigiert: status statt is_active
+    projects = Order.objects.filter(status='open').select_related('user').order_by('-created_at')
+    
+    # Produkte
+    products = Product.objects.filter(is_active=True).select_related('owner').order_by('-is_boosted', '-created_at')
+    
+    # Top Profiles (Freelancer UND Companies UND Sonstiges gemischt)
+    freelancers = FreelancerProfile.objects.filter(
+        user__is_active=True
+    ).select_related('user').prefetch_related('Categorys').order_by('-visitor_count')[:4]
+    
+    companies = CompanyProfile.objects.filter(
+        user__is_active=True
+    ).select_related('user').prefetch_related('Categorys').order_by('-visitor_count')[:4]
+    
+    sonstiges = Sonstiges.objects.filter(
+        user__is_active=True
+    ).select_related('user').prefetch_related('Categorys').order_by('-visitor_count')[:2]
+    
+    # Kombiniere und sortiere nach visitor_count
+    top_profiles = sorted(
+        chain(freelancers, companies, sonstiges), 
+        key=attrgetter('visitor_count'), 
+        reverse=True
+    )[:8]
+    
+    # Erstelle Liste mit Typ-Information für einfacheren Template-Zugriff
+    top_profiles_enhanced = []
+    for profile in top_profiles:
+        profile_type = profile._meta.model_name
+        
+        # Bestimme Anzeige-Name und Icon basierend auf Typ
+        if profile_type == 'companyprofile':
+            type_label = "Company"
+            type_icon = "fa-building"
+            type_color = "indigo"
+            # KORRIGIERT: company_type statt industry
+            description = profile.company_type or profile.description or "Company"
+        elif profile_type == 'freelancerprofile':
+            type_label = "Freelancer"
+            type_icon = "fa-user-tie"
+            type_color = "purple"
+            # Hole Categorys aus Many-to-Many
+            categories = profile.Categorys.all()[:3]
+            description = ", ".join([c.name for c in categories]) if categories else "Various Skills"
+        else:  # sonstiges
+            type_label = "Other"
+            type_icon = "fa-user"
+            type_color = "gray"
+            description = profile.additional_info or "Other Professional"
+        
+        profile_data = {
+            'profile': profile,
+            'type': profile_type,
+            'type_label': type_label,
+            'type_icon': type_icon,
+            'type_color': type_color,
+            'description': description,
+        }
+        top_profiles_enhanced.append(profile_data)
+    
+    context = {
+        'projects': projects,
+        'products': products,
+        'top_profiles': top_profiles_enhanced,
+    }
+    
+    return render(request, 'main/home.html', context)
 
 def registration_step1(request):
     if request.method == "POST":
@@ -39,38 +111,166 @@ def create_order(request):
         pass
     return render(request, "main/create_order.html")
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Count, Q
+from plans.models import UserPlan
+from products.models import Product
+from profiles.models import ProfileVisit
+from .models import Lead
+
+@login_required
 def company_dashboard(request):
-    active_plan = UserPlan.objects.filter(user=request.user, expires_at__gte=timezone.now()).first()
-    profile_visits_count = 0
-    profile = getattr(request.user, "companyprofile", None) or getattr(request.user, "freelancerprofile", None)
-    if profile:
-        profile_visits_count = getattr(profile, "visitor_count", 0)
-
-    leads = []
+    user = request.user
+    
+    # Check active plan
+    active_plan = UserPlan.objects.filter(
+        user=user, 
+        expires_at__gte=timezone.now()
+    ).select_related('plan').first()
+    
+    has_premium = active_plan is not None
+    
+    profile = getattr(user, "companyprofile", None) or getattr(user, "freelancerprofile", None)
+    
+    now = timezone.now()
+    two_months_ago = now - timedelta(days=60)
+    six_months_ago = now - timedelta(days=180)
+    
+    # === VISITS (Profile Visitors) - Immer verfügbar ===
+    all_visitors = ProfileVisit.objects.filter(profile=user).select_related('visitor').order_by('-visited_at')
+    
+    recent_visitors = all_visitors.filter(visited_at__gte=two_months_ago)
+    medium_visitors = all_visitors.filter(visited_at__gte=six_months_ago, visited_at__lt=two_months_ago)
+    archive_visitors = all_visitors.filter(visited_at__lt=six_months_ago)
+    
+    total_visitors = all_visitors.count()
+    recent_visitors_count = recent_visitors.count()
+    
+    # Profile-Daten für Besucher anreichern
+    for visitor in list(recent_visitors) + list(medium_visitors):
+        visitor.visitor.profile = getattr(visitor.visitor, 'companyprofile', None) or \
+                                   getattr(visitor.visitor, 'freelancerprofile', None) or \
+                                   getattr(visitor.visitor, 'sonstiges', None)
+    
+    # === BESUCHE (Leads) - Nur mit Plan ===
+    total_leads = 0
+    new_leads_count = 0
+    leads_by_status = {}
+    
+    if has_premium:
+        all_leads = Lead.objects.filter(company=user).prefetch_related('category').order_by('-created_at')
+        total_leads = all_leads.count()
+        new_leads_count = all_leads.filter(status='new').count()
+        
+        # Gruppiere nach Status für die Anzeige
+        leads_by_status = {
+            'new': all_leads.filter(status='new')[:10],
+            'contacted': all_leads.filter(status='contacted')[:5],
+            'qualified': all_leads.filter(status='qualified')[:5],
+            'converted': all_leads.filter(status='converted')[:5],
+        }
+    
+    # Produkte
+    products = Product.objects.filter(owner=user).order_by('-is_boosted', '-created_at')
+    products_count = products.count()
+    boosted_products_count = products.filter(is_boosted=True).count()
+    
+    can_boost = False
+    boostable_products = []
     if active_plan:
-        pref = getattr(request.user, "lead_preference", None)
-        if pref and pref.categories.exists():
-            leads = Lead.objects.filter(category__in=pref.categories.all()).distinct().order_by('-created_at')
-        else:
-            leads = Lead.objects.all().order_by('-created_at')
-    else:
-        leads = []
-
-
-    products = Product.objects.filter(owner=request.user)
-    jobs = Order.objects.filter(user=request.user)
-
+        used_boosts = boosted_products_count
+        available_boosts = getattr(active_plan.plan, 'booster_limit', 0) - used_boosts
+        can_boost = available_boosts > 0
+        
+        if can_boost:
+            boostable_products = products.filter(is_boosted=False)[:available_boosts]
+    
+    jobs = Order.objects.filter(user=user).order_by('-created_at')
+    jobs_count = jobs.count()
+    
+    # Stats - Nur mit Plan
+    profile_views_this_month = recent_visitors_count if has_premium else 0
+    click_through_rate = 5.2 if has_premium else 0
+    product_views_total = sum(p.views for p in products) if has_premium else 0
+    search_appearances = 42 if has_premium else 0
+    
     context = {
-        "profile_visits_count": profile_visits_count,
-        "leads_count": len(leads) if active_plan else 0,
-        "leads": leads,
-        "products_count": products.count(),
+        "active_plan": active_plan,
+        "has_premium": has_premium,
+        "profile": profile,
+        
+        # Visits (immer verfügbar)
+        "total_visitors": total_visitors,
+        "recent_visitors_count": recent_visitors_count,
+        "recent_visitors": recent_visitors[:5],  # Nur Top 5 ohne Plan
+        "medium_visitors": medium_visitors[:3] if has_premium else [],
+        "archive_visitors": archive_visitors if has_premium else [],
+        
+        # Besuche/Leads (nur mit Plan)
+        "total_leads": total_leads,
+        "new_leads_count": new_leads_count,
+        "leads_by_status": leads_by_status,
+        
+        # Products & Jobs
         "products": products,
-        "jobs": jobs,
-        "active_plan": bool(active_plan),
+        "products_count": products_count,
+        "boosted_products_count": boosted_products_count,
+        "can_boost": can_boost,
+        "boostable_products": boostable_products,
+        "jobs": jobs[:10],
+        "jobs_count": jobs_count,
+        
+        # Stats (nur mit Plan)
+        "profile_views_this_month": profile_views_this_month,
+        "click_through_rate": click_through_rate,
+        "product_views_total": product_views_total,
+        "search_appearances": search_appearances,
     }
-
+    
     return render(request, "main/company_dashboard.html", context)
+
+
+@login_required
+def boost_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id, owner=request.user)
+    
+    if product.is_boosted:
+        return redirect('company_dashboard')
+    
+    active_plan = UserPlan.objects.filter(
+        user=request.user,
+        expires_at__gte=timezone.now()
+    ).first()
+    
+    if not active_plan:
+        return redirect('plans')
+    
+    used_boosts = Product.objects.filter(owner=request.user, is_boosted=True).count()
+    available_boosts = getattr(active_plan.plan, 'booster_limit', 0) - used_boosts
+    
+    if available_boosts <= 0:
+        return redirect('plans')
+    
+    if request.method == 'POST':
+        product.is_boosted = True
+        product.save()
+    
+    return redirect('/company/dashboard/')
+
+
+@login_required
+def unboost_product(request, product_id):
+    """Boost von Produkt entfernen"""
+    product = get_object_or_404(Product, id=product_id, owner=request.user)
+    
+    if request.method == 'POST' and product.is_boosted:
+        product.is_boosted = False
+        product.save()
+    
+    return redirect('/company/dashboard/')
 
 @login_required
 def lead_preferences(request):

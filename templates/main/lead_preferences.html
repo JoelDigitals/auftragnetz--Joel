@@ -1,17 +1,254 @@
 {% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Lead Categories" %}{% endblock %}
+
 {% block content %}
-<h2>Kategorien für Leadliste</h2>
-<form method="post">
-  {% csrf_token %}
-  <div class="grid grid-cols-2 gap-2">
-    {% for cat in categories %}
-      <label>
-        <input type="checkbox" name="categories" value="{{ cat.id }}"
-               {% if cat in selected_categories %}checked{% endif %}>
-        {{ cat.name }}
-      </label>
-    {% endfor %}
+<div class="max-w-2xl mx-auto px-4 py-6 md:py-8">
+  
+  <!-- Header -->
+  <div class="mb-6 md:mb-8">
+    <a href="{% url 'company_dashboard' %}" class="inline-flex items-center text-sm text-gray-500 hover:text-primary transition mb-4">
+      <i class="fas fa-arrow-left mr-2"></i>{% trans "Back to Dashboard" %}
+    </a>
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+      <span class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+        <i class="fas fa-tags text-primary"></i>
+      </span>
+      {% trans "Lead Categories" %}
+    </h1>
+    <p class="text-gray-500 dark:text-gray-400 mt-2 text-sm md:text-base">
+      {% trans "Select the categories you want to receive leads for. This helps us match you with relevant projects." %}
+    </p>
   </div>
-  <button type="submit" class="btn btn-primary mt-4">Speichern</button>
-</form>
+
+  <!-- Form Card -->
+  <div class="card">
+    <form method="post" id="categoryForm">
+      {% csrf_token %}
+      
+      <!-- Search/Filter (optional) -->
+      <div class="mb-4 relative">
+        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+        <input 
+          type="text" 
+          id="categorySearch" 
+          placeholder="{% trans 'Search categories...' %}"
+          class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
+        >
+      </div>
+
+      <!-- Selected Count -->
+      <div class="flex items-center justify-between mb-4 p-3 bg-primary/5 dark:bg-primary/10 rounded-lg">
+        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {% trans "Selected" %}:
+        </span>
+        <span id="selectedCount" class="text-sm font-bold text-primary bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-sm">
+          {{ selected_categories|length }} / {{ categories|length }}
+        </span>
+      </div>
+
+      <!-- Categories Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="categoryGrid">
+        {% for cat in categories %}
+        <label class="category-item relative flex items-center p-4 bg-gray-50 dark:bg-gray-700/30 border-2 border-transparent rounded-xl cursor-pointer transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:border-gray-200 dark:hover:border-gray-600 {% if cat in selected_categories %}selected bg-primary/5 dark:bg-primary/10 border-primary{% endif %}">
+          <input 
+            type="checkbox" 
+            name="categories" 
+            value="{{ cat.id }}"
+            {% if cat in selected_categories %}checked{% endif %}
+            class="category-checkbox absolute opacity-0 w-0 h-0"
+            onchange="updateSelection(this)"
+          >
+          
+          <!-- Custom Checkbox -->
+          <div class="w-6 h-6 rounded-lg border-2 border-gray-300 dark:border-gray-500 flex items-center justify-center mr-3 transition-all duration-200 checkbox-custom {% if cat in selected_categories %}bg-primary border-primary{% endif %}">
+            <i class="fas fa-check text-white text-xs {% if cat in selected_categories %}opacity-100{% else %}opacity-0{% endif %}"></i>
+          </div>
+          
+          <!-- Category Info -->
+          <div class="flex-1 min-w-0">
+            <span class="category-name block font-medium text-gray-900 dark:text-white text-sm truncate">
+              {{ cat.name }}
+            </span>
+            {% if cat.description %}
+              <span class="block text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                {{ cat.description }}
+              </span>
+            {% endif %}
+          </div>
+          
+          <!-- Selected Indicator -->
+          <div class="selected-indicator ml-2 text-primary {% if cat in selected_categories %}opacity-100{% else %}opacity-0{% endif %} transition-opacity">
+            <i class="fas fa-check-circle"></i>
+          </div>
+        </label>
+        {% empty %}
+        <div class="col-span-full text-center py-8 text-gray-500">
+          <i class="fas fa-inbox text-4xl mb-3 opacity-50"></i>
+          <p>{% trans "No categories available." %}</p>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Select All / None -->
+      <div class="flex gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <button type="button" onclick="selectAll()" class="text-sm text-primary hover:text-secondary font-medium transition">
+          {% trans "Select All" %}
+        </button>
+        <span class="text-gray-300">|</span>
+        <button type="button" onclick="selectNone()" class="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 font-medium transition">
+          {% trans "Select None" %}
+        </button>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <button type="submit" class="flex-1 bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-2">
+          <i class="fas fa-save"></i>
+          {% trans "Save Preferences" %}
+        </button>
+        <a href="{% url 'company_dashboard' %}" class="flex-1 sm:flex-initial bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition text-center">
+          {% trans "Cancel" %}
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Info Box -->
+  <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl flex items-start gap-3">
+    <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+    <div class="text-sm text-blue-800 dark:text-blue-200">
+      <p class="font-medium mb-1">{% trans "Tip:" %}</p>
+      <p>{% trans "You can change these preferences anytime. More categories mean more potential leads, but be selective for better matches." %}</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 68, 204, 0.1);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .card {
+    background: rgba(31, 41, 55, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .category-item.selected {
+    background: rgba(0, 68, 204, 0.08);
+    border-color: #0044cc;
+  }
+
+  .category-item.selected .checkbox-custom {
+    background: #0044cc;
+    border-color: #0044cc;
+  }
+
+  .category-item.selected .checkbox-custom i {
+    opacity: 1;
+  }
+
+  /* Smooth transitions */
+  .category-item {
+    touch-action: manipulation;
+  }
+
+  /* Active state for mobile touch */
+  .category-item:active {
+    transform: scale(0.98);
+  }
+
+  /* Hide scrollbar for clean look */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+</style>
+
+<script>
+  function updateSelection(checkbox) {
+    const label = checkbox.closest('.category-item');
+    const selectedIndicator = label.querySelector('.selected-indicator');
+    const checkboxCustom = label.querySelector('.checkbox-custom');
+    const checkIcon = checkboxCustom.querySelector('i');
+    
+    if (checkbox.checked) {
+      label.classList.add('selected');
+      selectedIndicator.classList.remove('opacity-0');
+      selectedIndicator.classList.add('opacity-100');
+      checkboxCustom.classList.add('bg-primary', 'border-primary');
+      checkIcon.classList.remove('opacity-0');
+      checkIcon.classList.add('opacity-100');
+    } else {
+      label.classList.remove('selected');
+      selectedIndicator.classList.add('opacity-0');
+      selectedIndicator.classList.remove('opacity-100');
+      checkboxCustom.classList.remove('bg-primary', 'border-primary');
+      checkIcon.classList.add('opacity-0');
+      checkIcon.classList.remove('opacity-100');
+    }
+    
+    updateCount();
+  }
+
+  function updateCount() {
+    const checked = document.querySelectorAll('.category-checkbox:checked').length;
+    const total = document.querySelectorAll('.category-checkbox').length;
+    document.getElementById('selectedCount').textContent = `${checked} / ${total}`;
+  }
+
+  function selectAll() {
+    document.querySelectorAll('.category-checkbox').forEach(cb => {
+      cb.checked = true;
+      updateSelection(cb);
+    });
+  }
+
+  function selectNone() {
+    document.querySelectorAll('.category-checkbox').forEach(cb => {
+      cb.checked = false;
+      updateSelection(cb);
+    });
+  }
+
+  // Search functionality
+  document.getElementById('categorySearch')?.addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    document.querySelectorAll('.category-item').forEach(item => {
+      const name = item.querySelector('.category-name').textContent.toLowerCase();
+      const desc = item.querySelector('.category-name + span')?.textContent.toLowerCase() || '';
+      
+      if (name.includes(searchTerm) || desc.includes(searchTerm)) {
+        item.style.display = 'flex';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  });
+
+  // Prevent double-tap zoom on iOS
+  document.querySelectorAll('.category-item').forEach(item => {
+    item.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      const checkbox = this.querySelector('.category-checkbox');
+      checkbox.checked = !checkbox.checked;
+      updateSelection(checkbox);
+    });
+  });
+</script>
 {% endblock %}
