@@ -251,3 +251,17 @@ def product_list(request):
     }
     
     return render(request, "products/product_list.html", context)
+
+def product_image_delete(request, pk):
+    """Löscht ein zusätzliches Produktbild"""
+    image = get_object_or_404(ProductImage, pk=pk, product__owner=request.user)
+    product_pk = image.product.pk
+    
+    if request.method == "POST":
+        image.delete()
+        messages.success(request, "Bild erfolgreich gelöscht!")
+        return redirect("product_edit", pk=product_pk)
+    
+    return render(request, "products/product_image_confirm_delete.html", {
+        "image": image
+    })
